@@ -10,8 +10,32 @@
 mod_Home_ui <- function(id){
   ns <- NS(id)
   tagList(
-    h1("Welcome HOME !")
- 
+    fluidPage(
+      fluidRow(
+        column(width = 5,
+               h2("Welcome!")),
+        br(),br(),br()
+      ),
+      fluidRow(
+        column(width = 10,
+               box(
+                 background = "blue",
+                 h2("You lifted XYZ xx times!"),
+                 title = "Congrats!"),
+               br(), br(), br(), br()
+        )),
+      fluidRow(
+        box(
+          title = "Top Exercises",
+          width = 6,
+          DT::dataTableOutput(ns('data_table'))),
+        box(
+          title = "Total Weight Lifted",
+          width = 6,
+          plotOutput(ns("plot"))
+        )
+      )
+    )
   )
 }
     
@@ -19,9 +43,18 @@ mod_Home_ui <- function(id){
 #'
 #' @noRd 
 mod_Home_server <- function(id){
-  moduleServer( id, function(input, output, session){
+  
+  moduleServer(id, function(input, output, session){
+
     ns <- session$ns
- 
+    
+    output$data_table <- DT::renderDT({
+      shinipsum::random_DT(5, 3, "numeric")
+    })
+    
+    output$plot <- renderPlot({
+      shinipsum::random_ggplot(type = "line")
+    })
   })
 }
     

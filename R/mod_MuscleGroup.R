@@ -10,8 +10,30 @@
 mod_MuscleGroup_ui <- function(id){
   ns <- NS(id)
   tagList(
-    h1("Bouh")
- 
+  
+    fluidPage(
+      fluidRow(
+        h2("Muscle Group Progress for "),
+        selectizeInput(
+          inputId = ns("muscles"), 
+          label = "", 
+          choices = c("Back", "Hamstrings"),
+          selected = "Back",
+          width = '50%',
+          multiple = FALSE)
+      ),
+      fluidRow(
+        shinydashboard::box(
+          title = "Max Weight Over Time",
+          width = 6,
+          plotOutput(ns("plot4"))),
+        shinydashboard::box(
+          title = "Top Exercises",
+          width = 6,
+          DT::dataTableOutput(ns('data_table2'))
+        )
+      )
+    )
   )
 }
     
@@ -22,6 +44,13 @@ mod_MuscleGroup_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
  
+    output$plot4 <- renderPlot({
+      shinipsum::random_ggplot(type = "line")
+    })
+    
+    output$data_table2 <- DT::renderDT({
+      shinipsum::random_DT(5, 3, "numeric")
+    })
   })
 }
     
