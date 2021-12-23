@@ -3,8 +3,7 @@
 #' @param request Internal parameter for `{shiny}`. 
 #'     DO NOT REMOVE.
 #' @import shiny
-#' @import shinydashboard
-#' @import shinydashboardPlus
+#' @import bs4Dash
 #' @noRd
 app_ui <- function(request) {
   
@@ -15,34 +14,50 @@ app_ui <- function(request) {
     # Define this page as a dashboard page to signal we're using the     dashboard page format
     dashboardPage(
       
+      title = "Oser",
+      fullscreen = TRUE,
       header = dashboardHeader(
-        title = "Fitbod Tracking Dashboard"
-      ),      
-      
+        title = "Oser"
+      ),
       # Create our navigation menu that links to each of the tabs we defined
       sidebar = dashboardSidebar(
+        skin = "light",
+        status = "primary",
+        elevation = 3,
+        sidebarUserPanel(
+          image = "https://image.flaticon.com/icons/svg/1149/1149168.svg",
+          name = "Welcome Onboard!"
+        ),
         sidebarMenu(
-          # Setting id makes input$tabs give the tabName of currently-selected tab
           id = "tabs",
-        menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
-        menuItem("Muscle Group View", icon = icon("th"), tabName = "mg"),
-        menuItem("Exercise View", icon = icon("bar-chart-o"), tabName = "ev"
-        ))
+          menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
+                   menuSubItem(
+            "Choix de l'unité", tabName = "unit", icon = icon("circle-thin")
+            ),
+                  menuSubItem(
+            "Oser", icon = icon("circle-thin"), tabName = "oser")),
+          menuItem("Tutoriels", icon = icon("bar-chart-o"), tabName = "tuto"),
+          menuItem("A propos", icon = icon("th"), tabName = "apropos")
+        )
       ),
-      
-      # Show the appropriate tab's content in the main body of our dashboard when we select it
-      body = dashboardBody(
-        tabItems(
-          tabItem("dashboard", mod_Home_ui("Home_ui_1")),
-          tabItem("mg", mod_MuscleGroup_ui("MuscleGroup_ui_1")),
-          tabItem("ev", mod_Exercises_ui("Exercises_ui_1")
-          )
-        ) 
+      footer = dashboardFooter(
+        left = "Prototype - application en développement",
+        right = "2022 - Strat&co"
       ),
       controlbar = NULL,
-      title = "FitBod App Monitoring Dashboard"
-    )
-  )
+      body = dashboardBody(
+        tabItems(
+          tabItem("unit", mod_choix_unit_ui("choix_unit_ui_1")),
+          tabItem("oser", mod_Oser_ui("Oser_ui_1")),
+          tabItem("tuto", mod_MuscleGroup_ui("MuscleGroup_ui_1")),
+          tabItem("apropos", mod_Exercises_ui("Exercises_ui_1")
+          )
+        )
+
+ 
+      )
+    ))
+
 }
 
 #' Add external Resources to the Application

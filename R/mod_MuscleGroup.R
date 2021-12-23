@@ -7,6 +7,9 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @import shinyWidgets
+#' @import SHELF
+#' 
 mod_MuscleGroup_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -23,11 +26,11 @@ mod_MuscleGroup_ui <- function(id){
           multiple = FALSE)
       ),
       fluidRow(
-        shinydashboard::box(
+        box(
           title = "Max Weight Over Time",
           width = 6,
           plotOutput(ns("plot4"))),
-        shinydashboard::box(
+        box(
           title = "Top Exercises",
           width = 6,
           DT::dataTableOutput(ns('data_table2'))

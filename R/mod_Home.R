@@ -19,7 +19,7 @@ mod_Home_ui <- function(id){
       fluidRow(
         column(width = 10,
                box(
-                 background = "blue",
+                 background = "primary",
                  h2("You lifted XYZ xx times!"),
                  title = "Congrats!"),
                br(), br(), br(), br()

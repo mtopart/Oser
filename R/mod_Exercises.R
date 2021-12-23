@@ -25,17 +25,17 @@ mod_Exercises_ui <- function(id){
         ),
         fluidRow(
           column(width = 10,
-                 shinydashboard::box(
-                   background = "blue",
+                 box(
+                   background = "primary",
                    h2("Your current projected 1 rep max is x!"),
                    title = "Congrats!")
           )),
         fluidRow(
-          shinydashboard::box(
+          box(
             title = "Total Weight Per Workout",
             width = 6,
             plotOutput(ns("plot2"))),
-          shinydashboard::box(
+          box(
             title = "Max Weight Per Workout",
             width = 6,
             plotOutput(ns("plot3"))
