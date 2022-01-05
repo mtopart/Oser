@@ -7,6 +7,9 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @import  SHELF
+#' @importFrom dplyr %>%
+#'  
 mod_Oser_ui <- function(id){
   ns <- NS(id)
   
@@ -19,18 +22,18 @@ mod_Oser_ui <- function(id){
         p(em("Par exemple : en tonnes pour 150 ha ou 1000 L pour l'atelier vaches laitières")),
         br(),
         wellPanel(numericInput(
-          inputId = "prod_min",
+          inputId = ns("prod_min"),
           label = "minimale",
           value = 20),
           
           numericInput(
-            inputId = "prod_max",
+            inputId = ns("prod_max"),
             label = "maximale",
             value = 50)
       ),
       
       materialSwitch(
-        inputId = "loi_prod",
+        inputId = ns("loi_prod"),
         label = "Je souhaite tracer une distribution (par défaut, la distribution sera uniforme)", 
         value = FALSE,
         status = "primary"
@@ -38,14 +41,14 @@ mod_Oser_ui <- function(id){
       
       conditionalPanel(
         condition = "input.loi_prod == 1",
-        plotOutput("roulette_p",
+        plotOutput(ns("roulette_p"),
                    click = "location_p"),
         p(em("Moyenne de la distribution :")),
-        textOutput("mean_prod"),
+        textOutput(ns("mean_prod")),
         hr()
       ),
       p(em("Distribution :")),
-      verbatimTextOutput("distrib")
+      verbatimTextOutput(ns("distrib"))
       ),
       
       

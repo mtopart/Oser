@@ -8,64 +8,63 @@
 #'
 #' @importFrom shiny NS tagList 
 mod_Exercises_ui <- function(id){
+  
+  
   ns <- NS(id)
+  
   tagList(
-
-      fluidPage(
-        fluidRow(
-          h2("Exercise Progress for "),
-          selectizeInput(
-            inputId = ns("exercises"), 
-            label = "",
-            # Hard coded for now, but we'll deal with this later!
-            choices = c("Dumbell Bicep Curl", "Deadlift"),
-            selected = "Dumbell Bicep Curl",
-            width = '50%',
-            multiple = FALSE)
+    fluidRow(
+      box(
+        title = "Production et quantité",
+        width = 4,
+        "(par unité de mesure sur une échelle choisie)",
+        p(em("Par exemple : en tonnes pour 150 ha ou 1000 L pour l'atelier vaches laitières")),
+        br(),
+        wellPanel(numericInput(
+          inputId = ns("prod_min"),
+          label = "minimale",
+          value = 20),
+          
+          numericInput(
+            inputId = ns("prod_max"),
+            label = "maximale",
+            value = 50)
         ),
-        fluidRow(
-          column(width = 10,
-                 box(
-                   background = "primary",
-                   h2("Your current projected 1 rep max is x!"),
-                   title = "Congrats!")
-          )),
-        fluidRow(
-          box(
-            title = "Total Weight Per Workout",
-            width = 6,
-            plotOutput(ns("plot2"))),
-          box(
-            title = "Max Weight Per Workout",
-            width = 6,
-            plotOutput(ns("plot3"))
-          )
-        )
+        
+        p(em("Distribution :")),
+        verbatimTextOutput(ns("distrib"))
       )
     )
-}
     
-#' Exercises Server Functions
+  )
+}
+
+#' Oser Server Functions
 #'
 #' @noRd 
 mod_Exercises_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
- 
     
-    output$plot2 <- renderPlot({
-      shinipsum::random_ggplot(type = "line")
-    })
     
-    output$plot3 <- renderPlot({
-      shinipsum::random_ggplot(type = "line")
-    })
+    
+    distrib<- reactive ({
+      
+      prod_min <- input$prod_min
+      prod_max <- input$prod_max
+      
+      distribution <-runif(40, prod_min, prod_max)
+      
+      distribution 
+    })  
+    
+    output$distrib <- renderPrint(distrib())
     
   })
 }
-    
+
 ## To be copied in the UI
 # mod_Exercises_ui("Exercises_ui_1")
-    
+
 ## To be copied in the server
 # mod_Exercises_server("Exercises_ui_1")
