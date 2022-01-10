@@ -1,19 +1,29 @@
 Package: Oser
 Title: Outil de Simulation du risque Economique et des Revenus
 Version: 0.0.0.9000
-Authors@R: person('Morgane', 'Topart', email = 'm.topart@agro-transfert-rt.org', role = c('cre', 'aut'))
+Authors@R: 
+    person(given = "Morgane",
+           family = "Topart",
+           role = c("cre", "aut"),
+           email = "m.topart@agro-transfert-rt.org")
 Description: Application Oser en développement
 License: MIT + file LICENSE
+URL: https://github.com/mtopart/Oser
+BugReports: https://github.com/mtopart/Oser/issues
 Imports: 
     attempt,
     bs4Dash,
     config (>= 0.3.1),
+    crch,
+    dplyr,
     DT,
     ggplot2,
     glue,
+    EnvStats,
     golem (>= 0.3.1),
     htmltools,
     processx,
+    RGeode,
     SHELF,
     shinipsum,
     shiny (>= 1.6.0),
@@ -23,5 +33,5 @@ RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Language: en-US
-BugReports: https://github.com/mtopart/Oser/issues
+Encoding: UTF-8
+
