@@ -48,13 +48,10 @@ mod_Exercises_server <- function(id){
     
     
     
-    distrib<- reactive ({
-      
+    distrib <- reactive ({
       prod_min <- input$prod_min
       prod_max <- input$prod_max
-      
       distribution <-runif(40, prod_min, prod_max)
-      
       distribution 
     })  
     

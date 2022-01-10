@@ -7,6 +7,8 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @importFrom bs4Dash box
+#' 
 mod_Home_ui <- function(id){
   ns <- NS(id)
   tagList(
