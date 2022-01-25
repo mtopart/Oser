@@ -1,0 +1,1 @@
+utils::globalVariables(c(".", "ca", "q3", "q1", "solde"))

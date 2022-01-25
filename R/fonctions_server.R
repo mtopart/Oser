@@ -44,6 +44,10 @@ bin.right <- function(mini,
 }
 
 
+
+
+#' @importFrom graphics par lines rect
+
 plot_elicit <- function(name,
                         chips,
                         mini,
@@ -154,7 +158,7 @@ calc_distrib <- function (myfit,
     
     
     distribution <-  mini + (maxi - mini)  *
-      qbeta((1:40/41), myfit$Beta$shape1, myfit$Beta$shape2)
+      stats::qbeta((1:40/41), myfit$Beta$shape1, myfit$Beta$shape2)
   }
   
   distribution

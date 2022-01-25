@@ -27,11 +27,18 @@ Imports:
     SHELF,
     shinipsum,
     shiny (>= 1.6.0),
-    shinyWidgets
+    shinyWidgets,
+    pkgload,
+    shinyBS,
+    shinyjs,
+    tibble,
+    tidyr,
+    plotly,
+    rhandsontable,
+    rlang
 LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
-

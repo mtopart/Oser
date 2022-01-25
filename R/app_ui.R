@@ -32,10 +32,12 @@ app_ui <- function(request) {
           id = "tabs",
           menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
                    menuSubItem(
+                     "Oser", icon = icon("circle-thin"), tabName = "oser"), 
+                   menuSubItem(
             "Choix de l'unité", tabName = "unit", icon = icon("circle-thin")
             ),
                   menuSubItem(
-            "Oser", icon = icon("circle-thin"), tabName = "oser")),
+            "Charges en détail", icon = icon("circle-thin"), tabName = "chg")),
           menuItem("Tutoriels", icon = icon("bar-chart-o"), tabName = "tuto"),
           menuItem("A propos", icon = icon("th"), tabName = "apropos")
         )
@@ -47,10 +49,11 @@ app_ui <- function(request) {
       controlbar = NULL,
       body = dashboardBody(
         tabItems(
-          tabItem("unit", mod_choix_unit_ui("choix_unit_ui_1")),
           tabItem("oser", mod_Oser_ui("Oser_ui_1")),
+          tabItem("unit", mod_choix_unit_ui("choix_unit_ui_1")),
+          tabItem("chg", mod_charges_ui("charges_ui_1")), 
           tabItem("tuto", mod_MuscleGroup_ui("MuscleGroup_ui_1")),
-          tabItem("apropos", mod_Exercises_ui("Exercises_ui_1")
+          tabItem("apropos", mod_apropos_ui("apropos_ui_1")
           )
         )
 

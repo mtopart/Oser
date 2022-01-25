@@ -8,51 +8,76 @@
 #'
 #' @importFrom shiny NS tagList 
 #' @importFrom  SHELF fitdist
-#' @importFrom dplyr %>%
+#' @importFrom dplyr %>% mutate case_when select
 #' @importFrom shinyjs useShinyjs toggle
 #' @importFrom bs4Dash box
+#' @importFrom tidyr crossing
+#' @importFrom tibble tibble
+#' @importFrom shinyBS bsModal
+#' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot geom_vline theme_light coord_cartesian theme element_blank
+#' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout
+#' @importFrom stats quantile runif median 
 #' 
-mod_Oser_ui <- function(id){
+mod_Oser_ui <- function(id) {
   ns <- NS(id)
   
   tagList(
     fluidRow(
       useShinyjs(),
+      
+      
+      ## Production------------------------------------
+      
       box(
         title = "Production et quantité",
         width = 4,
         "(par unité de mesure sur une échelle choisie)",
-        p(em("Par exemple : en tonnes pour 150 ha ou 1000 L pour l'atelier vaches laitières")),
+        textOutput(ns("ma_sortie")),
+        p(
+          em(
+            "Par exemple : en tonnes pour 150 ha ou 1000 L pour l'atelier vaches laitières"
+          )
+        ),
         br(),
-        wellPanel(numericInput(
-          inputId = ns("prod_min"),
-          label = "minimale",
-          value = 20),
+        wellPanel(
+          numericInput(
+            inputId = ns("prod_min"),
+            label = "minimale",
+            value = 20
+          ),
           
           numericInput(
             inputId = ns("prod_max"),
             label = "maximale",
-            value = 50)
+            value = 50
+          )
+        ),
+        
+        materialSwitch(
+          inputId = ns("loi_prod"),
+          label = "Je souhaite tracer une distribution (par défaut, la distribution sera uniforme)",
+          value = FALSE,
+          status = "primary"
+        ),
+        
+        plotOutput(ns("roulette_p"),
+                   click = ns("location_p")),
+        p(em(
+          id = ns("t_prod"), "Moyenne de la distribution :"
+        )),
+        textOutput(ns("mean_prod")),
+        hr(id = ns("esp")),
+        
+        # actionButton(ns("view_prod"), "View"),
+        # bsModal("modalprod", "Distribution", ns("view_prod"), size = "large",
+        #         verbatimTextOutput(ns("distrib")))
+        # ),
+
+        p(em("Distribution :")),
+        verbatimTextOutput(ns("distrib"))
       ),
       
-      materialSwitch(
-        inputId = ns("loi_prod"),
-        label = "Je souhaite tracer une distribution (par défaut, la distribution sera uniforme)", 
-        value = FALSE,
-        status = "primary"
-      ),
-      
-      plotOutput(ns("roulette_p"),
-                 click = ns("location_p")),
-      p(em(id = ns("t_prod"), "Moyenne de la distribution :")),
-      textOutput(ns("mean_prod")),
-      hr(id = ns("esp")),
-      
-   
-      p(em("Distribution :")),
-      verbatimTextOutput(ns("distrib"))
-      ),
-      
+      # Prix -----------------------------------
       
       box(
         title = "Prix",
@@ -60,75 +85,157 @@ mod_Oser_ui <- function(id){
         "(par unité de mesure sur une échelle choisie)",
         p(em("Par exemple : en €/t ou €/1000 L")),
         br(),
-        wellPanel( numericInput(
-          inputId = ns("prix_min"),
-          label = "minimal",
-          value = 50),
+        wellPanel(
+          numericInput(
+            inputId = ns("prix_min"),
+            label = "minimal",
+            value = 50
+          ),
           
           numericInput(
             inputId = ns("prix_max"),
             label = "maximal",
-            value = 150),
+            value = 150
+          ),
           
           materialSwitch(
             inputId = ns("loi_prix"),
-            label = "Je souhaite tracer une distribution (par défaut, la distribution sera uniforme)", 
+            label = "Je souhaite tracer une distribution (par défaut, la distribution sera uniforme)",
             value = FALSE,
             status = "primary"
           ),
-        
-        plotOutput(ns("roulette_px"),
-                   click = ns("location_px")),
-        p(em(id = ns("t_prix"), "Moyenne de la distribution :")),
-        textOutput(ns("mean_prix")),
-        hr(id = ns("espp")),
-        
-        
-        p(em("Distribution :")),
-        verbatimTextOutput(ns("distrib2"))
-      )),
+          
+          plotOutput(ns("roulette_px"),
+                     click = ns("location_px")),
+          p(em(
+            id = ns("t_prix"), "Moyenne de la distribution :"
+          )),
+          textOutput(ns("mean_prix")),
+          hr(id = ns("espp")),
+          
+          
+          p(em("Distribution :")),
+          verbatimTextOutput(ns("distrib2"))
+        )
+      ),
+      
+      # Charges -----------------------------------
       
       box(
         title = "Charges",
         width = 4,
         "(par unité de mesure (€ ou k€) sur l'échelle choisie)",
-        p(em("Par exemple : charges sur 150 ha ou sur l'atelier vaches laitières")),
+        p(
+          em(
+            "Par exemple : charges sur 150 ha ou sur l'atelier vaches laitières"
+          )
+        ),
         br(),
         
-        wellPanel(       numericInput(
-          inputId = ns("charges_min"),
-          label = "minimales",
-          value = 1000),
+        wellPanel(
+          numericInput(
+            inputId = ns("charges_min"),
+            label = "minimales",
+            value = 1000
+          ),
           
           numericInput(
             inputId = ns("charges_max"),
             label = "maximales",
-            value = 2000) ,
+            value = 2000
+          ) ,
           
           materialSwitch(
             inputId = ns("loi_charges"),
-            label = "Je souhaite tracer une distribution, (par défaut, la distribution sera uniforme)", 
+            label = "Je souhaite tracer une distribution, (par défaut, la distribution sera uniforme)",
             value = FALSE,
             status = "primary"
           ),
-
-
+          
+          
           plotOutput(ns("roulette_c"),
-                       click = ns("location_c")),
-          p(em(id = ns("t_charges"), "Moyenne de la distribution :")),
+                     click = ns("location_c")),
+          p(em(
+            id = ns("t_charges"), "Moyenne de la distribution :"
+          )),
           textOutput(ns("mean_charges")),
           hr(id = ns("esppp")),
           p(em("Distribution :")),
           verbatimTextOutput(ns("distrib3"))
-        ))
-      )
-  )
+        )
+      ),
+      
+      # Aide ---------------------------------------------------------
+      
+      materialSwitch(
+        inputId = ns("aide"),
+        label = "J'ai besoin d'aide pour comprendre comment tracer ma distribution",
+        value = FALSE,
+        status = "primary"
+      ),
+      br(),
+      br(),
+      
+      
+      # Go---------------------------------------------------------------------
+      actionBttn(
+        inputId = ns("goButton"),
+        label = "Go!",
+        style = "gradient",
+        color = "primary"
+      ),
+      
+      hr(),
+      hr(),
+      hr(),
+      br(),
+      
+      # Sorties--------------------------------------------------------------------- 
+      
+      box(
+        title = "Conséquences sur le solde choisi (marge, EBE, revenu...)",
+        width = 12,
+
+          em("Voir onglet 'Choix du solde'"),
+        textOutput(ns("texte")),
+        br(),
+        
+        numericInput(ns("vseuil"),
+                     label = "Choix d'une valeur seuil à afficher sur le graphique (par défaut, moyenne du résultat)",
+                     value = 0),
+        
+        br(),
+        fluidRow(
+          column(6,
+                 radioGroupButtons(
+                   inputId = ns("choix_graph"),
+                   label = "Choix du graphique",
+                   choiceNames = list("Histogramme", 
+                                      "Boite à moustache"),
+                   choiceValues = list(
+                     "histo", "bam"
+                   ),
+                   justified = TRUE,
+                   checkIcon = list(
+                     yes = icon("ok", 
+                                lib = "glyphicon"))
+                 )),
+          
+          
+          column(12,
+                 
+                 
+                 plotlyOutput(ns("graphique"))
+          )))
+        
+    ))
+
 }
     
 #' Oser Server Functions
 #'
 #' @noRd 
-mod_Oser_server <- function(id){
+mod_Oser_server <- function(id, r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
@@ -518,6 +625,172 @@ output$mean_charges <- renderText(mean(charges())  %>%
                                  round(., digits = 1))
 
 output$distrib3 <- renderPrint(charges())
+
+
+
+
+# Distribution du solde --------------------------------------------------
+
+
+
+result <- eventReactive(input$goButton,{
+  
+  production <- production()
+  prix <- prix()
+  charges <- charges()
+  
+  crossing(
+    production,
+    prix,
+    charges
+  ) %>% 
+    mutate(ca = production * prix,
+           solde = ca - charges,
+           risque = case_when(
+             solde <= 0 ~ "solde inferieur a 0 €",
+             solde > 0 & solde <= 2000 ~ "solde compris entre 0 et 2000 €",
+             solde > 2000 ~ "solde superieur a 2 000 €"
+           ))
+})  
+
+
+#Définition du texte -----------
+output$texte <- renderText({
+  
+  
+  req(result())
+  result <- result()
+  
+  descript <- tibble(
+    moy = mean(result$solde),
+    mediane = median(result$solde),
+    nb_val = length(result$solde),
+    q1 = quantile(result$solde, 0.25),
+    q3 = quantile(result$solde, 0.75),
+    interv = q3 -q1
+  )
+  paste(c("La moyenne de l'échantillon calculé est de"), round(descript$moy), c("euros."), 
+        c("La médiane coupe l'échantillon en deux parties contenant le même nombre de valeurs. Elle est de"), round(descript$mediane), c("euros."),
+        c("1/4 des valeurs de l'échantillon sont inférieures à"), round(descript$q1), c("euros et 1/4 sont supérieures à"), round(descript$q3), c("euros."),
+        sep = " ") 
+  
+  
+})
+
+# Sortie graphique -------------------
+
+# Définition de l'histogramme -------
+
+observe({
+  
+  moy <- round(mean(result()$solde), digits = 0 )
+  
+  updateNumericInput(session, 
+                     "vseuil",
+                     value = moy)
+  
+})
+
+
+output$graphique<- renderPlotly({
+  
+  if(input$choix_graph == "histo"){
+    
+    result <- result()
+    
+    # 
+    # result <- result %>%
+    #   ggplot(aes(solde )) +
+    #   geom_histogram( fill = "darkgoldenrod1", show.legend = TRUE) +
+    #   labs(title = "Représentation graphique de la répartition du solde choisi (fréquence du solde choisi dans différents intervalles)",
+    #        x = "Solde choisi (marge, EBE, revenu, ...) (en € ou k€)",
+    #        y ="Nombre des soldes calculés \n (marge, EBE, revenu, ..) \n par intervalle ",
+    #        fill = ""
+    #   )+
+    #   geom_vline(aes(xintercept=input$vseuil),
+    #              color="blue", linetype="dashed", size=1)+
+    #   theme_light(
+    #     base_size = 16
+    #   ) +
+    #   theme(legend.position="bottom")
+    # 
+    # 
+    # ggplotly(result)
+    # 
+    
+    
+   result <- plot_ly() %>% 
+      add_trace(name = "histogramme", 
+                data = result,
+                x = ~ solde,
+                type = "histogram",
+                histnorm = "probability",
+                marker = list(color = "#77b5fe"),
+                nbinsx = 50) %>%
+      add_segments(name = "seuil",
+                   x = input$vseuil,
+                   xend = input$vseuil, 
+                   y = 0, 
+                   yend = 0.08, 
+                   line = list(dash = "dash", color = "blue"))  %>%
+      layout(title = "Représentation graphique de la répartition du solde choisi<br><sup>Fréquence du solde choisi dans différents intervalles</sup>",
+             xaxis = list(title = 'Solde choisi (marge, EBE, revenu, ...) (en € ou k€)'),
+             yaxis = list(title = " % des données" ),
+             showlegend = FALSE)
+    
+    # Définition de la boite à moustache -----------
+    
+  } else if(input$choix_graph == "bam"){
+    
+    result <- result()
+    
+    result <- result %>% 
+      select(solde) %>% 
+      ggplot(aes(solde)) +
+      geom_boxplot(fill = "darkgoldenrod1",
+                   width = 0.8) +
+      coord_cartesian(ylim = c(-1,1)) +
+      
+      labs(title = "Répartition du solde choisi (marge, EBE, revenu, ...)",
+           x ="(en € ou k€)") +
+      geom_vline(aes(xintercept=input$vseuil),
+                 color="blue", linetype="dashed", size=1) + 
+      theme_light(
+        base_size = 16
+      ) +
+      theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()
+      )
+    
+    ggplotly(result)
+    
+  }
+})
+
+
+
+
+
+
+# ## Liens avec les modules
+# 
+# moduleServe(module = mod_choix_unit, id = "id",
+#            variable = unit_ech,
+#            variable_name = reactive(input$SI_colname))
+# 
+# 
+
+observeEvent(r$test, {
+  ma_sortie <- r$test
+  
+  output$ma_sortie <- renderText(ma_sortie)
+})
+
+
+
+
+
 
   }
 )}
