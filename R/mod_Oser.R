@@ -13,10 +13,10 @@
 #' @importFrom bs4Dash box
 #' @importFrom tidyr crossing
 #' @importFrom tibble tibble
-#' @importFrom shinyBS bsModal
 #' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot geom_vline theme_light coord_cartesian theme element_blank
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout
 #' @importFrom stats quantile runif median 
+#' @importFrom prompter add_prompt use_prompt
 #' 
 mod_Oser_ui <- function(id) {
   ns <- NS(id)
@@ -24,21 +24,31 @@ mod_Oser_ui <- function(id) {
   tagList(
     fluidRow(
       useShinyjs(),
+      use_prompt(),
       
+      tags$head(
+        tags$style(
+          HTML("[class*=hint--][aria-label]:after {
+   white-space: pre;
+}")
+        )
+      ),
+        
+     
       
       ## Production------------------------------------
       
       box(
         title = "Production et quantité",
-        width = 4,
-        "(par unité de mesure sur une échelle choisie)",
-        textOutput(ns("ma_sortie")),
-        p(
-          em(
-            "Par exemple : en tonnes pour 150 ha ou 1000 L pour l'atelier vaches laitières"
+        icon = tags$span(icon("question")) %>% 
+          add_prompt(
+            position = "right",
+            message = "Par unité de mesure sur une échelle choisie \n\nPar exemple : en tonnes pour 150 ha ou 1000 L pour l'atelier vaches laitières.",
+            type = "info"
           )
-        ),
-        br(),
+        ,
+        width = 4,
+      
         wellPanel(
           numericInput(
             inputId = ns("prod_min"),
@@ -68,10 +78,6 @@ mod_Oser_ui <- function(id) {
         textOutput(ns("mean_prod")),
         hr(id = ns("esp")),
         
-        # actionButton(ns("view_prod"), "View"),
-        # bsModal("modalprod", "Distribution", ns("view_prod"), size = "large",
-        #         verbatimTextOutput(ns("distrib")))
-        # ),
 
         p(em("Distribution :")),
         verbatimTextOutput(ns("distrib"))
@@ -82,9 +88,11 @@ mod_Oser_ui <- function(id) {
       box(
         title = "Prix",
         width = 4,
-        "(par unité de mesure sur une échelle choisie)",
-        p(em("Par exemple : en €/t ou €/1000 L")),
-        br(),
+        icon = tags$span(icon("question")) %>% 
+          add_prompt(
+            position = "right",
+            message = "Par unité de mesure sur une échelle choisie \n\nPar exemple : en €/t ou €/1000 L.",
+            type = "info"),
         wellPanel(
           numericInput(
             inputId = ns("prix_min"),
@@ -124,14 +132,13 @@ mod_Oser_ui <- function(id) {
       box(
         title = "Charges",
         width = 4,
-        "(par unité de mesure (€ ou k€) sur l'échelle choisie)",
-        p(
-          em(
-            "Par exemple : charges sur 150 ha ou sur l'atelier vaches laitières"
-          )
-        ),
-        br(),
-        
+        icon = tags$span(icon("question")) %>% 
+          add_prompt(
+            position = "left",
+            message = "Par unité de mesure (€ ou k€) sur une échelle choisie \n\nPar exemple : charges sur 150 ha ou sur l'atelier vaches laitières.",
+            type = "info")
+        ,
+
         wellPanel(
           numericInput(
             inputId = ns("charges_min"),
@@ -238,6 +245,8 @@ mod_Oser_ui <- function(id) {
 mod_Oser_server <- function(id, r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    
+
     
     # # * Modification du slider pour la moyenne  ------------------------------------------------------------ 
     observe({
@@ -698,25 +707,6 @@ output$graphique<- renderPlotly({
     
     result <- result()
     
-    # 
-    # result <- result %>%
-    #   ggplot(aes(solde )) +
-    #   geom_histogram( fill = "darkgoldenrod1", show.legend = TRUE) +
-    #   labs(title = "Représentation graphique de la répartition du solde choisi (fréquence du solde choisi dans différents intervalles)",
-    #        x = "Solde choisi (marge, EBE, revenu, ...) (en € ou k€)",
-    #        y ="Nombre des soldes calculés \n (marge, EBE, revenu, ..) \n par intervalle ",
-    #        fill = ""
-    #   )+
-    #   geom_vline(aes(xintercept=input$vseuil),
-    #              color="blue", linetype="dashed", size=1)+
-    #   theme_light(
-    #     base_size = 16
-    #   ) +
-    #   theme(legend.position="bottom")
-    # 
-    # 
-    # ggplotly(result)
-    # 
     
     
    result <- plot_ly() %>% 
@@ -747,17 +737,17 @@ output$graphique<- renderPlotly({
     result <- result %>% 
       select(solde) %>% 
       ggplot(aes(solde)) +
-      geom_boxplot(fill = "darkgoldenrod1",
+      geom_boxplot(fill = "#77b5fe",
                    width = 0.8) +
       coord_cartesian(ylim = c(-1,1)) +
       
       labs(title = "Répartition du solde choisi (marge, EBE, revenu, ...)",
            x ="(en € ou k€)") +
       geom_vline(aes(xintercept=input$vseuil),
-                 color="blue", linetype="dashed", size=1) + 
-      theme_light(
-        base_size = 16
-      ) +
+                 color="blue", linetype="dashed", size=0.8) + 
+      # theme_light(
+      #   base_size = 16
+      # ) +
       theme(
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank()
@@ -774,12 +764,7 @@ output$graphique<- renderPlotly({
 
 
 # ## Liens avec les modules
-# 
-# moduleServe(module = mod_choix_unit, id = "id",
-#            variable = unit_ech,
-#            variable_name = reactive(input$SI_colname))
-# 
-# 
+
 
 observeEvent(r$test, {
   ma_sortie <- r$test

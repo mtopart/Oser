@@ -35,7 +35,8 @@ Imports:
     tidyr,
     plotly,
     rhandsontable,
-    rlang
+    rlang,
+    prompter
 LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
