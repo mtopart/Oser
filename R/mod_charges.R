@@ -54,7 +54,7 @@ mod_charges_server <- function(id, r){
     
     
     output$tabelle <- renderRHandsontable({
-      rhandsontable(df)
+      rhandsontable(data = df)
     }) 
     
  
@@ -77,21 +77,7 @@ mod_charges_server <- function(id, r){
       })
     })
     
-      
-      # observeEvent(eventExpr = input$tabelle, {
-      #   df$values <- hot_to_r(input$tabelle)
-      # 
-      #   r$une_valeur # existe
-      #   # et on peut creer
-      #   r$ch <- df$values[[2]] %>%
-      #     sum(., na.rm = TRUE)
-      # 
-      #   #
-      #   # r$ch$maxi <- df$values[[3]] %>%
-      #   #   sum(., na.rm = TRUE)
-      # 
-      #   })
-      
+
      
 
       observeEvent(eventExpr = input$button_send, {
@@ -101,10 +87,6 @@ mod_charges_server <- function(id, r){
         # et on peut creer
         r$ch <- df$values[[2]] %>% 
           sum(., na.rm = TRUE)
-        
-        # 
-        # r$ch$maxi <- df$values[[3]] %>% 
-        #   sum(., na.rm = TRUE)
         
       })
       
