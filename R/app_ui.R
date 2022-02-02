@@ -25,20 +25,20 @@ app_ui <- function(request) {
         status = "primary",
         elevation = 3,
         sidebarUserPanel(
-          image = "https://image.flaticon.com/icons/svg/1149/1149168.svg",
+          image = "https://cdn-icons-png.flaticon.com/512/1055/1055683.png",
           name = "Welcome Onboard!"
         ),
         sidebarMenu(
           id = "tabs",
           menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
                    menuSubItem(
-                     "Oser", icon = icon("circle-thin"), tabName = "oser"), 
+                     "Oser", icon = icon("arrow-right"), tabName = "oser"), 
                    menuSubItem(
-            "Choix de l'unité", tabName = "unit", icon = icon("circle-thin")
+            "Choix de l'unité", tabName = "unit", icon = icon("arrow-right")
             ),
                   menuSubItem(
-            "Charges en détail", icon = icon("circle-thin"), tabName = "chg")),
-          menuItem("Tutoriels", icon = icon("bar-chart-o"), tabName = "tuto"),
+            "Charges en détail", icon = icon("arrow-right"), tabName = "chg")),
+          menuItem("Tutoriels", icon = icon("tools"), tabName = "tuto"),
           menuItem("A propos", icon = icon("th"), tabName = "apropos")
         )
       ),
@@ -52,7 +52,7 @@ app_ui <- function(request) {
           tabItem("oser", mod_Oser_ui("Oser_ui_1")),
           tabItem("unit", mod_choix_unit_ui("choix_unit_ui_1")),
           tabItem("chg", mod_charges_ui("charges_ui_1")), 
-          tabItem("tuto", mod_MuscleGroup_ui("MuscleGroup_ui_1")),
+          tabItem("tuto", mod_tutoriel_ui("tutoriel_ui_1")),
           tabItem("apropos", mod_apropos_ui("apropos_ui_1")
           )
         )
