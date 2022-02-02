@@ -852,13 +852,17 @@ output$graphique<- renderPlotly({
 observeEvent(r$ch, {
   ma_sortie_mini <- r$ch
   
-  output$ma_sortie_mini <- renderText(ma_sortie_mini)
+  updateNumericInput(session, 
+                     "charges_min", 
+                     value = ma_sortie_mini)
 })
 
 observeEvent(r$ch2, {
   ma_sortie_maxi <- r$ch2
   
-  output$ma_sortie_maxi <- renderText(ma_sortie_maxi)
+  updateNumericInput(session, 
+                     "charges_max", 
+                     value = ma_sortie_maxi)
 })
 
 # observeEvent(r$ch_maxi, {
