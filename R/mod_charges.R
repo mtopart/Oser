@@ -18,19 +18,23 @@ mod_charges_ui <- function(id){
     fluidRow(
       box(
         title = "Charges",
-        width = 8,
         rHandsontableOutput(outputId = ns("tabelle")),
-        textOutput(ns("texte_ch"))
+        textOutput(ns("texte_ch")),
+        br(),
+        actionButton(ns("button_send"), 
+                     label = "", 
+                     icon = icon("paper-plane"),
+                     color = "primary"))
         
       )
     )
-  )
+
 }
     
 #' charges Server Functions
 #'
 #' @noRd 
-mod_charges_server <- function(id){
+mod_charges_server <- function(id, r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
@@ -71,10 +75,51 @@ mod_charges_server <- function(id){
      glue('Les charges varient de {sum_mini} à {sum_maxi} (€ ou k€).')  
         
       })
-       
-      
     })
     
+      
+      # observeEvent(eventExpr = input$tabelle, {
+      #   df$values <- hot_to_r(input$tabelle)
+      # 
+      #   r$une_valeur # existe
+      #   # et on peut creer
+      #   r$ch <- df$values[[2]] %>%
+      #     sum(., na.rm = TRUE)
+      # 
+      #   #
+      #   # r$ch$maxi <- df$values[[3]] %>%
+      #   #   sum(., na.rm = TRUE)
+      # 
+      #   })
+      
+     
+
+      observeEvent(eventExpr = input$button_send, {
+        df$values <- hot_to_r(input$tabelle)
+        
+        r$une_valeur # existe
+        # et on peut creer
+        r$ch <- df$values[[2]] %>% 
+          sum(., na.rm = TRUE)
+        
+        # 
+        # r$ch$maxi <- df$values[[3]] %>% 
+        #   sum(., na.rm = TRUE)
+        
+      })
+      
+      
+
+      observeEvent(eventExpr = input$button_send, {
+        df$values <- hot_to_r(input$tabelle)
+        
+        r$une_valeur # existe
+        # et on peut creer
+        r$ch2 <- df$values[[3]] %>% 
+          sum(., na.rm = TRUE)  })   
+      
+      
+   
     
   
   })

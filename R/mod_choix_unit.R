@@ -13,6 +13,12 @@ mod_choix_unit_ui <- function(id){
       
       fluidRow(
         
+        column(
+          width = 12,
+        p("Page en construction", style = "color:red ;font-size: 20px;
+                                 font-style: italic"),
+        br()),
+        
                box(
                  title = "Choix des unités",
                  textInput(inputId = ns("unit_ech"), 
@@ -74,13 +80,13 @@ mod_choix_unit_server <- function(id, r){
     
     
 
-
-    observeEvent(input$unit_prod, {
-      r$une_valeur # existe
-      # et on peut creer
-      r$test <- input$unit_prod
-    })
-    
+# 
+#     observeEvent(input$unit_prod, {
+#       r$une_valeur # existe
+#       # et on peut creer
+#       r$data_val <- input$unit_prod
+#     })
+#     
    
  
   })
