@@ -17,6 +17,8 @@
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout
 #' @importFrom stats quantile runif median 
 #' @importFrom prompter add_prompt use_prompt
+#' @importFrom shinyalert  shinyalert
+#' @importFrom shinyWidgets materialSwitch actionBttn radioGroupButtons
 #' 
 mod_Oser_ui <- function(id) {
   ns <- NS(id)
@@ -25,6 +27,7 @@ mod_Oser_ui <- function(id) {
     fluidRow(
       useShinyjs(),
       use_prompt(),
+
       
       tags$head(
         tags$style(
@@ -34,7 +37,8 @@ mod_Oser_ui <- function(id) {
         )
       ),
         
-     
+      textOutput(ns("ma_sortie_mini")),
+      textOutput(ns("ma_sortie_maxi")),
       
       ## Production------------------------------------
       
@@ -76,11 +80,9 @@ mod_Oser_ui <- function(id) {
           id = ns("t_prod"), "Moyenne de la distribution :"
         )),
         textOutput(ns("mean_prod")),
-        hr(id = ns("esp")),
         
-
-        p(em("Distribution :")),
-        verbatimTextOutput(ns("distrib"))
+        br(),
+        actionButton(ns("button_prod"), icon("eye"))
       ),
       
       # Prix -----------------------------------
@@ -119,11 +121,9 @@ mod_Oser_ui <- function(id) {
             id = ns("t_prix"), "Moyenne de la distribution :"
           )),
           textOutput(ns("mean_prix")),
-          hr(id = ns("espp")),
           
-          
-          p(em("Distribution :")),
-          verbatimTextOutput(ns("distrib2"))
+          br(),
+          actionButton(ns("button_prix"), icon("eye"))
         )
       ),
       
@@ -166,44 +166,67 @@ mod_Oser_ui <- function(id) {
             id = ns("t_charges"), "Moyenne de la distribution :"
           )),
           textOutput(ns("mean_charges")),
-          hr(id = ns("esppp")),
-          p(em("Distribution :")),
-          verbatimTextOutput(ns("distrib3"))
+          
+          br(),
+          actionButton(ns("button_ch"), icon("eye")),
+          tags$style(type='text/css', "#button_ch { vertical-align- middle; height- 50px; width- 100%; font-size- 30px;}")
+          #,
+          # textOutput(ns("ma_sortie_mini")),
+          # textOutput(ns("ma_sortie_maxi"))
         )
       ),
       
       # Aide ---------------------------------------------------------
       
+      # actionButton("button_help",  icon("wrench")),
+
+      column( 
+        12,
       materialSwitch(
         inputId = ns("aide"),
-        label = "J'ai besoin d'aide pour comprendre comment tracer ma distribution",
+        label = strong("J'ai besoin d'aide pour comprendre comment tracer ma distribution"),
         value = FALSE,
-        status = "primary"
+        status = "primary",
+        inline = TRUE
       ),
-      br(),
-      br(),
       
+      p(id = ns("h1"), strong("Utilisation :")," Cliquez directement dans le graphique pour allouer un nombre de jetons à chaque intervalle. 
+                           Cliquez juste en-dessous de la ligne du 0 de l'axe des y pour effacer une case."),
+      p(id= ns("h2"), "Si un message d'erreur ", strong("rouge")," apparait, le nombre de jetons est insuffisant pour faire le calcul."), 
+      br(id = ns("h3")),
+      p(id = ns("h4"), strong("Pour mieux comprendre :"), "Plus la barre est haute, plus la probabilité que la valeur de l'intervalle soit atteinte dans la distribution est élevée.
+                           Inversement, s'il n'y a pas de jeton dans une barre verticale, la probabilité qu'il y ait une valeur dans l'intervalle est", strong(" faible, mais possible.") 
+        ),
+      
+      br()),
+
       
       # Go---------------------------------------------------------------------
-      actionBttn(
-        inputId = ns("goButton"),
-        label = "Go!",
-        style = "gradient",
-        color = "primary"
-      ),
+ column(
+     12,
+     align = "center",
+        actionBttn(
+          inputId = ns("goButton"),
+          label = "Go!",
+          style = "gradient",
+          color = "primary"
+        ) ,
       
-      hr(),
-      hr(),
-      hr(),
+      
       br(),
+      br()),
       
       # Sorties--------------------------------------------------------------------- 
       
       box(
         title = "Conséquences sur le solde choisi (marge, EBE, revenu...)",
         width = 12,
+        icon = tags$span(icon("question")) %>% 
+          add_prompt(
+            position = "right",
+            message = "Voir onglet 'Tutoriels' - en construction",
+            type = "info"),
 
-          em("Voir onglet 'Choix du solde'"),
         textOutput(ns("texte")),
         br(),
         
@@ -336,7 +359,6 @@ mod_Oser_server <- function(id, r){
     observeEvent(input$loi_prod, {toggle("roulette_p")})
     observeEvent(input$loi_prod, {toggle(id = "t_prod")})
     observeEvent(input$loi_prod, {toggle("mean_prod")})
-    observeEvent(input$loi_prod, {toggle("esp")})
 
     observeEvent(input$location_p, {
       rl_p$x <-input$location_p$x
@@ -396,7 +418,28 @@ mod_Oser_server <- function(id, r){
     output$mean_prod <- renderText(mean(production())  %>%
                                      round(., digits = 1))
     
-    output$distrib <- renderPrint(production())
+   
+    # Aperçu de la distribution Shinyalert quand clique sur le bouton--------------
+    
+    observeEvent(input$button_prod, {
+      # Show a modal when the button is pressed
+      
+      prod <- production()
+      
+    prod <- matrix(prod, 
+                   ncol = 5)
+      
+    shinyalert(
+      html = TRUE,
+      title = "Distribution :", 
+      text = tagList(
+        tableOutput(ns("prod"))
+      ), 
+      type = "")
+      
+      output$prod <- renderTable(prod)
+    })
+    
     
 
     # #  * Prix ---------------------------------------------------------------
@@ -457,7 +500,6 @@ mod_Oser_server <- function(id, r){
     observeEvent(input$loi_prix, {toggle("roulette_px")})
     observeEvent(input$loi_prix, {toggle(id = "t_prix")})
     observeEvent(input$loi_prix, {toggle("mean_prix")})
-    observeEvent(input$loi_prix, {toggle("espp")})
 
     observeEvent(input$location_px, {
       rl_px$x <-input$location_px$x
@@ -515,10 +557,26 @@ mod_Oser_server <- function(id, r){
     output$mean_prix <- renderText(mean(prix())  %>%
                                      round(., digits = 1))
     
-    output$distrib2 <- renderPrint(prix())
+    # Aperçu de la distribution Shinyalert quand clique sur le bouton--------------
     
+    observeEvent(input$button_prix, {
+      # Show a modal when the button is pressed
+      
+      px <- prix()
+      
+      shinyalert(
+        html = TRUE,
+        title = "Distribution :", 
+        text = tagList(
+          verbatimTextOutput(ns("px"))
+        ),
+       type = "")
+      
+      output$px <- renderPrint(px)
+        
+    })
     
-    
+
     # # * Charges -------------------------------------------------------------
     
     ### Unif-------------------------------------------
@@ -574,7 +632,6 @@ mod_Oser_server <- function(id, r){
     observeEvent(input$loi_charges, {toggle("roulette_c")})
     observeEvent(input$loi_charges, {toggle(id = "t_charges")})
     observeEvent(input$loi_charges, {toggle("mean_charges")})
-    observeEvent(input$loi_charges, {toggle("esppp")})
 
     observeEvent(input$location_c, {
       rl_c$x <-input$location_c$x
@@ -633,10 +690,25 @@ charges <- reactive({
 output$mean_charges <- renderText(mean(charges())  %>%
                                  round(., digits = 1))
 
-output$distrib3 <- renderPrint(charges())
+# Aperçu de la distribution Shinyalert quand clique sur le bouton--------------
 
+observeEvent(input$button_ch, {
+  # Show a modal when the button is pressed
+  
+  ch <- charges()
+  
+  shinyalert("Distribution :", 
+             ch, type = "")
+})
 
+# Aide pour distribution-------------------
 
+observe({
+  toggle(id = "h1", condition = input$aide)
+  toggle(id = "h2", condition = input$aide)
+  toggle(id = "h3", condition = input$aide)
+  toggle(id = "h4", condition = input$aide)
+})
 
 # Distribution du solde --------------------------------------------------
 
@@ -763,16 +835,37 @@ output$graphique<- renderPlotly({
 
 
 
-# ## Liens avec les modules
+# ## Liens avec les modules---------------------------------------
 
 
-observeEvent(r$test, {
-  ma_sortie <- r$test
+# observeEvent(r$data_val, {
+#   ma_sortie <- r$data_val
+#   
+#   output$ma_sortie <- renderText(ma_sortie)
+# })
+# 
+# 
+
+# Mise à jour des charges
+
+
+observeEvent(r$ch, {
+  ma_sortie_mini <- r$ch
   
-  output$ma_sortie <- renderText(ma_sortie)
+  output$ma_sortie_mini <- renderText(ma_sortie_mini)
 })
 
+observeEvent(r$ch2, {
+  ma_sortie_maxi <- r$ch2
+  
+  output$ma_sortie_maxi <- renderText(ma_sortie_maxi)
+})
 
+# observeEvent(r$ch_maxi, {
+#   ma_sortie_maxi <- r$ch_maxi
+#   
+#   output$ma_sortie_maxi <- renderText(ma_sortie_maxi)
+# })
 
 
 
