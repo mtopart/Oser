@@ -315,7 +315,8 @@ mod_Oser_server <- function(id, r){
       prod_min <- input$prod_min
       prod_max <- input$prod_max
 
-      distribution <-runif(40, prod_min, prod_max)
+      distribution <- repet_unif(mini = prod_min, 
+                                maxi = prod_max)
       
       distribution 
     })  
@@ -378,25 +379,27 @@ mod_Oser_server <- function(id, r){
       myp <- rp
       myp
     })
-    
+
     v_p <- reactive({
       rv <- bin.right_p()[rl_p$nonEmpty]
       myv <- rv
       myv
     })
-    
+
     myfit_p <- reactive({
      fitdisti(mini = prod_min(),
               maxi = prod_max(),
               v = v_p(),
               p = p_p())
-    })  
+    })
+    
+ 
     
     
     production_distrib <-  reactive({
       calc_distrib(myfit = myfit_p(),
                    mini = prod_min(),
-                   maxi = prod_max())    })
+                   maxi = prod_max())  })
     
 
     loi_prod <- reactive({
@@ -726,12 +729,7 @@ result <- eventReactive(input$goButton,{
     charges
   ) %>% 
     mutate(ca = production * prix,
-           solde = ca - charges,
-           risque = case_when(
-             solde <= 0 ~ "solde inferieur a 0 €",
-             solde > 0 & solde <= 2000 ~ "solde compris entre 0 et 2000 €",
-             solde > 2000 ~ "solde superieur a 2 000 €"
-           ))
+           solde = ca - charges)
 })  
 
 
@@ -838,14 +836,6 @@ output$graphique<- renderPlotly({
 # ## Liens avec les modules---------------------------------------
 
 
-# observeEvent(r$data_val, {
-#   ma_sortie <- r$data_val
-#   
-#   output$ma_sortie <- renderText(ma_sortie)
-# })
-# 
-# 
-
 # Mise à jour des charges
 
 
@@ -865,11 +855,7 @@ observeEvent(r$ch2, {
                      value = ma_sortie_maxi)
 })
 
-# observeEvent(r$ch_maxi, {
-#   ma_sortie_maxi <- r$ch_maxi
-#   
-#   output$ma_sortie_maxi <- renderText(ma_sortie_maxi)
-# })
+
 
 
 
