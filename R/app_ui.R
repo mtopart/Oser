@@ -2,7 +2,7 @@
 #' 
 #' @param request Internal parameter for `{shiny}`. 
 #'     DO NOT REMOVE.
-#' @import shiny
+#' @rawNamespace import(shiny, except = c(insertTab, actionButton, tabsetPanel, column))
 #' @import bs4Dash 
 #' @noRd
 app_ui <- function(request) {
@@ -68,7 +68,7 @@ app_ui <- function(request) {
 #' This function is internally used to add external 
 #' resources inside the Shiny application. 
 #' 
-#' @import shiny
+#' @rawNamespace import(shiny, except = c(insertTab, actionButton, tabsetPanel, column))
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @noRd
 golem_add_external_resources <- function(){

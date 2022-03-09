@@ -2,7 +2,7 @@
 #' 
 #' @param input,output,session Internal parameters for {shiny}. 
 #'     DO NOT REMOVE.
-#' @import shiny
+#' @rawNamespace import(shiny, except = c(insertTab, actionButton, tabsetPanel, column))
 #' @noRd
 app_server <- function( input, output, session ) {
 
