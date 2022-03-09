@@ -2,6 +2,11 @@
 
 # Création du graphique d'entrée (élicitation)
 
+#' @importFrom dplyr pull summarise group_by 
+#' @importFrom purrr map_dfc
+#' @importFrom tidyr pivot_longer
+#' @importFrom tidyselect starts_with
+
 
 bin.width <- function(mini, 
                       maxi,
@@ -124,47 +129,108 @@ calc_distrib <- function (myfit,
                           mini,
                           maxi) {
   
+  
+  
   if (myfit$best.fitting[1] == "normal") {
     
-    distribution <- EnvStats::rnormTrunc(40, min = mini, max = maxi,
-                                         mean = myfit$Normal$mean,
-                                         sd = myfit$Normal$sd)
+    
+    
+    
+
+    
+    distribution <- map_dfc(
+      1:50, ~{ EnvStats::rnormTrunc(50, min = mini, max = maxi,
+                                    mean = myfit$Normal$mean,
+                                    sd = myfit$Normal$sd) %>% 
+          sort()}) %>% 
+      mean_distrib()
+
+    
     
   } else if (myfit$best.fitting[1] == "t" | myfit$best.fitting[1] == "logt") {
     
     
-    distribution <- crch::rct(40, location = myfit$Student.t$location,
-                              scale = myfit$Student.t$scale,
-                              df = myfit$Student.t$df,
-                              left = mini,
-                              right = maxi
-    )
+    distribution <- map_dfc(
+      1:50, ~{ crch::rct(50, location = myfit$Student.t$location,
+                         scale = myfit$Student.t$scale,
+                         df = myfit$Student.t$df,
+                         left = mini,
+                         right = maxi) %>% 
+          sort()}) %>% 
+      mean_distrib()
     
   } else if (myfit$best.fitting[1] == "gamma") {
     
-    distribution <- RGeode::rgammatr(40, A = myfit$Gamma$shape,
-                                     B = myfit$Gamma$rate,
-                                     range = c(mini, maxi)
-    )
+
+    distribution <- map_dfc(
+      1:50, ~{ RGeode::rgammatr(50, A = myfit$Gamma$shape,
+                                          B = myfit$Gamma$rate,
+                                          range = c(mini, maxi)) %>% 
+          sort()}) %>% 
+      mean_distrib()
     
   } else if (myfit$best.fitting[1] == "lognormal") {
     
-    distribution <- EnvStats::rlnormTrunc(40, min = mini, max = maxi,
-                                          meanlog = myfit$Log.normal$mean.log.X,
-                                          sdlog = myfit$Log.normal$sd.log.X)
+    distribution <- map_dfc(
+      1:50, ~{ EnvStats::rlnormTrunc(50, min = mini, max = maxi,
+                                     meanlog = myfit$Log.normal$mean.log.X,
+                                     sdlog = myfit$Log.normal$sd.log.X) %>% 
+          sort()}) %>% 
+      mean_distrib()
     
   } else if (myfit$best.fitting[1] == "beta") {
     
     
-    
-    distribution <-  mini + (maxi - mini)  *
-      stats::qbeta((1:40/41), myfit$Beta$shape1, myfit$Beta$shape2)
+    distribution <- map_dfc(
+      1:50, ~{ (mini + (maxi - mini)  *
+          stats::qbeta((1:50/51), myfit$Beta$shape1, myfit$Beta$shape2)) %>% 
+          sort()}) %>% 
+      mean_distrib()
   }
+
   
   distribution
   
   
 }
+
+
+repet_unif <- function( mini,
+                        maxi) {
+  
+  map_dfc(
+    1:50, ~{ runif(50, mini, maxi) %>% 
+        sort()}) %>% 
+    mean_distrib()
+}
+
+
+
+
+
+
+mean_distrib <- function(tableau) {
+  
+ distribution <- tableau %>% 
+    mutate(
+      valeur = 1 :50
+    ) %>% 
+    pivot_longer(
+      cols = starts_with("..."),
+      names_to = "dist",
+      values_to = "val" 
+    ) %>% 
+    group_by( valeur) %>% 
+    summarise(
+      distribution = mean(val)
+    ) %>% 
+    pull(distribution) 
+  
+  return(distribution)
+  
+}
+
+
 
 # select_distrib <- function(choixloi,
 #                            unif,
