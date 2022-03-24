@@ -8,13 +8,14 @@
 #' @importFrom tidyselect starts_with
 
 
-bin.width <- function(mini, 
+
+bin.width <- function(mini,
                       maxi,
                       nBins = 10) {
   req(mini, maxi)
-      
+
       (maxi - mini) / nBins
-  
+
 }
 
 
@@ -75,7 +76,7 @@ plot_elicit <- function(name,
        ylab="Fréquence",
        xaxp=c(mini[1], maxi, nBins), 
        main = paste("Total des jetons  :", sum(chips)),
-       xlab = paste("Répartition ", name))
+       xlab =  name)
   for(i in 1:nBins){
     lines(c(left[i],left[i]),
           c(0, plotHeight),lty=3,col=8)
@@ -112,7 +113,7 @@ fitdisti <- function(mini,
                      p){
   
   req(maxi, mini, v, p)
-  myfit <- fitdist(vals = v, probs = p, lower = mini,
+  myfit <- fitdist_mod(vals = v, probs = p, lower = mini,
                     upper = maxi )
   myfit
 }

@@ -272,35 +272,35 @@ mod_Oser_server <- function(id, r){
 
     
     # # * Modification du slider pour la moyenne  ------------------------------------------------------------ 
-    observe({
-      #Production
-      prod_min <- input$prod_min
-      prod_max <- input$prod_max
-      prod_moy <- (prod_min + prod_max) /2
-        
-      
-      updateSliderInput(session, "mean_prod", 
-                        min = prod_min, max = prod_max, value = prod_moy)
-      
-      
-      #Prix
-      prix_min <- input$prix_min
-      prix_max <- input$prix_max
-      prix_moy <- (prix_min + prix_max) / 2
-      
-      updateSliderInput(session, "mean_prix", 
-                        min = prix_min, max = prix_max, value = prix_moy)
-      
-      #Charges
-      charges_min <- input$charges_min
-      charges_max <- input$charges_max
-      charges_moy <- (charges_min + charges_max) /2
-      
-      updateSliderInput(session, "mean_charges", 
-                        min = charges_min, max = charges_max, value = charges_moy)  
-      
-      
-    })
+    # observe({
+    #   #Production
+    #   prod_min <- input$prod_min
+    #   prod_max <- input$prod_max
+    #   prod_moy <- (prod_min + prod_max) /2
+    #     
+    #   
+    #   updateSliderInput(session, "mean_prod", 
+    #                     min = prod_min, max = prod_max, value = prod_moy)
+    #   
+    #   
+    #   #Prix
+    #   prix_min <- input$prix_min
+    #   prix_max <- input$prix_max
+    #   prix_moy <- (prix_min + prix_max) / 2
+    #   
+    #   updateSliderInput(session, "mean_prix", 
+    #                     min = prix_min, max = prix_max, value = prix_moy)
+    #   
+    #   #Charges
+    #   charges_min <- input$charges_min
+    #   charges_max <- input$charges_max
+    #   charges_moy <- (charges_min + charges_max) /2
+    #   
+    #   updateSliderInput(session, "mean_charges", 
+    #                     min = charges_min, max = charges_max, value = charges_moy)  
+    #   
+    #   
+    # })
    
     # Sortie des fonctions de distribution   ----------------------------------   
     fs <- 12
