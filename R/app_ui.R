@@ -28,6 +28,7 @@ app_ui <- function(request) {
           image = "https://cdn-icons-png.flaticon.com/512/1055/1055683.png",
           name = "Welcome Onboard!"
         ),
+        
         sidebarMenu(
           id = "tabs",
           menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
@@ -35,31 +36,92 @@ app_ui <- function(request) {
                      "Oser", icon = icon("arrow-right"), tabName = "oser"), 
                    menuSubItem(
             "Choix de l'unité", tabName = "unit", icon = icon("arrow-right")
-            ),
-                  menuSubItem(
-            "Charges en détail", icon = icon("arrow-right"), tabName = "chg")),
+            )),
+
           menuItem("Tutoriels", icon = icon("tools"), tabName = "tuto"),
           menuItem("A propos", icon = icon("th"), tabName = "apropos")
-        )
-      ),
+        
+      )),
+      
+      
       footer = dashboardFooter(
         left = "Prototype - application en développement",
         right = "2022 - Strat&co"
       ),
-      controlbar = NULL,
+
       body = dashboardBody(
         tabItems(
-          tabItem("oser", mod_Oser_ui("Oser_ui_1")),
+          tabItem("oser", 
+                    
+# Mode simple Oser
+                    conditionalPanel(
+                      'input.select == 1',
+
+                      fluidRow(
+                        mod_box_distrib_ui("box_distrib_ui_1", 
+                                           box_title = "Production et quantité",
+                                           type = "production"),
+                        mod_box_distrib_ui("box_distrib_ui_2", 
+                                           box_title = "Prix",
+                                           type = "prix"),
+                        mod_box_distrib_ui("box_distrib_ui_3", 
+                                           box_title = "Charges",
+                                           type = "charges"),
+                        mod_aide_distrib_ui("aide_distrib_ui_1"),
+                        mod_graph_final_ui("graph_final_ui_1")
+                        
+                        
+                      )                      
+                    ),
+                    
+# Mode avancé 
+                   conditionalPanel(
+                      'input.select == 2',
+                      box(
+                        p("En construction", style = "color:red") )
+                      )
+                    ),
           tabItem("unit", mod_choix_unit_ui("choix_unit_ui_1")),
-          tabItem("chg", mod_charges_ui("charges_ui_1")), 
           tabItem("tuto", mod_tutoriel_ui("tutoriel_ui_1")),
           tabItem("apropos", mod_apropos_ui("apropos_ui_1")
+          )
+        )),
+        
+  # Création de la controlbar -----------------------------
+        controlbar = dashboardControlbar(
+          skin = "light",
+          # pinned = FALSE,
+          # collapsed = FALSE,
+          # overlay = FALSE,
+          controlbarMenu(
+            id = "controlbarmenu",
+            controlbarItem(
+              title = "Item 1",
+              selectInput("select", 
+                          label = "Select box", 
+                          choices = list("Simple" = 1, 
+                                         "Avancé" = 2), 
+                          selected = 1),
+              conditionalPanel(
+                'input.select == 2',
+                sliderInput(
+                  inputId = "obs",
+                  label = "Number of observations:",
+                  min = 1,
+                  max = 10,
+                  value = 1
+                ))
+            ),
+            controlbarItem(
+              "Item 2",
+              textOutput("text_test")
+            )
           )
         )
 
  
       )
-    ))
+    )
 
 }
 

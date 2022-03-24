@@ -8,11 +8,12 @@
 #'
 #' @import shiny 
 #' @importFrom  bs4Dash box boxSidebar
+#' @importFrom dplyr %>% 
 #' @importFrom shinyWidgets materialSwitch actionBttn radioGroupButtons
 #' @importFrom prompter add_prompt use_prompt
 #' @importFrom shinyalert  shinyalert
 #' @importFrom shinyjs toggle  useShinyjs 
-#' @importFrom rhandsontable rHandsontableOutput  rhandsontable renderRHandsontable hot_to_r
+#' @importFrom rhandsontable rHandsontableOutput  rhandsontable renderRHandsontable hot_to_r hot_cols
 #' 
 #' 
 mod_box_distrib_ui <- function(id,

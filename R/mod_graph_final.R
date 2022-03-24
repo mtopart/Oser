@@ -11,7 +11,7 @@
 #' @importFrom tidyr crossing
 #' @importFrom tibble tibble
 #' @importFrom shinyWidgets actionBttn
-#' @importFrom dplyr select
+#' @importFrom dplyr select mutate
 #' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot geom_vline theme_light coord_cartesian theme element_blank
 #' 
 

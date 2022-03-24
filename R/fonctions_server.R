@@ -2,7 +2,7 @@
 
 # Création du graphique d'entrée (élicitation)
 
-#' @importFrom dplyr pull summarise group_by 
+#' @importFrom dplyr pull summarise group_by  mutate
 #' @importFrom purrr map_dfc
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect starts_with
