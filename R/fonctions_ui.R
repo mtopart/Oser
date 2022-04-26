@@ -12,3 +12,16 @@ def_help_text <- function(type) {
   }
   
   return(help_text) }
+
+
+
+menu_tab <- function(v_obs) {
+  
+ lapply(1 : v_obs, function(i) {
+  tabPanel(
+    sprintf("Menu %s", i),
+    sprintf("Hello tab %s", i)
+  )
+  })
+  
+  }

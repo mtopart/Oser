@@ -233,25 +233,5 @@ mean_distrib <- function(tableau) {
 
 
 
-# select_distrib <- function(choixloi,
-#                            unif,
-#                            stat
-#                            ) {
-#   
-#   
-#   if (choixloi == TRUE) {
-#     
-#     distrib <- unif 
-#   } else {
-#     
-#     distrib <- stat
-#   }
-#   
-#   distrib %>% 
-#     round(., digits = 1) %>% 
-#     sort()
-#   
-#   
-# }
 
 

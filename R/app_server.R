@@ -12,6 +12,10 @@ app_server <- function( input, output, session ) {
   
   # List the first level callModules here
   
+  # observeEvent(input$browser,{
+  #   browser()
+  # })
+  
   
   # Mod distrib
   
@@ -35,13 +39,9 @@ app_server <- function( input, output, session ) {
   mod_graph_final_server("graph_final_ui_1",
                          r = r)
  
-  mod_choix_unit_server("choix_unit_ui_1", r = r)
- 
   mod_tutoriel_server("tutoriel_ui_1")
   mod_apropos_server("apropos_ui_1")
   
   
- 
-  
-  
+
 }

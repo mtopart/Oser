@@ -6,7 +6,7 @@
 #'
 #' @noRd 
 #'
-#' @importFrom shiny NS tagList
+#' @rawNamespace import(shiny, except = c(insertTab, actionButton, tabsetPanel, column))
 #' @importFrom shinyWidgets materialSwitch 
 #' @importFrom shinyjs toggle
 mod_aide_distrib_ui <- function(id){
