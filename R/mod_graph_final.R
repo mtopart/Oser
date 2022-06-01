@@ -12,7 +12,7 @@
 #' @importFrom tibble tibble
 #' @importFrom shinyjs toggle useShinyjs
 #' @importFrom shinyWidgets actionBttn radioGroupButtons checkboxGroupButtons prettyCheckbox
-#' @importFrom dplyr select mutate %>% rename case_when
+#' @importFrom dplyr select mutate %>% rename case_when filter
 #' @importFrom prompter add_prompt use_prompt
 #' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot geom_vline theme_light coord_cartesian theme element_blank
 #' 
@@ -48,7 +48,7 @@ mod_graph_final_ui <- function(id){
           type = "info")
       ,
       
-      textOutput(ns("texte")),
+
 
       br(),
       
@@ -108,10 +108,25 @@ fluidRow(
      width = 6,
    numericInput(ns("s_att"), 
                 "Résultat attendu",
-                1,
-                width ='100%' ))
+                500,
+                width ='100%' )),
    
-   ))
+   textOutput(ns("texte_pourcent")) 
+   
+   )),
+
+hr(),
+
+prettyCheckbox(
+  inputId = ns("coche_quart"),
+  label = "Quartiles", 
+  value = FALSE,
+  icon = icon("check"),
+  status = "success"
+),
+
+htmlOutput(ns("texte"))
+
       )  
     )    
     
@@ -195,7 +210,7 @@ mod_graph_final_server <- function(id,
       
     })
     
-    ### Ajout zone de confort------------------------------
+    ### Ajout annotation------------------------------
     
     
     
@@ -206,6 +221,14 @@ mod_graph_final_server <- function(id,
       graph_hist <- graph_hist()
       
       
+      
+      hist <- hist(result()$solde, plot = FALSE)
+      xlim = range(hist$breaks)
+      ylim  = c(0, (ceiling(max(hist$density)*100)/10)-0.03)
+      
+      
+    ####  zone de confort ---------------------------------------  
+      
       if(input$coche_confort){
         
         graph_hist <- graph_hist %>% 
@@ -213,12 +236,35 @@ mod_graph_final_server <- function(id,
             shapes = list(
               list(
                 type = "rect",
-                fillcolor = "blue", line = list(color = "blue"), opacity = 0.3,
-                x0= -10, x1 = 50,  xref = "x",
-                y0 = 0, y1 = 0.1, yref = "y")
+                fillcolor = "red", line = list(color = "red"), opacity = 0.1,
+                x0= xlim[1], x1 = input$s_mini,  xref = "x",
+                y0 = ylim[1], y1 = ylim[2], yref = "y"),
+              list(
+                type = "rect",
+                fillcolor = "orange", line = list(color = "orange"), opacity = 0.1,
+                x0= input$s_mini, x1 = input$s_att,  xref = "x",
+                y0 = ylim[1], y1 = ylim[2], yref = "y")
             )
           )
       }  
+      
+   #### Quartiles -----------------------------------------
+      
+      if(input$coche_quart){
+        
+        graph_hist <- graph_hist %>% 
+          add_segments(x = descript()$q1, xend =  descript()$q1, 
+                       y = ylim[1], yend = ylim[2], 
+                       linetype = "bot") %>% 
+          add_segments(x = descript()$q3, xend =  descript()$q3, 
+                       y = ylim[1], yend = ylim[2], 
+                       linetype = "bot") %>% 
+          add_segments(x = descript()$mediane, xend =  descript()$mediane, 
+                       y = ylim[1], yend = ylim[2], 
+                       linetype = "dashed")
+      }   
+      
+      ### Sortie Output------------------------------
       
       output$graphique_hist <- renderPlotly({
         graph_hist
@@ -266,7 +312,7 @@ mod_graph_final_server <- function(id,
     
     # #Définition du texte -----------
     
-    output$texte <- renderText({
+    output$texte <- renderUI({
       
       
       req(result())
@@ -274,13 +320,76 @@ mod_graph_final_server <- function(id,
       
       descript <- descript()
       
-      paste(c("La moyenne de l'échantillon calculé est de"), round(descript$moy), c("euros."),
-            c("La médiane coupe l'échantillon en deux parties contenant le même nombre de valeurs. Elle est de"), round(descript$mediane), c("euros."),
-            c("1/4 des valeurs de l'échantillon sont inférieures à"), round(descript$q1), c("euros et 1/4 sont supérieures à"), round(descript$q3), c("euros."),
-            sep = " ")
+      # paste(c("La moyenne de l'échantillon calculé est de"), round(descript$moy), c("euros."),
+      #       c("La médiane coupe l'échantillon en deux parties contenant le même nombre de valeurs. Elle est de"), round(descript$mediane), c("euros."),
+      #       c("1/4 des valeurs de l'échantillon sont inférieures à"), round(descript$q1), c("euros et 1/4 sont supérieures à"), round(descript$q3), c("euros."),
+      #       sep = " ")
+      
+      moy <- paste0(c("Moyenne = " ), round(descript$moy), c(" € ou K€"))
+      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), c(" € ou K€"))
+      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), c(" euros.") )
+      
+      HTML(paste(moy, med, q, sep = '<br/>'))
+      
+    
       
       
     })
+    
+    
+  pc_mini <- reactive({
+  
+    nb_result <- nrow(result())
+    
+    nb_mini <- result() %>% 
+      filter(solde  > input$s_mini) %>% 
+      nrow()
+    
+    pc_mini <- nb_mini*100/nb_result
+    pc_mini <- round(pc_mini,digits = 0)
+    
+    pc_mini
+ 
+    
+  })
+  
+  pc_att <- reactive({
+    
+    nb_result <- nrow(result())
+    
+    nb_att <- result() %>% 
+      filter(solde  > input$s_att) %>% 
+      nrow()
+    
+    pc_att <- nb_att*100/nb_result
+    pc_att <- round(pc_att,digits = 0)
+    
+    pc_att
+    
+    
+  })
+  
+      
+
+      
+      output$texte_pourcent <- renderText({
+      
+    mini <- pc_mini()
+    
+    att <- pc_att()
+    
+    paste( mini, c("% des valeurs sont au-dessus du seuil minimum défini et"),
+           att, c("% des valeurs sont au-dessus du seuil attendu défini"),
+           sep = " ")
+      
+      
+      }) 
+      
+  
+    
+    
+    
+    
     
     
 

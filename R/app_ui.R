@@ -12,8 +12,8 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     
     
-    #browser pour développement       
-    
+    #browser pour développement
+
     actionButton("browser", "browser"),
     tags$script("$('#browser');"),
     
