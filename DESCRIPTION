@@ -6,7 +6,7 @@ Authors@R:
            family = "Topart",
            role = c("cre", "aut"),
            email = "m.topart@agro-transfert-rt.org")
-Description: Application Oser en développement
+Description: Application Oser en développement.
 License: MIT + file LICENSE
 URL: https://github.com/mtopart/Oser
 BugReports: https://github.com/mtopart/Oser/issues

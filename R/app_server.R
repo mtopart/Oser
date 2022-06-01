@@ -12,10 +12,10 @@ app_server <- function( input, output, session ) {
   
   # List the first level callModules here
   
-  # observeEvent(input$browser,{
-  #   browser()
-  # })
-  
+  observeEvent(input$browser,{
+    browser()
+  })
+
   
   # Mod distrib
   
