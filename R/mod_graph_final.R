@@ -51,6 +51,8 @@ mod_graph_final_ui <- function(id){
       textOutput(ns("texte")),
 
       br(),
+      
+      ## Choix graph--------------------------------------------------
       fluidRow(
         column(6,
                radioGroupButtons(
@@ -69,46 +71,27 @@ mod_graph_final_ui <- function(id){
         
         
         column(12,
-               plotlyOutput(ns("graphique"))
-        )
-      ),
+               plotlyOutput(ns("graphique_hist")),
+              plotlyOutput(ns("graphique_bam"))
+      )),
       
       # Gestion de la sidebar------------------------------
       sidebar = boxSidebar(
         id = ns("sidebar"),
         width = 50,
-       #background = "#fafafa",
-       #style = "color: red",
+       background = "#fafafa",
+       style = "color: black",
         
         
-        checkboxGroupButtons(
-          inputId = ns("data_graph"),
-          label = "Label",
-          choices = c("Zone de confort" = 1 , 
-                      "Quartiles" = 2, 
-                      "Courbe" = 3 ),
-          status = "primary",
-          justified = TRUE,
-          checkIcon = list(
-            yes = icon("ok", 
-                       lib = "glyphicon"))
-        ),
-       
-       
-       
        prettyCheckbox(
-         inputId = ns("test_b"),
+         inputId = ns("coche_confort"),
          label = "Zone de confort", 
          value = FALSE,
          icon = icon("check"),
          status = "success"
        ),
        
-       
-        
 
-
-       
     wellPanel(id = ns("zone_conf"),
               
 fluidRow(
@@ -128,20 +111,12 @@ fluidRow(
                 1,
                 width ='100%' ))
    
-   )),
-
-verbatimTextOutput(ns("test")),
-verbatimTextOutput(ns("test2"))
-
-  
-           
-        
-        
+   ))
       )  
     )    
     
   )
-  
+   
 }
 
 #' graph_final Server Functions
@@ -191,33 +166,9 @@ mod_graph_final_server <- function(id,
     
 # Définition des graphiques -------------------------
     
-    ## Gestion des inputs-----------------
-    
-    infos_graph <- reactive({
-      
-      req(!is.null(input$data_graph))
-      
-      input$data_graph  %>%
-         tibble() %>%
-         rename(input = 1) %>%
-          mutate(type = case_when(
-          input == 1 ~ "zconf",
-          input == 2 ~ "quart",
-          input == 3 ~ "courbe"
-        ) )
-      
-    })
-      
-      
-    
-    output$test <- renderPrint({
-      "infos_graph()"
-    })
-    
-    
-    
-    
+
     ## Histogramme de base ----------------------------
+    
     graph_hist <- reactive({
       req(result())
       result <- result()
@@ -241,20 +192,23 @@ mod_graph_final_server <- function(id,
                yaxis = list(title = " % des données" ),
                showlegend = FALSE,
                hovermode = 'compare')
-    
+      
     })
     
     ### Ajout zone de confort------------------------------
     
-
-    observeEvent(input$test_b, {
-      if(input$test_b){
+    
+    
+    observe({
+      
+      req(result())
+      
+      graph_hist <- graph_hist()
+      
+      
+      if(input$coche_confort){
         
-        req(result())
-        
-        graph <- graph_hist()
-        
-        graph <- graph %>% 
+        graph_hist <- graph_hist %>% 
           layout(
             shapes = list(
               list(
@@ -265,14 +219,11 @@ mod_graph_final_server <- function(id,
             )
           )
       }  
-    
-      output$graphique <- renderPlotly({
-        graph
+      
+      output$graphique_hist <- renderPlotly({
+        graph_hist
       })
-    })
-    
-  
-    
+    })  
     
     ## Violon / bam de base -----------------------------
     
@@ -307,7 +258,10 @@ mod_graph_final_server <- function(id,
       
     })
       
-      
+    
+    output$graphique_bam <- renderPlotly({
+      graph_bam()
+    })   
       
     
     # #Définition du texte -----------
@@ -329,107 +283,19 @@ mod_graph_final_server <- function(id,
     })
     
     
-    # Sortie graphique -------------------
-    
-    # Définition de l'histogramme -------
-    
 
-    
-    
-#     output$graphique<- renderPlotly({
-#       
-#       if(input$choix_graph == "histo"){
-#         
-#         graph_hist()
-#         
-#         
-#         
-#         # if (is.null(input$data_graph)) {
-#         #   result <- result 
-#         #   return(result)
-#         # } else if (input$data_graph == 1) {
-#         # 
-#         #   result <- result %>%
-#         #     layout(
-#         #       shapes = list(
-#         #         list(
-#         #           type = "rect",
-#         #           fillcolor = "blue", line = list(color = "blue"), opacity = 0.3,
-#         #           x0 = 10, x2 = 20,  xref = "x",
-#         #           y0 = 0, y1 = 0.06, yref = "y")
-#         #       ))
-#         #   
-#         #   return(result)
-#         #     } 
-#         # 
-#         #   
-#         # if (is.null(input$data_graph)) {
-#         #   return(result)
-#         # } else if (input$data_graph == 2) {
-#         # 
-#         # 
-#         #   result <- result %>%
-#         #     add_segments(name = "seuil",
-#         #                  x = 20,
-#         #                  xend = 20,
-#         #                  y = 0,
-#         #                  yend = 0.08,
-#         #                  line = list(dash = "dash", color = "blue"))
-#         # 
-#         #   return(result)
-#         # }
-#         # 
-# 
-#         
-#         
-#         # Définition de la boite à moustache -----------
-#         
-#       } else if(input$choix_graph == "bam"){
-#         
-# graph_bam()
-#         
-# 
-#         
-#         
-#         # result <- result %>%
-#         #   select(solde) %>%
-#         #   ggplot(aes(solde)) +
-#         #   geom_boxplot(fill = "#77b5fe",
-#         #                width = 0.8) +
-#         #   coord_cartesian(ylim = c(-1,1)) +
-#         #   
-#         #   labs(title = "Répartition du solde choisi (marge, EBE, revenu, ...)",
-#         #        x ="(en € ou k€)") +
-#         #   geom_vline(aes(xintercept=input$vseuil),
-#         #              color="blue", linetype="dashed", size=0.8) +
-#         #   # theme_light(
-#         #   #   base_size = 16
-#         #   # ) +
-#         #   theme(
-#         #     axis.text.y = element_blank(),
-#         #     axis.ticks.y = element_blank()
-#         #   )
-#         # 
-#         # ggplotly(result)
-#         
-#       }
-#     })
-#     
-#   
-    
     
     ### Gestion graphique ----------------------------------------------
     
 
-    
-    
-      observe({
-        toggle(id = "zone_conf",
-               condition = {1 %in% input$data_graph})
-      })
 
 
 
+observe({
+  toggle(id = "zone_conf", condition = input$coche_confort)
+  toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
+  toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
+})
 
       
     
