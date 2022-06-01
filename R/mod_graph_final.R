@@ -135,14 +135,6 @@ verbatimTextOutput(ns("test2"))
 
   
            
-
-
-       
-
-        
-        # numericInput(ns("vseuil"),
-        #              label = "Choix d'une valeur seuil à afficher sur le graphique (par défaut, moyenne du résultat)",
-        #              value = 0)
         
         
       )  
@@ -254,34 +246,7 @@ mod_graph_final_server <- function(id,
     
     ### Ajout zone de confort------------------------------
     
-    
-    
-    # zone_conf <-  function(graph){
-    #   
-    #   graph <- graph %>%
-    #     layout(
-    #       shapes = list(
-    #         list(
-    #           type = "rect",
-    #           fillcolor = "blue", line = list(color = "blue"), opacity = 0.3,
-    #           x0 = 10, x2 = 20,  xref = "x",
-    #           y0 = 0, y1 = 0.06, yref = "y")
-    #       ))
-    #   
-    #   return(graph)  
-    #   
-    #   
-    # }
-    
-    
-   # observeEvent("zconf" %in% infos_graph(), {
-   #   
-   #   zone_conf(graph_hist())      
-   # }, ignoreNULL = FALSE   ) 
-    
-    
-    
-    
+
     observeEvent(input$test_b, {
       if(input$test_b){
         
@@ -306,34 +271,7 @@ mod_graph_final_server <- function(id,
       })
     })
     
-  #   observeEvent(input$test_b,{
-  #     
-  # 
-  #     output$test2 <- renderPrint("coucou")}
-  #     
-  # , ignoreInit = TRUE)
-
-   
-  # output$test2 <- renderPrint(input$test_b)
-  #  
-  #   
-    # observeEvent(1 %in% input$data_graph,{
-    #   
-    #   graph_hist <- graph_hist()
-    #   
-    #   graph_hist <- graph_hist %>%
-    #       layout(
-    #         shapes = list(
-    #           list(
-    #             type = "rect",
-    #             fillcolor = "blue", line = list(color = "blue"), opacity = 0.3,
-    #             x0 = 10, x2 = 20,  xref = "x",
-    #             y0 = 0, y1 = 0.06, yref = "y")
-    #         ))
-    #   })
-
-      
-
+  
     
     
     ## Violon / bam de base -----------------------------
