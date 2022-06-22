@@ -19,7 +19,6 @@
 
 
 mod_box_distrib_ui <- function(id,
-                               box_title,
                                type,
                                input_mini,
                                input_maxi){
@@ -40,7 +39,7 @@ mod_box_distrib_ui <- function(id,
     
     
     box(
-      title = box_title,
+      title = uiOutput(ns("titre")),
       icon = tags$span(icon("question")) %>% 
         add_prompt(
           position = "right",
@@ -83,17 +82,19 @@ mod_box_distrib_ui <- function(id,
       br(),
       actionButton(ns("button_distrib"), icon("eye")),
       verbatimTextOutput(ns("test")),
-      
-      
+
+
       # Sidebar de la box
-      
-      sidebar = boxSidebar(
+
+      sidebar = if(type %in% c("charges", "production"))  { boxSidebar(
         id = ns("mycardsidebar"),
         width = 80,
         background = "#fafafa",
-        
+
         rHandsontableOutput(outputId = ns("tabelle")) # Tableau qui permet de calculer les sommes
-      )    
+      )   } else {
+       NULL
+      }
     )
     
   )
@@ -327,6 +328,51 @@ mod_box_distrib_server <- function(id,
     observeEvent( r$button , {
       r[[paste("dist_pr_graph", type, sep = "_")]] <- distrib_finale()
     })
+    
+
+    
+    # observeEvent(r$button_unit,{
+    #   texte <- r$unit_prix
+    #   
+    # })
+    
+    # test_text <- reactive({
+    #   if(is.null(r$unit_prix)){
+    #     box_title } else {
+    #       paste(title,r$unit_prix, sep = ,)
+    #     }
+    # 
+    # })
+    
+    
+ ## Gestion des titres -------------------------------------------------------------------------   
+    gest_text <- reactive({
+      
+      if(type == "prix"){
+        if(is.null(r$unit_prix)){
+          "Prix" } else {
+            HTML(paste("Prix (",  em(r$unit_prix), ")", sep ="" ))
+          } 
+        
+      }     else if(type == "charges"){
+        if(is.null(r$unit_ch)){
+          "Charges" } else {
+            HTML(paste("Charges (",  
+                       em(r$unit_ch), 
+                       em(" à l'échelle "),  
+                       em(r$echelle),
+                       em(")"), sep ="" ))
+          } 
+      }      else if(type == "production"){
+        if(is.null(r$unit_prod)){
+          "Production et quantité" } else {
+            HTML(paste("Production (",  em(r$unit_prod), ")", sep ="" ))
+          } 
+      }
+      
+    })
+    
+    output$titre <- renderUI( gest_text()   )  
     
     
   })

@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout config style
+#' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout config style  add_annotations
 #' @importFrom tidyr crossing
 #' @importFrom tibble tibble
 #' @importFrom shinyjs toggle useShinyjs
@@ -38,7 +38,7 @@ mod_graph_final_ui <- function(id){
       br()),
     
     box(
-      title = "Conséquences sur le solde choisi (marge, EBE, revenu...)",
+      title = uiOutput(ns("titre")),
       width = 12,
       icon = tags$span(icon("question"))
       %>%
@@ -168,7 +168,7 @@ mod_graph_final_server <- function(id,
       
       result <- result()
       
-      tibble(
+     tibble(
         moy = mean(result$solde),
         mediane = median(result$solde),
         nb_val = length(result$solde),
@@ -182,6 +182,30 @@ mod_graph_final_server <- function(id,
 # Définition des graphiques -------------------------
     
 
+  graph_titre <- reactive({
+      if(is.null(r$solde) ){
+        "Répartition du solde choisi" } else {
+          paste("Répartition de", r$solde, sep = " " )
+        } 
+    }) 
+    
+    
+    graph_axe_titre_x <- reactive({
+      if(is.null(r$solde) & is.null(r$unit$solde) ){
+        "Valeurs du solde choisi (marge, EBE, revenu, ...) (en € ou k€)" } else {
+          paste("Valeurs de", r$solde , "en", r$unit_solde , sep = " " )
+        } 
+    })   
+    
+    
+    graph_axe_titre_y <- reactive({
+      if(is.null(r$solde) ){
+        "Fréquence des valeurs (en %)" } else {
+          paste("Fréquence des valeurs de", r$solde, "(en %)", sep = " " )
+        } 
+    }) 
+    
+    
     ## Histogramme de base ----------------------------
     
     graph_hist <- reactive({
@@ -202,11 +226,12 @@ mod_graph_final_server <- function(id,
                                      'zoomOut2d',
                                      'autoScale2d') 
         ) %>% 
-        layout(title = "Représentation graphique de la répartition du solde choisi<br><sup>Fréquence du solde choisi dans différents intervalles</sup>",
-               xaxis = list(title = 'Solde choisi (marge, EBE, revenu, ...) (en € ou k€)'),
-               yaxis = list(title = " % des données" ),
+        layout(title = graph_titre(),
+               xaxis = list(title = graph_axe_titre_x()),
+               yaxis = list(title = graph_axe_titre_y() ),
                showlegend = FALSE,
-               hovermode = 'compare')
+               hovermode = 'compare') %>% 
+        config(editable = TRUE)
       
     })
     
@@ -261,7 +286,26 @@ mod_graph_final_server <- function(id,
                        linetype = "bot") %>% 
           add_segments(x = descript()$mediane, xend =  descript()$mediane, 
                        y = ylim[1], yend = ylim[2], 
-                       linetype = "dashed")
+                       line = list(dash = "dash", color = "blue"))  %>% 
+          add_annotations(
+            x = descript()$mediane, y = ylim[2]- 0.015, xref = "x", yref = "y",
+            text = "Médiane", xanchor = 'right',
+            showarrow = T, arrowhead = 4, arrowsize = .5,
+            ax = 20, ay = -40
+          ) %>% 
+          add_annotations(
+            x = descript()$q1, y = ylim[2]- 0.015, xref = "x", yref = "y",
+            text = "Q1", xanchor = 'right',
+            showarrow = T, arrowhead = 4, arrowsize = .5,
+            ax = 20, ay = -40
+          )  %>% 
+          add_annotations(
+            x = descript()$q3, y = ylim[2]- 0.015, xref = "x", yref = "y",
+            text = "Q3", xanchor = 'right',
+            showarrow = T, arrowhead = 4, arrowsize = .5,
+            ax = 20, ay = -40
+          )
+          
       }   
       
       ### Sortie Output------------------------------
@@ -407,7 +451,23 @@ observe({
 })
 
       
-    
+  ## Gestion du titre--------------------------------------------------
+      
+      
+      gest_text <- reactive({
+        
+          if(is.null(r$solde)){
+            "Conséquences sur le solde choisi (marge, EBE, revenu...)" } else {
+              paste("Conséquences sur ",  r$solde, sep = "" )
+            } 
+        
+      })
+      
+      output$titre <- renderUI( gest_text()   )       
+      
+      
+      
+      
     
   })
 }

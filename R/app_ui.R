@@ -4,6 +4,7 @@
 #'     DO NOT REMOVE.
 #' @rawNamespace import(shiny, except = c(insertTab, actionButton, tabsetPanel, column))
 #' @import bs4Dash 
+#' @import waiter
 #' @noRd
 app_ui <- function(request) {
   
@@ -12,21 +13,25 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     
     
-    #browser pour développement
-
-    actionButton("browser", "browser"),
-    tags$script("$('#browser');"),
+    # #browser pour développement
+    # 
+    # actionButton("browser", "browser"),
+    # tags$script("$('#browser');"),
     
     # Define this page as a dashboard page to signal we're using the     dashboard page format
     dashboardPage(
+      
+      preloader = list(html = tagList(spin_1(), "Chargement en cours ..."), color = "#3c8dbc"),
       
       title = "Oser",
       freshTheme = TRUE,
       fullscreen = TRUE,
       header = dashboardHeader(
-        title = "Oser"
+        title = bs4DashBrand("Oser",
+                             color = NULL , href = NULL, image = NULL, opacity = 0.8),
+        actionButton(inputId = "controlbarToggle", label = "Gestion des unités", class = "mx-2")
       ),
-  
+      
       # Create our navigation menu that links to each of the tabs we defined
       sidebar = dashboardSidebar(
         skin = "light",
@@ -39,10 +44,10 @@ app_ui <- function(request) {
           name = "Welcome Onboard!"
         ),
         
-  # Définition des menus de la barre de gauche      
+        # Définition des menus de la barre de gauche      
         sidebarMenu(
           id = "tabs",
-
+          
           menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
                    menuSubItem(
                      "Oser", icon = icon("arrow-right"), tabName = "oser")),
@@ -52,7 +57,7 @@ app_ui <- function(request) {
           
         )),
       
-  # Définition des menus de la barre de gauche       
+      # Définition des menus de la barre de gauche       
       footer = dashboardFooter(
         left = "Prototype - application en développement",
         right = "2022 - Strat&co"
@@ -68,47 +73,45 @@ app_ui <- function(request) {
                   
                   # conditionalPanel(
                   #   'input.select == 1',
-                    
-                    fluidRow(
-                      mod_box_distrib_ui("box_distrib_ui_1", 
-                                         box_title = "Production et quantité",
-                                         type = "production",
-                                         input_mini = 20,
-                                         input_maxi = 50),
-                      mod_box_distrib_ui("box_distrib_ui_2", 
-                                         box_title = "Prix",
-                                         type = "prix",
-                                         input_mini = 50,
-                                         input_maxi = 150),
-                      mod_box_distrib_ui("box_distrib_ui_3", 
-                                         box_title = "Charges",
-                                         type = "charges",
-                                         input_mini = 1000,
-                                         input_maxi = 2000),
-                      mod_aide_distrib_ui("aide_distrib_ui_1"),
-                      mod_graph_final_ui("graph_final_ui_1")
-                      
-                      
-                    )                      
-                  ),
                   
-                  # # Mode avancé 
-                  # conditionalPanel(
-                  #   'input.select == 2',
-                  #   box(
-                  #     p("En construction", style = "color:red") )
-                  # ,
-                  # uiOutput("tab"))),
+                  fluidRow(
+                    mod_box_distrib_ui("box_distrib_ui_1", 
+                                       type = "production",
+                                       input_mini = 20,
+                                       input_maxi = 50),
+                    mod_box_distrib_ui("box_distrib_ui_2", 
+                                       type = "prix",
+                                       input_mini = 50,
+                                       input_maxi = 150),
+                    mod_box_distrib_ui("box_distrib_ui_3", 
+                                       type = "charges",
+                                       input_mini = 1000,
+                                       input_maxi = 2000),
+                    mod_aide_distrib_ui("aide_distrib_ui_1"),
+                    mod_graph_final_ui("graph_final_ui_1")
+                    
+                    
+                  )                      
+          ),
+          
+          # # Mode avancé 
+          # conditionalPanel(
+          #   'input.select == 2',
+          #   box(
+          #     p("En construction", style = "color:red") )
+          # ,
+          # uiOutput("tab"))),
           
           # Reste des items
-
+          
           tabItem("tuto", mod_tutoriel_ui("tutoriel_ui_1")),
-          tabItem("apropos", mod_apropos_ui("apropos_ui_1")
+          tabItem("apropos", mod_apropos_ui("apropos_ui_1"))
           )
-        ))
-  #,
+        ),
+      #,
       
       # # Création de la controlbar -----------------------------
+      
       # controlbar = dashboardControlbar(
       #   skin = "light",
       #   # pinned = FALSE,
@@ -140,10 +143,17 @@ app_ui <- function(request) {
       #   )
       # )
       
-      
-    )
-  )
-  
+      controlbar = dashboardControlbar(
+        id = "controlbar",
+        skin = "light",
+         #pinned = FALSE,
+         #collapsed = FALSE,
+        overlay = FALSE,
+        width = 500,
+         mod_gestion_unites_ui("gestion_unites_1")
+          )
+          )
+      )
 }
 
 #' Add external Resources to the Application
