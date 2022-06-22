@@ -200,8 +200,8 @@ mod_graph_final_server <- function(id,
     
     graph_axe_titre_y <- reactive({
       if(is.null(r$solde) ){
-        "Fréquence des valeurs (en %)" } else {
-          paste("Fréquence des valeurs de", r$solde, "(en %)", sep = " " )
+        "Fréquence des valeurs" } else {
+          paste("Fréquence des valeurs de", r$solde,  sep = " " )
         } 
     }) 
     
