@@ -50,6 +50,11 @@ mod_box_distrib_ui <- function(id,
       
       
       wellPanel(
+        
+        
+        if(type %in% "charges")  {
+          h5("")},
+        
         numericInput(
           inputId = ns("v_mini"),
           label = "minimale",
@@ -81,12 +86,14 @@ mod_box_distrib_ui <- function(id,
       
       br(),
       actionButton(ns("button_distrib"), icon("eye")),
-      verbatimTextOutput(ns("test")),
+
+      if(type %in% "charges")  {
+       h5("")},
 
 
       # Sidebar de la box
 
-      sidebar = if(type %in% c("charges", "production"))  { boxSidebar(
+      sidebar = if(type %in% "charges")  { boxSidebar(
         id = ns("mycardsidebar"),
         width = 80,
         background = "#fafafa",

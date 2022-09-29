@@ -6,15 +6,16 @@
 #'
 #' @noRd 
 #'
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS tagList downloadHandler downloadButton
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout config style  add_annotations
 #' @importFrom tidyr crossing
 #' @importFrom tibble tibble
 #' @importFrom shinyjs toggle useShinyjs
 #' @importFrom shinyWidgets actionBttn radioGroupButtons checkboxGroupButtons prettyCheckbox
-#' @importFrom dplyr select mutate %>% rename case_when filter
+#' @importFrom dplyr select mutate %>% rename case_when filter group_by ungroup
 #' @importFrom prompter add_prompt use_prompt
-#' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot geom_vline theme_light coord_cartesian theme element_blank
+#' @importFrom ggplot2 ggplot aes waiver xlab geom_histogram labs geom_boxplot scale_x_discrete geom_vline theme_light coord_cartesian theme element_blank geom_tile scale_fill_gradientn
+#' @importFrom officer read_docx body_add_gg body_add_par
 #' 
 
 mod_graph_final_ui <- function(id){
@@ -59,9 +60,10 @@ mod_graph_final_ui <- function(id){
                  inputId = ns("choix_graph"),
                  label = "Choix du graphique",
                  choiceNames = list("Histogramme",
-                                    "Boite à moustache"),
+                                    "Boite à moustache",
+                                    "Matrice"),
                  choiceValues = list(
-                   "histo", "bam"
+                   "histo", "bam", "mat"
                  ),
                  justified = TRUE,
                  checkIcon = list(
@@ -72,7 +74,21 @@ mod_graph_final_ui <- function(id){
         
         column(12,
                plotlyOutput(ns("graphique_hist")),
-              plotlyOutput(ns("graphique_bam"))
+               plotlyOutput(ns("graphique_bam"))
+      )),
+      
+      fluidRow( id = ns("graphique_mat"),
+      
+                ### Matrice---------------
+      column(8,
+             plotlyOutput(ns("graph_mat"))
+             ),
+      column(4,
+             style = "background: #f2f2f2;",
+       selectInput(inputId = ns("idSelect_mat"), label = "Selectionner la variable fixe ", selected = 3,
+                         choices = c("Production" = 1, "Prix" = 2, "Charges" = 3))
+
+      
       )),
       
       # Gestion de la sidebar------------------------------
@@ -125,7 +141,26 @@ prettyCheckbox(
   status = "success"
 ),
 
-htmlOutput(ns("texte"))
+htmlOutput(ns("texte")),
+
+br(),
+br(),
+hr(),
+
+
+
+actionBttn(
+  inputId = ns("select_graph"),
+  label = "Sélectionner le graphique", 
+  style = "bordered",
+  color = "success"
+),
+br(),
+br(),
+downloadButton(ns("dl_graph"), "Télécharger le récapitulatif")
+
+
+
 
       )  
     )    
@@ -319,9 +354,6 @@ mod_graph_final_server <- function(id,
     
     graph_bam <- reactive({
       req(result())
-      result <- result()
-    
-      
       
       result <- result() %>% 
         
@@ -353,6 +385,113 @@ mod_graph_final_server <- function(id,
       graph_bam()
     })   
       
+    
+    ## Matrice--------------------------------------------------------
+    
+
+    tbl_matrice <- reactive({
+      
+      req(result())
+      
+      if(input$idSelect_mat == 3){   # ici charges sont fixes et on fait varier prod et prix
+        
+        expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
+          mutate(
+            marge = col1 * col2 - round(mean(r$dist_pr_graph_charges))
+            # ,
+            # col1 = as.factor(col1),
+            # col2 = as.factor(col2)
+          ) %>%
+          group_by(col1, col2) %>%
+          unique()  %>%
+          ungroup()  
+        
+      } else if(input$idSelect_mat == 2){ # ici prix fixe et on fait varier prod et charges
+        
+        
+        expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_charges) %>%
+          mutate(
+            marge = col1 * round(mean(r$dist_pr_graph_prix)) - col2
+            # ,
+            # col1 = as.factor(col1),
+            # col2 = as.factor(col2)
+          ) %>%
+          group_by(col1, col2) %>%
+          unique()  %>%
+          ungroup() 
+        
+      } else if(input$idSelect_mat == 1){ # ici prod fixe et on fait varier prix et charges
+        
+        
+        expand.grid(col1 = r$dist_pr_graph_prix, col2 = r$dist_pr_graph_charges) %>%
+          mutate(
+            marge = round(mean(r$dist_pr_graph_production)) * col1 - col2
+            # ,
+            # col1 = as.factor(col1),
+            # col2 = as.factor(col2)
+          ) %>%
+          group_by(col1, col2) %>%
+          unique()  %>%
+          ungroup()     
+        
+      }
+      
+    })
+    
+    
+    
+    
+    output$graph_mat <- renderPlotly({
+      
+      seuil <- scales::rescale(1000, c(0,1), from = range(tbl_matrice()$marge))
+      
+      if( seuil >= 1) {
+        
+        g <-ggplot(tbl_matrice())  +
+          geom_tile(aes(x = col1, y = col2, fill = marge)) +
+          scale_fill_gradientn(colours = c("red", "orange"), values = c(0, 1) )  
+        
+      } else if(seuil < 0 ) {
+        
+        g <-ggplot(tbl_matrice())  +
+          geom_tile(aes(x = col1, y = col2, fill = marge)) +
+          scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0,0, 1) ) 
+        
+      } else { 
+        
+        g <- ggplot(tbl_matrice())  +
+          geom_tile(aes(x = col1, y = col2, fill = marge)) +
+          scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil, 1) )
+      } 
+      
+      
+      
+    g <-  g + 
+        labs(
+          title = case_when(
+            input$idSelect_mat == 3 ~ "Marge en fonction du prix et de la production",
+            input$idSelect_mat == 2 ~ "Marge en fonction des charges et de la production",
+            input$idSelect_mat == 1 ~ "Marge en fonction du prix et des charges"
+          ),
+          x = case_when(
+            input$idSelect_mat == 3 ~ "Production",
+            input$idSelect_mat == 2 ~ "Production",
+            input$idSelect_mat == 1 ~ "Prix"
+          ),
+          y = case_when(
+            input$idSelect_mat == 3 ~ "Prix",
+            input$idSelect_mat == 2 ~ "Charges",
+            input$idSelect_mat == 1 ~ "Charges"
+          )
+      )
+
+      
+      ggplotly(g)
+      
+    })
+    
+    
+    
     
     # #Définition du texte -----------
     
@@ -438,7 +577,7 @@ mod_graph_final_server <- function(id,
     
 
     
-    ### Gestion graphique ----------------------------------------------
+    ### Toogle Gestion graphique ----------------------------------------------
     
 
 
@@ -448,6 +587,9 @@ observe({
   toggle(id = "zone_conf", condition = input$coche_confort)
   toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
   toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
+  toggle(id= "graphique_mat", condition = input$choix_graph == "mat")
+  # toogle(id= "charges_mat", condition = input$idSelect_mat == 3 )
+  
 })
 
       
@@ -463,10 +605,58 @@ observe({
         
       })
       
-      output$titre <- renderUI( gest_text()   )       
+      output$titre <- renderUI( gest_text()   )  
       
       
       
+## Téléchargement----------------------------
+      
+      
+  graph_word <- function(gg ){
+
+    if(exists("doc")){
+    } else {
+      doc <- read_docx()
+    }
+
+  doc <- doc %>%
+    body_add_par(value = "Table des graphiques", style = "heading 1") %>%
+    body_add_gg(value = gg,
+                style = "Normal")
+
+  }
+
+
+  observeEvent(input$select_graph,{
+   doc <- reactive({
+     graph_word(graph_hist())
+   })
+
+  })
+      
+  
+  
+  # doc <- reactive({
+  #  read_docx() %>%
+  #     body_add_par(value = "Retranscription des commentaires", style = "heading 1") %>%
+  #     
+  #     body_add_par(value = "Contexte général", style = "heading 2")
+  #   
+  # })
+      
+   
+  output$dl_graph <- downloadHandler(
+    filename = function() {
+      paste0("graphiques", Sys.Date(), ".docx")
+    },
+    content = function(file) {
+      print(doc(), target = file)
+    }
+  )  
+  #     
+  # doc() %>%
+  #      print(target = tempfile(fileext = ".docx")) %>%
+  #   browseURL()
       
     
   })

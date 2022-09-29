@@ -10,11 +10,11 @@ app_server <- function( input, output, session ) {
   
   r <- reactiveValues()
   
-  # # List the first level callModules here
-  # 
-  # observeEvent(input$browser,{
-  #   browser()
-  # })
+  # List the first level callModules here
+
+  observeEvent(input$browser,{
+    browser()
+  })
 
   
   # Mod distrib

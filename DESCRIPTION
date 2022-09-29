@@ -39,7 +39,8 @@ Imports:
     prompter,
     shinyalert,
     purrr,
-    tidyselect
+    tidyselect,
+    officer
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 
