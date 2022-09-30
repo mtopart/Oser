@@ -14,7 +14,7 @@
 #' @importFrom shinyWidgets actionBttn radioGroupButtons checkboxGroupButtons prettyCheckbox
 #' @importFrom dplyr select mutate %>% rename case_when filter group_by ungroup
 #' @importFrom prompter add_prompt use_prompt
-#' @importFrom ggplot2 ggplot aes waiver xlab geom_histogram labs geom_boxplot scale_x_discrete geom_vline theme_light coord_cartesian theme element_blank geom_tile scale_fill_gradientn
+#' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot scale_fill_distiller geom_vline theme_light coord_cartesian theme element_blank geom_tile scale_fill_gradientn
 #' @importFrom officer read_docx body_add_gg body_add_par
 #' 
 
@@ -86,8 +86,19 @@ mod_graph_final_ui <- function(id){
       column(4,
              style = "background: #f2f2f2;",
        selectInput(inputId = ns("idSelect_mat"), label = "Selectionner la variable fixe ", selected = 3,
-                         choices = c("Production" = 1, "Prix" = 2, "Charges" = 3))
-
+                         choices = c("Production" = 1, "Prix" = 2, "Charges" = 3)),
+       
+       numericInput(inputId = ns("charges_mat"),
+                    label = paste0("Niveau de charges"),
+                    value = uiOutput(ns("charges_moy_UI"))),
+       
+       numericInput(inputId = ns("prod_mat"),
+                    label = paste0("Niveau de production"),
+                    value = uiOutput(ns("prod_moy_UI"))),
+       
+       numericInput(inputId = ns("prix_mat"),
+                    label = paste0("Niveau de prix"),
+                    value = uiOutput(ns("prix_moy_UI")))
       
       )),
       
@@ -397,7 +408,7 @@ mod_graph_final_server <- function(id,
         
         expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
           mutate(
-            marge = col1 * col2 - round(mean(r$dist_pr_graph_charges))
+            marge = col1 * col2 - input$charges_mat
             # ,
             # col1 = as.factor(col1),
             # col2 = as.factor(col2)
@@ -411,7 +422,7 @@ mod_graph_final_server <- function(id,
         
         expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_charges) %>%
           mutate(
-            marge = col1 * round(mean(r$dist_pr_graph_prix)) - col2
+            marge = col1 * input$prix_mat - col2
             # ,
             # col1 = as.factor(col1),
             # col2 = as.factor(col2)
@@ -425,7 +436,7 @@ mod_graph_final_server <- function(id,
         
         expand.grid(col1 = r$dist_pr_graph_prix, col2 = r$dist_pr_graph_charges) %>%
           mutate(
-            marge = round(mean(r$dist_pr_graph_production)) * col1 - col2
+            marge = input$prod_mat * col1 - col2
             # ,
             # col1 = as.factor(col1),
             # col2 = as.factor(col2)
@@ -438,35 +449,15 @@ mod_graph_final_server <- function(id,
       
     })
     
+ 
     
-    
-    
-    output$graph_mat <- renderPlotly({
+    graph_mat <- reactive({
       
-      seuil <- scales::rescale(1000, c(0,1), from = range(tbl_matrice()$marge))
-      
-      if( seuil >= 1) {
-        
-        g <-ggplot(tbl_matrice())  +
-          geom_tile(aes(x = col1, y = col2, fill = marge)) +
-          scale_fill_gradientn(colours = c("red", "orange"), values = c(0, 1) )  
-        
-      } else if(seuil < 0 ) {
-        
-        g <-ggplot(tbl_matrice())  +
-          geom_tile(aes(x = col1, y = col2, fill = marge)) +
-          scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0,0, 1) ) 
-        
-      } else { 
-        
-        g <- ggplot(tbl_matrice())  +
-          geom_tile(aes(x = col1, y = col2, fill = marge)) +
-          scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil, 1) )
-      } 
+    g <- ggplot(tbl_matrice())  +
+        geom_tile(aes(x = col1, y = col2, fill = marge))
       
       
-      
-    g <-  g + 
+       g + 
         labs(
           title = case_when(
             input$idSelect_mat == 3 ~ "Marge en fonction du prix et de la production",
@@ -482,13 +473,140 @@ mod_graph_final_server <- function(id,
             input$idSelect_mat == 3 ~ "Prix",
             input$idSelect_mat == 2 ~ "Charges",
             input$idSelect_mat == 1 ~ "Charges"
-          )
-      )
-
-      
-      ggplotly(g)
+          ) ) 
       
     })
+    
+    ####  Moyennes definies --------------------------------------- 
+
+    
+    charges_moy_UI <- renderUI( round(mean(r$dist_pr_graph_charges))  ) 
+    
+    prod_moy_UI <- renderUI( round(mean(r$dist_pr_graph_production))  ) 
+    
+    prix_moy_UI <- renderUI( round(mean(r$dist_pr_graph_prix))  ) 
+    
+    observe({
+      updateNumericInput(session, "charges_mat", value = round(mean(r$dist_pr_graph_charges)))
+      updateNumericInput(session, "prod_mat", value = round(mean(r$dist_pr_graph_production)))
+      updateNumericInput(session, "prix_mat", value = round(mean(r$dist_pr_graph_prix)))
+    })
+
+    
+    ####  zone de confort ---------------------------------------  
+    
+     observe({
+       
+        req(tbl_matrice())    
+       
+       graph_mat <- graph_mat()
+       
+       if(input$coche_confort){ 
+         
+          req(input$s_mini)
+          req(input$s_att)
+         
+         seuil_mini <- scales::rescale(input$s_mini, c(0,1), from = range(tbl_matrice()$marge))
+         seuil_att <- scales::rescale(input$s_att, c(0,1), from = range(tbl_matrice()$marge))
+         
+         if( seuil_att >= 1) {
+           
+           if (seuil_mini >= 1){
+             
+             graph_mat <- graph_mat  +
+               scale_fill_gradientn(colours = c("#CD0000", "red"), values = c(0, 1) )
+             
+           } else if (0 < seuil_mini & seuil_mini < 1) {
+             
+             graph_mat <- graph_mat +
+               scale_fill_gradientn(colours = c("red", "orange"), values = c(0, seuil_mini, 1) )
+           } else {
+             graph_mat <- graph_mat +
+               scale_fill_gradientn(colours = c("#FF7F00", "orange"), values = c(0,  1) )  
+     
+           }
+           
+         } else if(seuil_mini < 0 ) {
+           
+           if(seuil_att > 0) {
+             graph_mat <-  graph_mat  +
+               scale_fill_gradientn(colours = c( "orange", "green"), values = c(0,seuil_att,  1) )
+           } else {
+           
+           graph_mat <-  graph_mat  +
+             scale_fill_gradientn(colours = c("chartreuse", "green"), values = c(0,  1) ) 
+           }
+           
+         } else { 
+           
+           graph_mat <- graph_mat +
+             scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil_mini, seuil_att, 1) )
+        }      
+         
+         
+       } else {
+           
+         graph_mat <- graph_mat  +
+           scale_fill_distiller(palette = "RdYlGn",direction = 1) 
+         
+         }
+      
+      
+      output$graph_mat <- renderPlotly({  
+        ggplotly(graph_mat)
+      })
+      
+    })
+    
+    
+    # output$graph_mat <- renderPlotly({
+    #   
+    #   seuil <- scales::rescale(1000, c(0,1), from = range(tbl_matrice()$marge))
+    #   
+    #   if( seuil >= 1) {
+    #     
+    #     g <-ggplot(tbl_matrice())  +
+    #       geom_tile(aes(x = col1, y = col2, fill = marge)) +
+    #       scale_fill_gradientn(colours = c("red", "orange"), values = c(0, 1) )  
+    #     
+    #   } else if(seuil < 0 ) {
+    #     
+    #     g <-ggplot(tbl_matrice())  +
+    #       geom_tile(aes(x = col1, y = col2, fill = marge)) +
+    #       scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0,0, 1) ) 
+    #     
+    #   } else { 
+    #     
+    #     g <- ggplot(tbl_matrice())  +
+    #       geom_tile(aes(x = col1, y = col2, fill = marge)) +
+    #       scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil, 1) )
+    #   } 
+    #   
+    #   
+    #   
+    # g <-  g + 
+    #     labs(
+    #       title = case_when(
+    #         input$idSelect_mat == 3 ~ "Marge en fonction du prix et de la production",
+    #         input$idSelect_mat == 2 ~ "Marge en fonction des charges et de la production",
+    #         input$idSelect_mat == 1 ~ "Marge en fonction du prix et des charges"
+    #       ),
+    #       x = case_when(
+    #         input$idSelect_mat == 3 ~ "Production",
+    #         input$idSelect_mat == 2 ~ "Production",
+    #         input$idSelect_mat == 1 ~ "Prix"
+    #       ),
+    #       y = case_when(
+    #         input$idSelect_mat == 3 ~ "Prix",
+    #         input$idSelect_mat == 2 ~ "Charges",
+    #         input$idSelect_mat == 1 ~ "Charges"
+    #       )
+    #   )
+    # 
+    #   
+    #   ggplotly(g)
+    #   
+    # })
     
     
     
@@ -588,7 +706,9 @@ observe({
   toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
   toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
   toggle(id= "graphique_mat", condition = input$choix_graph == "mat")
-  # toogle(id= "charges_mat", condition = input$idSelect_mat == 3 )
+  toggle(id= "charges_mat", condition = input$idSelect_mat == 3 )
+  toggle(id = "prix_mat", condition = input$idSelect_mat == 2 )
+  toggle(id = "prod_mat", condition = input$idSelect_mat == 1 )
   
 })
 
