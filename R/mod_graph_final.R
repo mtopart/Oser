@@ -14,8 +14,9 @@
 #' @importFrom shinyWidgets actionBttn radioGroupButtons checkboxGroupButtons prettyCheckbox
 #' @importFrom dplyr select mutate %>% rename case_when filter group_by ungroup
 #' @importFrom prompter add_prompt use_prompt
-#' @importFrom ggplot2 ggplot aes geom_histogram labs geom_boxplot scale_fill_distiller geom_vline theme_light coord_cartesian theme element_blank geom_tile scale_fill_gradientn
+#' @importFrom ggplot2 ggplot scale_fill_manual annotate aes after_stat element_text scale_y_continuous geom_histogram labs geom_boxplot scale_fill_distiller geom_vline theme_light theme_bw coord_cartesian theme element_blank geom_tile scale_fill_gradientn
 #' @importFrom officer read_docx body_add_gg body_add_par
+#' @importFrom scales percent
 #' 
 
 mod_graph_final_ui <- function(id){
@@ -254,32 +255,37 @@ mod_graph_final_server <- function(id,
     
     ## Histogramme de base ----------------------------
     
+    
     graph_hist <- reactive({
       req(result())
       result <- result()
       
-      graph_hist <- plot_ly() %>%
-        add_trace(name = "histogramme",
-                  data = result,
-                  x = ~ solde,
-                  type = "histogram",
-                  histnorm = "probability",
-                  marker = list(color = "#77b5fe"),
-                  nbinsx = 40) %>%    
-        config(
-          modeBarButtonsToRemove = c('lasso2d', 
-                                     'zoomIn2d', 
-                                     'zoomOut2d',
-                                     'autoScale2d') 
-        ) %>% 
-        layout(title = graph_titre(),
-               xaxis = list(title = graph_axe_titre_x()),
-               yaxis = list(title = graph_axe_titre_y() ),
-               showlegend = FALSE,
-               hovermode = 'compare') %>% 
-        config(editable = TRUE)
+      graph_hist <- result %>%
+        ggplot(aes(solde)) +
+        geom_histogram(aes(y = after_stat(count / sum(count))),
+                       binwidth = 200,
+                       show.legend = FALSE,
+                       alpha = 0.7 ) +
+        scale_y_continuous(labels = scales::percent) +
+        labs(
+          title = graph_titre(),
+          subtitle = "Répartition de la marge ",
+          x = graph_axe_titre_x(),
+          y = graph_axe_titre_y(),
+          fill = ""
+        ) +
+        theme_bw() +
+        theme(
+          plot.title = element_text(size = 15L,
+                                    face = "bold"),
+          plot.subtitle = element_text(size = 13L,
+                                       face = "italic")
+        )
       
+        
     })
+        
+
     
     ### Ajout annotation------------------------------
     
@@ -301,63 +307,65 @@ mod_graph_final_server <- function(id,
     ####  zone de confort ---------------------------------------  
       
       if(input$coche_confort){
+
+        graph_hist <- graph_hist +
+          aes(fill = case_when(solde < input$s_mini ~ "A", 
+                               solde > input$s_att ~ "B", 
+                               TRUE ~ "C")) + 
+          scale_fill_manual(
+            values = c("A" = "red", 
+                       "C" = "orange", 
+                       "B" = "green3")
+          )+
+          theme(
+            legend.position = "none")
         
-        graph_hist <- graph_hist %>% 
-          layout(
-            shapes = list(
-              list(
-                type = "rect",
-                fillcolor = "red", line = list(color = "red"), opacity = 0.1,
-                x0= xlim[1], x1 = input$s_mini,  xref = "x",
-                y0 = ylim[1], y1 = ylim[2], yref = "y"),
-              list(
-                type = "rect",
-                fillcolor = "orange", line = list(color = "orange"), opacity = 0.1,
-                x0= input$s_mini, x1 = input$s_att,  xref = "x",
-                y0 = ylim[1], y1 = ylim[2], yref = "y")
-            )
-          )
-      }  
-      
+
+      } else {
+        graph_hist <- graph_hist +
+          aes(fill = "#XXXXX") +
+          scale_fill_manual(values = c("#XXXXX" = "#77b5fe"))  + 
+          theme(
+            legend.position = "none")
+      }
+
    #### Quartiles -----------------------------------------
-      
+
       if(input$coche_quart){
-        
-        graph_hist <- graph_hist %>% 
-          add_segments(x = descript()$q1, xend =  descript()$q1, 
-                       y = ylim[1], yend = ylim[2], 
-                       linetype = "bot") %>% 
-          add_segments(x = descript()$q3, xend =  descript()$q3, 
-                       y = ylim[1], yend = ylim[2], 
-                       linetype = "bot") %>% 
-          add_segments(x = descript()$mediane, xend =  descript()$mediane, 
-                       y = ylim[1], yend = ylim[2], 
-                       line = list(dash = "dash", color = "blue"))  %>% 
-          add_annotations(
-            x = descript()$mediane, y = ylim[2]- 0.015, xref = "x", yref = "y",
-            text = "Médiane", xanchor = 'right',
-            showarrow = T, arrowhead = 4, arrowsize = .5,
-            ax = 20, ay = -40
-          ) %>% 
-          add_annotations(
-            x = descript()$q1, y = ylim[2]- 0.015, xref = "x", yref = "y",
-            text = "Q1", xanchor = 'right',
-            showarrow = T, arrowhead = 4, arrowsize = .5,
-            ax = 20, ay = -40
-          )  %>% 
-          add_annotations(
-            x = descript()$q3, y = ylim[2]- 0.015, xref = "x", yref = "y",
-            text = "Q3", xanchor = 'right',
-            showarrow = T, arrowhead = 4, arrowsize = .5,
-            ax = 20, ay = -40
-          )
-          
+
+        graph_hist <- graph_hist +
+          geom_vline(xintercept = descript()$q1,  
+                     color = "orange") +
+          geom_vline(xintercept = descript()$q3,  
+                     color = "green") +
+          geom_vline(xintercept = descript()$mediane,  
+                     color = "blue",
+                     linetype =  "dashed")   +
+          annotate("text",
+                   x = descript()$mediane,
+                   y = ylim[2]- 0.015,
+                   label = "Médiane") + 
+          annotate("text",
+                   x = descript()$q1,
+                   y =ylim[2]- 0.015,
+                   label = "Q1") + 
+          annotate("text",
+                   x = descript()$q3,
+                   y =ylim[2]- 0.015,
+                   label = "Q3") 
+           
       }   
       
       ### Sortie Output------------------------------
       
       output$graphique_hist <- renderPlotly({
-        graph_hist
+        ggplotly(graph_hist) %>%    
+              config(
+                modeBarButtonsToRemove = c('lasso2d',
+                                           'zoomIn2d',
+                                           'zoomOut2d',
+                                           'autoScale2d')
+              )
       })
     })  
     

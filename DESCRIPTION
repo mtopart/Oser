@@ -40,7 +40,8 @@ Imports:
     shinyalert,
     purrr,
     tidyselect,
-    officer
+    officer,
+    scales
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 
