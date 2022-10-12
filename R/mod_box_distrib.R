@@ -213,6 +213,9 @@ mod_box_distrib_server <- function(id,
     
     
     distrib_man <-  reactive({
+      
+      req(v_myfit())
+    
       calc_distrib(myfit = v_myfit(),
                    mini = v_mini(),
                    maxi = v_maxi()) 
@@ -231,11 +234,24 @@ mod_box_distrib_server <- function(id,
       distrib %>%
         round(., digits = 1) %>%
         sort()
+    }
+    )
+   
+    
+    text_mean <-  reactive({
+      
+  mean(distrib_finale())  %>%
+           round(., digits = 1)
+
     })
     
     
-    output$mean_distrib <- renderText(mean(distrib_finale())  %>%
-                                        round(., digits = 1))
+    output$mean_distrib <- renderText(
+      # mean(distrib_finale())  %>%
+      #   round(., digits = 1)
+      text_mean()
+     
+    )
     
     
     

@@ -11,7 +11,7 @@
 #' @importFrom tidyr crossing
 #' @importFrom tibble tibble
 #' @importFrom shinyjs toggle useShinyjs
-#' @importFrom shinyWidgets actionBttn radioGroupButtons checkboxGroupButtons prettyCheckbox
+#' @importFrom shinyWidgets actionBttn radioGroupButtons checkboxGroupButtons prettyCheckbox prettyToggle
 #' @importFrom dplyr select mutate %>% rename case_when filter group_by ungroup
 #' @importFrom prompter add_prompt use_prompt
 #' @importFrom ggplot2 ggplot scale_fill_manual annotate aes after_stat element_text scale_y_continuous geom_histogram labs geom_boxplot scale_fill_distiller geom_vline theme_light theme_bw coord_cartesian theme element_blank geom_tile scale_fill_gradientn
@@ -113,13 +113,14 @@ mod_graph_final_ui <- function(id){
         
        prettyCheckbox(
          inputId = ns("coche_confort"),
-         label = "Zone de confort", 
+         label = "Zone de confort",
          value = FALSE,
          icon = icon("check"),
          status = "success"
        ),
        
 
+         
     wellPanel(id = ns("zone_conf"),
               
 fluidRow(
@@ -145,13 +146,24 @@ fluidRow(
 
 hr(),
 
-prettyCheckbox(
+# prettyCheckbox(
+#   inputId = ns("coche_quart"),
+#   label = "Quartiles",
+#   value = FALSE,
+#   icon = icon("check"),
+#   status = "success"
+# ),
+
+prettyToggle(
   inputId = ns("coche_quart"),
-  label = "Quartiles", 
-  value = FALSE,
-  icon = icon("check"),
-  status = "success"
-),
+  label_on = "Quartiles affichés",
+  status_on = "default",
+  icon_on = icon("ok-circle", lib = "glyphicon"),
+  label_off = "Sans quartiles",
+  status_off = "default",
+  icon_off = icon("remove-circle", lib = "glyphicon"),
+  plain = TRUE,
+  inline = FALSE),
 
 htmlOutput(ns("texte")),
 
@@ -385,15 +397,18 @@ mod_graph_final_server <- function(id,
           meanline = list(
             visible = T
           ),
-          x0 = 'Répartition du solde choisi (marge, EBE, revenu, ...)l'
+          x0 = 'Solde',
+          hoverinfo = "y"
         ) %>% 
         layout(
           yaxis = list(
             title = "",
-            zeroline = F
+            zeroline = F,
+            hoverformat = ".2f"
           ) 
-        ) %>% 
-        style(hoverinfo = 'none')
+        ) 
+      # %>% 
+      #   style(hoverinfo = 'none')
       
       
       
@@ -561,7 +576,8 @@ mod_graph_final_server <- function(id,
       
       
       output$graph_mat <- renderPlotly({  
-        ggplotly(graph_mat)
+        ggplotly(graph_mat,
+                 tooltip = "marge")
       })
       
     })
@@ -703,7 +719,7 @@ mod_graph_final_server <- function(id,
     
 
     
-    ### Toogle Gestion graphique ----------------------------------------------
+    ### Toggle Gestion graphique ----------------------------------------------
     
 
 

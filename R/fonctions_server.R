@@ -107,14 +107,38 @@ plot_elicit <- function(name,
 
 
 
+
+tryCatch_test <- function(vals, probs, lower = -Inf,
+                          upper = Inf, weights = 1, tdf = 3,
+                          expertnames = NULL){
+  tryCatch(fitdist_mod(vals, probs, lower = -Inf,
+                       upper = Inf, weights = 1, tdf = 3,
+                       expertnames = NULL),
+           error = function(e) {
+             if (conditionMessage(e) %in% c("smallest elicited probability must be less than 0.4",
+                                            "probabilities must be between 0 and 1",
+                                            "largest elicited probability must be greater than 0.6",
+                                            "elicited parameter values cannot be smaller than lower parameter limit",
+                                            "elicited parameter values cannot be greater than upper parameter limit",
+                                            "Student-t degrees of freedom must be greater than 0",
+                                            "probabilities must be specified in ascending order",
+                                            "parameter values must be specified in ascending order")) 
+               return(NULL)})
+  
+}
+
+
 fitdisti <- function(mini,
                      maxi,
                      v,
                      p){
   
   req(maxi, mini, v, p)
-  myfit <- fitdist_mod(vals = v, probs = p, lower = mini,
-                    upper = maxi )
+  # myfit <- fitdist_mod(vals = v, probs = p, lower = mini,
+  #                   upper = maxi )
+  
+  myfit <- tryCatch_test(vals = v, probs = p, lower = mini,
+                       upper = maxi )
   myfit
 }
 

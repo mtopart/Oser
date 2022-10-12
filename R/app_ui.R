@@ -17,7 +17,7 @@ app_ui <- function(request) {
     # 
     # actionButton("browser", "browser"),
     # tags$script("$('#browser');"),
-    
+
     # Define this page as a dashboard page to signal we're using the     dashboard page format
     dashboardPage(
       
