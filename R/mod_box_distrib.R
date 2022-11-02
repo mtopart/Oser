@@ -204,23 +204,33 @@ mod_box_distrib_server <- function(id,
     })
     
     v_myfit <- reactive({
-       fitdisti(mini = v_mini(),
-               maxi = v_maxi(),
-               v = v(),
-               p = p())
+      myfit <- tryCatch({
+        this_fit <- fitdisti(mini = v_mini(),
+                             maxi = v_maxi(),
+                             v = v(),
+                             p = p())
+        if(is.null(this_fit)){
+          this_fit <- "Manque de points"
+        }
+        return(this_fit)
+        },
+        error = function(e) { return("Manque de points")}
+      )
+      
+      myfit
     })
     
     
     distrib_man <-  reactive({
- 
       req(v_myfit())
-      
-      calc_distrib(myfit = v_myfit(),
-                   mini = v_mini(),
-                   maxi = v_maxi()) 
-        
-
-    
+      myfit <- v_myfit()
+      if (is.list(myfit)){
+        calc_distrib(myfit = myfit,
+                     mini = v_mini(),
+                     maxi = v_maxi()) 
+      } else {
+        NULL
+      }
     })
     
     
@@ -228,7 +238,7 @@ mod_box_distrib_server <- function(id,
     ## Choix de la distribution finale en fonction du choix de l'utilisateur---------------
     
     distrib_finale <- reactive({
-      if (input$loi == TRUE) {
+      if (input$loi == TRUE && !is.null(distrib_man())) {
         distrib <- distrib_man()
       } else {
         distrib <- distrib_unif()
@@ -238,40 +248,26 @@ mod_box_distrib_server <- function(id,
         sort()
     }
     )
-   
-
-
-    observe({
-
-      test_distrib <- "initialise"
-
-      if(!is.null(v_myfit())) {
-        test_distrib <- "go"
-      }
 
     output$mean_distrib <- renderUI({
-            validate(
-        need(test_distrib == "go", "Oups ! J'ai encore besoin de jetons !")
-      )
-     
-     mean <- mean(distrib_finale())  %>%
-        round(., digits = 1)
-     
-     text <-"Moyenne de la distribution :"
-     
-     HTML(paste0(em(text), br(), mean))
-     
+      if (input$loi){
+        myfit <- v_myfit()
+        text <- paste0(em("Oups ! J'ai encore besoin de jetons !"))
+        if (is.list(myfit)){
+          my_mean <- mean(distrib_finale())  %>%
+            round(., digits = 1)
+          text <- paste0(em("Moyenne de la distribution :"), br(), my_mean)
+        }
+        HTML(text)
+      }
       })
-        })
-
-
-
+    
     
     # Aperçu de la distribution Shinyalert quand clique sur le bouton--------------
     
     observeEvent(input$button_distrib, {
       #   # Show a modal when the button is pressed
-      
+
       distrib <- distrib_finale()
       
       output$distrib<- renderPrint(distrib)
