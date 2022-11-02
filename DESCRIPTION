@@ -41,7 +41,8 @@ Imports:
     purrr,
     tidyselect,
     officer,
-    scales
+    scales,
+    ranger
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 

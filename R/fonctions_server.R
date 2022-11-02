@@ -108,7 +108,7 @@ plot_elicit <- function(name,
 
 
 
-tryCatch_test <- function(vals, probs, lower = -Inf,
+tryCatch_mod <- function(vals, probs, lower = -Inf,
                           upper = Inf, weights = 1, tdf = 3,
                           expertnames = NULL){
   tryCatch(fitdist_mod(vals, probs, lower = -Inf,
@@ -137,7 +137,7 @@ fitdisti <- function(mini,
   # myfit <- fitdist_mod(vals = v, probs = p, lower = mini,
   #                   upper = maxi )
   
-  myfit <- tryCatch_test(vals = v, probs = p, lower = mini,
+  myfit <- tryCatch_mod(vals = v, probs = p, lower = mini,
                        upper = maxi )
   myfit
 }
@@ -172,11 +172,11 @@ calc_distrib <- function (myfit,
 
     
     
-  } else if (myfit$best.fitting[1] == "t" | myfit$best.fitting[1] == "logt") {
+  } else if (myfit$best.fitting[1] == "t") {
     
     
     distribution <- map_dfc(
-      1:50, ~{ crch::rct(50, location = myfit$Student.t$location,
+      1:50, ~{ crch::rtt(50, location = myfit$Student.t$location,
                          scale = myfit$Student.t$scale,
                          df = myfit$Student.t$df,
                          left = mini,
@@ -184,7 +184,19 @@ calc_distrib <- function (myfit,
           sort()}) %>% 
       mean_distrib()
     
-  } else if (myfit$best.fitting[1] == "gamma") {
+  } else if ( myfit$best.fitting[1] == "logt") {
+    
+    
+    distribution <- map_dfc(
+      1:50, ~{ crch::rtt(50, location = myfit$Student.t$location,
+                         scale = myfit$Student.t$scale,
+                         df = myfit$Student.t$df,
+                         left = mini,
+                         right = maxi) %>% 
+          sort()}) %>% 
+      mean_distrib()
+    
+  }  else if (myfit$best.fitting[1] == "gamma") {
     
 
     distribution <- map_dfc(
@@ -211,6 +223,25 @@ calc_distrib <- function (myfit,
           stats::qbeta((1:50/51), myfit$Beta$shape1, myfit$Beta$shape2)) %>% 
           sort()}) %>% 
       mean_distrib()
+  } else if (myfit$best.fitting[1] == "mirrorgamma") {
+    
+    
+    distribution <- map_dfc(
+      1:50, ~{ 100 - RGeode::rgammatr(50, A = myfit$mirrorgamma$shape,
+                                B = myfit$mirrorgamma$rate,
+                                range = c(mini, maxi)) %>% 
+          sort()}) %>% 
+      mean_distrib()
+    
+  } else if (myfit$best.fitting[1] == "mirrorlognormal") {
+    
+    distribution <- map_dfc(
+      1:50, ~{ 100 - EnvStats::rlnormTrunc(50, min = mini, max = maxi,
+                                     meanlog = myfit$mirrorlognormal$mean.log.X,
+                                     sdlog = myfit$mirrorlognormal$sd.log.X) %>% 
+          sort()}) %>% 
+      mean_distrib()
+    
   }
 
   

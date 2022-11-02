@@ -78,10 +78,8 @@ mod_box_distrib_ui <- function(id,
       
       plotOutput(ns("roulette"),
                  click = ns("location")),
-      p(em(
-        id = ns("t_distrib"), "Moyenne de la distribution :"
-      )),
-      textOutput(ns("mean_distrib")),
+      p(id = ns("t_distrib"),
+      htmlOutput(ns("mean_distrib"))),
       
       
       br(),
@@ -176,7 +174,9 @@ mod_box_distrib_server <- function(id,
     
     observeEvent(input$loi, {toggle("roulette")})
     observeEvent(input$loi, {toggle(id = "t_distrib")})
-    observeEvent(input$loi, {toggle("mean_distrib")})
+
+
+
     
     observeEvent(input$location, {
       rl$x <-input$location$x
@@ -204,8 +204,7 @@ mod_box_distrib_server <- function(id,
     })
     
     v_myfit <- reactive({
-      
-      fitdisti(mini = v_mini(),
+       fitdisti(mini = v_mini(),
                maxi = v_maxi(),
                v = v(),
                p = p())
@@ -213,12 +212,15 @@ mod_box_distrib_server <- function(id,
     
     
     distrib_man <-  reactive({
-      
+ 
       req(v_myfit())
-    
+      
       calc_distrib(myfit = v_myfit(),
                    mini = v_mini(),
                    maxi = v_maxi()) 
+        
+
+    
     })
     
     
@@ -237,26 +239,33 @@ mod_box_distrib_server <- function(id,
     }
     )
    
-    
-    text_mean <-  reactive({
-      
-  mean(distrib_finale())  %>%
-           round(., digits = 1)
 
-    })
-    
-    
-    output$mean_distrib <- renderText(
-      # mean(distrib_finale())  %>%
-      #   round(., digits = 1)
-      text_mean()
+
+    observe({
+
+      test_distrib <- "initialise"
+
+      if(!is.null(v_myfit())) {
+        test_distrib <- "go"
+      }
+
+    output$mean_distrib <- renderUI({
+            validate(
+        need(test_distrib == "go", "Oups ! J'ai encore besoin de jetons !")
+      )
      
-    )
-    
-    
-    
-    
-    
+     mean <- mean(distrib_finale())  %>%
+        round(., digits = 1)
+     
+     text <-"Moyenne de la distribution :"
+     
+     HTML(paste0(em(text), br(), mean))
+     
+      })
+        })
+
+
+
     
     # Aperçu de la distribution Shinyalert quand clique sur le bouton--------------
     
