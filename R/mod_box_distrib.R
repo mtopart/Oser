@@ -37,7 +37,7 @@ mod_box_distrib_ui <- function(id,
       )
     ),
     
-    
+
     box(
       title = uiOutput(ns("titre")),
       icon = tags$span(icon("question")) %>% 
@@ -77,7 +77,13 @@ mod_box_distrib_ui <- function(id,
       ),
       
       plotOutput(ns("roulette"),
-                 click = ns("location")),
+                 click = ns("location"))  %>% 
+        add_prompt(
+          message = "Plus il y a de jetons sur une valeur, plus celle-ci sera fréquente.
+          \n Vous n'êtes pas à un jeton près !", 
+          type = "info",
+          position = "top-left"
+        ),
       p(id = ns("t_distrib"),
       htmlOutput(ns("mean_distrib"))),
       
@@ -114,6 +120,7 @@ mod_box_distrib_server <- function(id,
                                    r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    
     
     
     # Sortie des fonctions de distribution    ----------------------------------
@@ -204,10 +211,21 @@ mod_box_distrib_server <- function(id,
     })
     
     v_myfit <- reactive({
-       fitdisti(mini = v_mini(),
-               maxi = v_maxi(),
-               v = v(),
-               p = p())
+      
+      myfit <- tryCatch({
+        this_fit <- fitdisti(mini = v_mini(),
+                             maxi = v_maxi(),
+                             v = v(),
+                             p = p())
+        if(is.null(this_fit)){
+          this_fit <- "Manque de points"
+        }
+        return(this_fit)
+      },
+      error = function(e) { return("Manque de points")}
+      )
+      
+      myfit
     })
     
     
@@ -215,9 +233,14 @@ mod_box_distrib_server <- function(id,
  
       req(v_myfit())
       
-      calc_distrib(myfit = v_myfit(),
-                   mini = v_mini(),
-                   maxi = v_maxi()) 
+      myfit <- v_myfit()
+      if (is.list(myfit)){
+        calc_distrib(myfit = myfit,
+                     mini = v_mini(),
+                     maxi = v_maxi()) 
+      } else {
+        NULL
+      }
         
 
     
@@ -228,7 +251,7 @@ mod_box_distrib_server <- function(id,
     ## Choix de la distribution finale en fonction du choix de l'utilisateur---------------
     
     distrib_finale <- reactive({
-      if (input$loi == TRUE) {
+      if (input$loi == TRUE && !is.null(distrib_man())) {
         distrib <- distrib_man()
       } else {
         distrib <- distrib_unif()
@@ -241,28 +264,22 @@ mod_box_distrib_server <- function(id,
    
 
 
-    observe({
 
-      test_distrib <- "initialise"
-
-      if(!is.null(v_myfit())) {
-        test_distrib <- "go"
-      }
 
     output$mean_distrib <- renderUI({
-            validate(
-        need(test_distrib == "go", "Oups ! J'ai encore besoin de jetons !")
-      )
-     
-     mean <- mean(distrib_finale())  %>%
-        round(., digits = 1)
-     
-     text <-"Moyenne de la distribution :"
-     
-     HTML(paste0(em(text), br(), mean))
+      if (input$loi){
+        myfit <- v_myfit()
+        text <- paste0(em("Oups ! J'ai encore besoin de jetons !"))
+        if (is.list(myfit)){
+          my_mean <- mean(distrib_finale())  %>%
+            round(., digits = 1)
+          text <- paste0(em("Moyenne de la distribution :"), br(), my_mean)
+        }
+        HTML(text)
+      }
      
       })
-        })
+       
 
 
 
