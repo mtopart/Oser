@@ -73,9 +73,9 @@ plot_elicit <- function(name,
        xlim=c(mini, maxi),
        ylim=c(-1, plotHeight),
        type="l",
-       ylab="Fréquence",
+       ylab="",
        xaxp=c(mini[1], maxi, nBins), 
-       main = paste("Total des jetons  :", sum(chips)),
+       main = paste0("Répartissez vos jetons (", sum(chips), ")"),
        xlab =  name)
   for(i in 1:nBins){
     lines(c(left[i],left[i]),
