@@ -25,7 +25,6 @@ mod_aide_distrib_ui <- function(id){
       
       p(id = ns("h1"), strong("Utilisation :")," Cliquez directement dans le graphique pour allouer un nombre de jetons à chaque intervalle. 
                            Cliquez juste en-dessous de la ligne du 0 de l'axe des y pour effacer une case."),
-      p(id= ns("h2"), "Si un message d'erreur ", strong("rouge")," apparait, le nombre de jetons est insuffisant pour faire le calcul."), 
       br(id = ns("h3")),
       p(id = ns("h4"), strong("Pour mieux comprendre :"), "Plus la barre est haute, plus la probabilité que la valeur de l'intervalle soit atteinte dans la distribution est élevée.
                            Inversement, s'il n'y a pas de jeton dans une barre verticale, la probabilité qu'il y ait une valeur dans l'intervalle est", strong(" faible, mais possible.") 
