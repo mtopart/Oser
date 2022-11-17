@@ -10,11 +10,14 @@ app_server <- function( input, output, session ) {
   
   r <- reactiveValues()
   
+  r$check_saisie <- "non"
+
+  
   # # List the first level callModules here
 
-  observeEvent(input$browser,{
-    browser()
-  })
+  # observeEvent(input$browser,{
+  #   browser()
+  # })
 
   
   # Mod distrib
@@ -42,9 +45,12 @@ app_server <- function( input, output, session ) {
   mod_tutoriel_server("tutoriel_ui_1")
   mod_apropos_server("apropos_ui_1")
   
+  mod_onglet_unit_server("onglet_unit_1",
+                         r = r,
+                         parent_session = session)
   
-  mod_gestion_unites_server("gestion_unites_1",
-                            r = r)
+  # mod_gestion_unites_server("gestion_unites_1",
+  #                           r = r)
   
   observeEvent(input$controlbarToggle, {
     updateControlbar(id = "controlbar")

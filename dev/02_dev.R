@@ -15,7 +15,7 @@
 
 ## Dependencies ----
 ## Add one line by package you want to add as dependency
-usethis::use_package( "scales" )
+usethis::use_package( "ranger" )
 
 ## Add modules ----
 ## Create a module infrastructure in R/

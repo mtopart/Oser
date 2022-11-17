@@ -15,8 +15,8 @@ app_ui <- function(request) {
     
     # #browser pour développement
 
-    actionButton("browser", "browser"),
-    tags$script("$('#browser');"),
+    # actionButton("browser", "browser"),
+    # tags$script("$('#browser');"),
 
     # Define this page as a dashboard page to signal we're using the     dashboard page format
     dashboardPage(
@@ -28,8 +28,9 @@ app_ui <- function(request) {
       fullscreen = TRUE,
       header = dashboardHeader(
         title = bs4DashBrand("Oser",
-                             color = NULL , href = NULL, image = NULL, opacity = 0.8),
-        actionButton(inputId = "controlbarToggle", label = "Gestion des unités", class = "mx-2")
+                             color = NULL , href = NULL, image = NULL, opacity = 0.8)
+        # ,
+        # actionButton(inputId = "controlbarToggle", label = "Gestion des unités", class = "mx-2")
       ),
       
       # Create our navigation menu that links to each of the tabs we defined
@@ -48,9 +49,24 @@ app_ui <- function(request) {
         sidebarMenu(
           id = "tabs",
           
-          menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
-                   menuSubItem(
-                     "Oser", icon = icon("arrow-right"), tabName = "oser")),
+          # menuItem("L'outil", icon = icon("dashboard"), startExpanded = TRUE,
+          #          menuSubItem(
+          #            "Saisie", icon = icon("arrow-right"), tabName = "saisie_unit"),
+          #          menuSubItem(
+          #            "Oser", 
+          #            icon = icon("arrow-right"), 
+          #            tabName = "oser")),
+          
+          menuItem("Pour commencer", 
+                   icon = icon("arrow-right"), 
+                   tabName = "saisie_unit"),
+          
+          menuItem("L'outil", 
+                   icon = icon("dashboard"), 
+                   tabName = "oser"
+                   # ,
+                   # condition = "r.check_saisie == oui"
+                   ),
           
           menuItem("Tutoriels", icon = icon("tools"), tabName = "tuto"),
           menuItem("A propos", icon = icon("th"), tabName = "apropos")
@@ -66,6 +82,8 @@ app_ui <- function(request) {
       
       body = dashboardBody(
         tabItems(
+          tabItem("saisie_unit", 
+                    mod_onglet_unit_ui("onglet_unit_1")),
           
           tabItem("oser", 
                   
@@ -150,7 +168,7 @@ app_ui <- function(request) {
          #collapsed = FALSE,
         overlay = FALSE,
         width = 500,
-         mod_gestion_unites_ui("gestion_unites_1")
+         # mod_gestion_unites_ui("gestion_unites_1")
           )
           )
       )
