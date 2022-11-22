@@ -57,7 +57,15 @@ mod_graph_final_ui <- function(id){
       
       ## Choix graph--------------------------------------------------
       fluidRow(
+        column( 4,
+               p( style = "font-style: italic",
+                  "Pour positionner les valeurs seuils, cliquez sur")),
+        
+        column(8,
+               icon("cogs")),
+        
         column(6,
+               br(),
                radioGroupButtons(
                  inputId = ns("choix_graph"),
                  label = "Choix du graphique",
@@ -93,20 +101,21 @@ mod_graph_final_ui <- function(id){
              ),
       column(4,
              style = "background: #f2f2f2;",
-       selectInput(inputId = ns("idSelect_mat"), label = "Selectionner la variable fixe ", selected = 3,
+       selectInput(inputId = ns("idSelect_mat"), label = "Selectionnez la variable fixe ", selected = 3,
                          choices = c("Production" = 1, "Prix" = 2, "Charges" = 3)),
        
        numericInput(inputId = ns("charges_mat"),
-                    label = paste0("Niveau de charges"),
+                    label = paste0("Précisez le niveau de charges souhaité"),
                     value = uiOutput(ns("charges_moy_UI"))),
        
        numericInput(inputId = ns("prod_mat"),
-                    label = paste0("Niveau de production"),
+                    label = paste0("Précisez le niveau de production souhaité"),
                     value = uiOutput(ns("prod_moy_UI"))),
        
        numericInput(inputId = ns("prix_mat"),
-                    label = paste0("Niveau de prix"),
-                    value = uiOutput(ns("prix_moy_UI")))
+                    label = paste0("Précisez le niveau de prix souhaité"),
+                    value = uiOutput(ns("prix_moy_UI"))),
+       p(style = "font-style: italic","(Par défaut, moyenne)")
       
       )),
       
@@ -153,24 +162,24 @@ fluidRow(
 
 hr(),
 
-# prettyCheckbox(
-#   inputId = ns("coche_quart"),
-#   label = "Quartiles",
-#   value = FALSE,
-#   icon = icon("check"),
-#   status = "success"
-# ),
-
-prettyToggle(
+prettyCheckbox(
   inputId = ns("coche_quart"),
-  label_on = "Quartiles affichés",
-  status_on = "default",
-  icon_on = icon("ok-circle", lib = "glyphicon"),
-  label_off = "Sans quartiles",
-  status_off = "default",
-  icon_off = icon("remove-circle", lib = "glyphicon"),
-  plain = TRUE,
-  inline = FALSE),
+  label = "Quartiles",
+  value = FALSE,
+  icon = icon("check"),
+  status = "success"
+),
+
+# prettyToggle(
+#   inputId = ns("coche_quart"),
+#   label_on = "Quartiles affichés",
+#   status_on = "default",
+#   icon_on = icon("ok-circle", lib = "glyphicon"),
+#   label_off = "Sans quartiles",
+#   status_off = "default",
+#   icon_off = icon("remove-circle", lib = "glyphicon"),
+#   plain = TRUE,
+#   inline = FALSE),
 
 htmlOutput(ns("texte")),
 
@@ -180,9 +189,12 @@ hr(),
 
 
 
+strong(style = "color:red ;font-size: 20px;
+                                 font-style: italic","En construction"),
+
 actionBttn(
   inputId = ns("select_graph"),
-  label = "Sélectionner le graphique", 
+  label = "Sélectionnez le graphique", 
   style = "bordered",
   color = "success"
 ),
@@ -266,25 +278,25 @@ mod_graph_final_server <- function(id,
   graph_titre <- reactive({
       if(is.null(r$solde) ){
         "Répartition du solde choisi" } else {
-          paste("Répartition de", r$solde, sep = " " )
+          paste("Répartition du solde", r$solde, sep = " " )
         } 
     }) 
     
     
     graph_axe_titre_x <- reactive({
       if(is.null(r$solde) & is.null(r$unit$solde) ){
-        "Valeurs du solde choisi (marge, EBE, revenu, ...) (en € ou k€)" } else {
-          paste("Valeurs de", r$solde , "en", r$unit_solde , sep = " " )
+        "Solde (en € ou k€)" } else {
+          paste( r$solde,  sep = " " )
         } 
     })   
     
     
-    graph_axe_titre_y <- reactive({
-      if(is.null(r$solde) ){
-        "Fréquence des valeurs" } else {
-          paste("Fréquence des valeurs de", r$solde,  sep = " " )
-        } 
-    }) 
+    # graph_axe_titre_y <- reactive({
+    #   if(is.null(r$solde) ){
+    #     "Fréquence" } else {
+    #       paste("Fréquence des valeurs de", r$solde,  sep = " " )
+    #     } 
+    # }) 
     
     
     ## Histogramme de base ----------------------------
@@ -306,7 +318,7 @@ mod_graph_final_server <- function(id,
           title = graph_titre(),
           subtitle = "Répartition de la marge ",
           x = graph_axe_titre_x(),
-          y = graph_axe_titre_y(),
+          y = "Fréquence",
           fill = ""
         ) +
         theme_bw() +
@@ -431,7 +443,7 @@ mod_graph_final_server <- function(id,
       
     
     ## Matrice--------------------------------------------------------
-    
+  
 
     tbl_matrice <- reactive({
       
@@ -493,9 +505,9 @@ mod_graph_final_server <- function(id,
        g + 
         labs(
           title = case_when(
-            input$idSelect_mat == 3 ~ "Marge en fonction du prix et de la production",
-            input$idSelect_mat == 2 ~ "Marge en fonction des charges et de la production",
-            input$idSelect_mat == 1 ~ "Marge en fonction du prix et des charges"
+            input$idSelect_mat == 3 ~ titre_mat_3(),
+            input$idSelect_mat == 2 ~ titre_mat_2(),
+            input$idSelect_mat == 1 ~ titre_mat_1()
           ),
           x = case_when(
             input$idSelect_mat == 3 ~ "Production",
@@ -733,16 +745,42 @@ observe({
   ## Gestion du titre--------------------------------------------------
       
       
+      
       gest_text <- reactive({
         
           if(is.null(r$solde)){
             "Conséquences sur le solde choisi (marge, EBE, revenu...)" } else {
-              paste("Conséquences sur ",  r$solde, sep = "" )
+              paste("Conséquences sur le solde ",  r$solde, sep = "" )
             } 
         
       })
       
       output$titre <- renderUI( gest_text()   )  
+      
+      
+      
+      ### Matrice
+      
+      titre_mat_3 <- reactive({
+        if(is.null(r$solde)){
+          "Solde en fonction du prix et de la production" } else {
+            paste0(r$solde, " en fonction du prix et de la production") } 
+      })
+      
+      titre_mat_2 <- reactive({
+        if(is.null(r$solde)){
+          "Solde en fonction des charges et de la production" } else {
+            paste0(r$solde, " en fonction des charges et de la production") } 
+        
+      })
+      
+      titre_mat_1 <- reactive({
+        if(is.null(r$solde)){
+          "Solde en fonction du prix et des charges" } else {
+            paste0(r$solde, " en fonction du prix et des charges") } 
+        
+      })
+      
       
       
       
@@ -782,14 +820,14 @@ observe({
   # })
       
    
-  output$dl_graph <- downloadHandler(
-    filename = function() {
-      paste0("graphiques", Sys.Date(), ".docx")
-    },
-    content = function(file) {
-      print(doc(), target = file)
-    }
-  )  
+  # output$dl_graph <- downloadHandler(
+  #   filename = function() {
+  #     paste0("graphiques", Sys.Date(), ".docx")
+  #   },
+  #   content = function(file) {
+  #     print(doc(), target = file)
+  #   }
+  # )  
   #     
   # doc() %>%
   #      print(target = tempfile(fileext = ".docx")) %>%

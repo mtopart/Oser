@@ -40,12 +40,12 @@ mod_box_distrib_ui <- function(id,
 
     box(
       title = uiOutput(ns("titre")),
-      icon = tags$span(icon("question")) %>% 
-        add_prompt(
-          position = "right",
-          message = def_help_text(type),  # Fonction pour modifier le message d'aide en fonction du type de variable
-          type = "info"
-        ),
+      # icon = tags$span(icon("question")) %>% 
+      #   add_prompt(
+      #     position = "right",
+      #     message = def_help_text(type),  # Fonction pour modifier le message d'aide en fonction du type de variable
+      #     type = "info"
+      #   ),
       width = 4,
       
       
@@ -252,13 +252,17 @@ mod_box_distrib_server <- function(id,
     
     distrib_finale <- reactive({
       if (input$loi == TRUE && !is.null(distrib_man())) {
-        distrib <- distrib_man()
-      } else {
-        distrib <- distrib_unif()
+        distrib <- distrib_man() %>%
+          round(., digits = 1) %>%
+          sort()
+      } else   if (input$loi == TRUE && is.null(distrib_man())) {
+        distrib <- "Oser a besoin de jetons supplémentaires pour déterminer une distribution"
+      } else{
+        distrib <- distrib_unif()%>%
+          round(., digits = 1) %>%
+          sort()
       }
-      distrib %>%
-        round(., digits = 1) %>%
-        sort()
+      distrib 
     }
     )
    
@@ -289,7 +293,9 @@ mod_box_distrib_server <- function(id,
     observeEvent(input$button_distrib, {
       #   # Show a modal when the button is pressed
       
-      distrib <- distrib_finale()
+     req(distrib_finale())
+      
+       distrib <- distrib_finale()
       
       output$distrib<- renderPrint(distrib)
       
