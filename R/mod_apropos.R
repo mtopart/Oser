@@ -13,6 +13,8 @@ mod_apropos_ui <- function(id){
     box(
       title = "A propos",
       width = 12,
+      p("Page en construction", style = "color:red ;font-size: 20px;
+                                 font-style: italic"),
       strong("Outil conçu dans le cadre du projet Strat&co", em("Evaluation écononomique et accompagnement stratégique"),
              tags$img(src = "www/logo.jpg", width = "10%")),
       tags$img(src = "www/bandeau4.jpg", width = "70%"),
