@@ -65,7 +65,7 @@ app_ui <- function(request) {
                    icon = icon("dashboard"), 
                    tabName = "oser"
                    # ,
-                   # condition = "r.check_saisie == oui"
+                   # condition = "??"
                    ),
           
           menuItem("Tutoriels", icon = icon("tools"), tabName = "tuto"),
