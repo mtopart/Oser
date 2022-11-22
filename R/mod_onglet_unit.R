@@ -15,27 +15,29 @@ mod_onglet_unit_ui <- function(id) {
     tags$style(
       type = "text/css",
       "#inline label{ display: table-cell;
-                  font-family:  Cabin Sketch; vertical-align: middle;}
+                   vertical-align: middle;}
                  #inline .form-group { display: table-row;}"
     ) ),
+    
+    #font-family:  Cabin Sketch;
   
   fluidPage(fluidRow(
     # A propos
     column(
-      4,
+      6,
       wellPanel(
         style = "
                 border-left: 6px solid #2196F3!important;
                 background: white;",
 
-        p("  A propos à rédiger"),
+        img(src = "www/apropos.jpg", width = "95%"),
         
 
       )
     ),
 
     column(
-      8,
+    6,
       style = "background: white;",
       tags$div(
         id = "inline",
@@ -69,9 +71,10 @@ mod_onglet_unit_ui <- function(id) {
           id = ns("p4"),
           br(),
         textOutput(ns("text1")) %>% 
-          tagAppendAttributes(style ="font-family:  Cabin Sketch;"),
-        p(style ="font-family:  Cabin Sketch;",
+          tagAppendAttributes(style ="color:blue;"),
+        p(style =" color:blue;",
           "Le solde obtenu sera différent en fonction du type de charges rentrées dans le calculateur."),
+        br(),
         
         selectInput(
           ns("val_unit_solde"),  ## val_unit_solde----------
@@ -84,8 +87,9 @@ mod_onglet_unit_ui <- function(id) {
           )
         ),
         textInput(ns("val_unit_sautre"), "Solde choisi"), ## val_unit_sautre----------
-        textOutput(ns("text2")) %>% 
-          tagAppendAttributes(style ="font-family:  Cabin Sketch;")
+        textOutput(ns("text2")) 
+        # %>% 
+        #   tagAppendAttributes(style ="font-family:  Cabin Sketch;")
       ),
       
       # column(
@@ -156,7 +160,7 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     d <-  if(input$val_unit_solde == "autre"){ val_unit_sautre
     } else { input$val_unit_solde }
     
-    paste0(d, " en ", input$val_unit_e )
+    paste0(d, " en (", input$val_unit_e,")" )
       
     })  
     
