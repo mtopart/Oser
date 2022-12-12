@@ -43,7 +43,10 @@ mod_graph_final_ui <- function(id){
     box(
       title = uiOutput(ns("titre")),
       width = 12,
-      icon = tags$span(icon("question"))
+      icon = 
+        # tooltip( tags$span(icon("question")),
+        #               title = "Voir onglet 'Tutoriels' - en construction"),
+        tags$span(icon("question"))
       %>%
         add_prompt(
           position = "right",
@@ -57,12 +60,9 @@ mod_graph_final_ui <- function(id){
       
       ## Choix graph--------------------------------------------------
       fluidRow(
-        column( 4,
-               p( style = "font-style: italic",
-                  "Pour positionner les valeurs seuils, cliquez sur")),
-        
-        column(8,
-               icon("cogs")),
+        column(12,
+        div("Pour positionner les valeurs seuils, cliquez sur", 
+            icon("cogs", style = "color:grey;") )),
         
         column(6,
                br(),
@@ -119,6 +119,15 @@ mod_graph_final_ui <- function(id){
       
       )),
       
+      fluidRow(
+       column(6,
+              htmlOutput(ns("texte") 
+              )),
+       column(6,
+              br(),
+              textOutput(ns("texte_pourcent"))
+             )
+      ),
       # Gestion de la sidebar------------------------------
       sidebar = boxSidebar(
         id = ns("sidebar"),
@@ -154,9 +163,9 @@ fluidRow(
    numericInput(ns("s_att"), 
                 "Solde attendu",
                 500,
-                width ='100%' )),
+                width ='100%' ))
    
-   textOutput(ns("texte_pourcent")) 
+   
    
    )),
 
@@ -181,7 +190,7 @@ prettyCheckbox(
 #   plain = TRUE,
 #   inline = FALSE),
 
-htmlOutput(ns("texte")),
+
 
 br(),
 br(),
@@ -392,7 +401,8 @@ mod_graph_final_server <- function(id,
       })
  
     output$graphique_hist <- renderPlotly({
-      ggplotly(graph_hist()) %>%    
+      ggplotly(graph_hist(),
+               tooltip = "solde") %>%    
         config(
           modeBarButtonsToRemove = c('lasso2d',
                                      'zoomIn2d',
@@ -420,7 +430,7 @@ mod_graph_final_server <- function(id,
             visible = T
           ),
           x0 = 'Solde',
-          hoverinfo = "y"
+          hoverinfo = 'y'
         ) %>% 
         layout(
           yaxis = list(
@@ -450,6 +460,7 @@ mod_graph_final_server <- function(id,
       req(result())
       
       if(input$idSelect_mat == 3){   # ici charges sont fixes et on fait varier prod et prix
+        req(input$charges_mat)
         
         expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
           mutate(
@@ -463,7 +474,7 @@ mod_graph_final_server <- function(id,
           ungroup()  
         
       } else if(input$idSelect_mat == 2){ # ici prix fixe et on fait varier prod et charges
-        
+        req(input$prix_mat)
         
         expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_charges) %>%
           mutate(
@@ -477,7 +488,7 @@ mod_graph_final_server <- function(id,
           ungroup() 
         
       } else if(input$idSelect_mat == 1){ # ici prod fixe et on fait varier prix et charges
-        
+        req(input$prod_mat)
         
         expand.grid(col1 = r$dist_pr_graph_prix, col2 = r$dist_pr_graph_charges) %>%
           mutate(
@@ -654,9 +665,9 @@ mod_graph_final_server <- function(id,
       #       c("1/4 des valeurs de l'échantillon sont inférieures à"), round(descript$q1), c("euros et 1/4 sont supérieures à"), round(descript$q3), c("euros."),
       #       sep = " ")
       
-      moy <- paste0(c("Moyenne = " ), round(descript$moy), c(" € ou K€"))
-      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), c(" € ou K€"))
-      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), c(" euros.") )
+      moy <- paste0(c("Moyenne = " ), round(descript$moy), r$solde)
+      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), r$solde)
+      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), r$solde)
       
       HTML(paste(moy, med, q, sep = '<br/>'))
       
@@ -738,9 +749,11 @@ observe({
   toggle(id= "charges_mat", condition = input$idSelect_mat == 3 )
   toggle(id = "prix_mat", condition = input$idSelect_mat == 2 )
   toggle(id = "prod_mat", condition = input$idSelect_mat == 1 )
-  
+  toggle(id = "texte", condition = input$choix_graph %in% c("histo", "bam"))
+
 })
 
+  
       
   ## Gestion du titre--------------------------------------------------
       
