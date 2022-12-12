@@ -23,17 +23,17 @@ app_server <- function( input, output, session ) {
   # Mod distrib
   
   mod_box_distrib_server("box_distrib_ui_1",
-                         graph_title = "Répartition de la production",
+                         graph_title = "Production",
                          type = "production",
                          r = r)
   
   mod_box_distrib_server("box_distrib_ui_2",
-                         graph_title = "Répartition du prix",
+                         graph_title = "Prix",
                          type = "prix",
                          r = r)
   
   mod_box_distrib_server("box_distrib_ui_3",
-                         graph_title = "Répartition des charges",
+                         graph_title = "Charges",
                          type = "charges",
                          r = r)
   
