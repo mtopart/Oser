@@ -24,4 +24,8 @@ menu_tab <- function(v_obs) {
   )
   })
   
-  }
+}
+
+
+menu_to_hide <- menuItem("L'outil", icon = icon("dashboard"), tabName = "oser")
+menu_to_hide$attribs$style <- "display: none";
