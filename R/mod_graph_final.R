@@ -125,7 +125,7 @@ mod_graph_final_ui <- function(id){
               )),
        column(6,
               br(),
-              textOutput(ns("texte_pourcent"))
+              htmlOutput(ns("texte_pourcent"))
              )
       ),
       # Gestion de la sidebar------------------------------
@@ -138,57 +138,47 @@ mod_graph_final_ui <- function(id){
         
        prettyCheckbox(
          inputId = ns("coche_confort"),
-         label = "Zone de confort",
+         label = "Afficher la zone de confort",
          value = FALSE,
          icon = icon("check"),
          status = "success"
        ),
-       
 
-         
+
+
     wellPanel(id = ns("zone_conf"),
-              
+
 fluidRow(
-              
-    column(   
+
+    column(
       width = 6,
-              
-   numericInput(ns("s_mini"), 
-                "Solde minimum", 
+
+   numericInput(ns("s_mini"),
+                "Solde minimum",
                 1,
                 width ='100%' )),
-   
-   column(   
+
+   column(
      width = 6,
-   numericInput(ns("s_att"), 
+   numericInput(ns("s_att"),
                 "Solde attendu",
                 500,
                 width ='100%' ))
-   
-   
-   
+
+
+
    )),
 
 hr(),
 
 prettyCheckbox(
   inputId = ns("coche_quart"),
-  label = "Quartiles",
+  label = " Afficher les quartiles",
   value = FALSE,
   icon = icon("check"),
   status = "success"
 ),
 
-# prettyToggle(
-#   inputId = ns("coche_quart"),
-#   label_on = "Quartiles affichés",
-#   status_on = "default",
-#   icon_on = icon("ok-circle", lib = "glyphicon"),
-#   label_off = "Sans quartiles",
-#   status_off = "default",
-#   icon_off = icon("remove-circle", lib = "glyphicon"),
-#   plain = TRUE,
-#   inline = FALSE),
 
 
 
@@ -203,16 +193,13 @@ strong(style = "color:red ;font-size: 20px;
 
 actionBttn(
   inputId = ns("select_graph"),
-  label = "Sélectionnez le graphique", 
+  label = "Sélectionnez le graphique",
   style = "bordered",
   color = "success"
 ),
 br(),
 br(),
 downloadButton(ns("dl_graph"), "Télécharger le récapitulatif")
-
-
-
 
       )  
     )    
@@ -300,12 +287,6 @@ mod_graph_final_server <- function(id,
     })   
     
     
-    # graph_axe_titre_y <- reactive({
-    #   if(is.null(r$solde) ){
-    #     "Fréquence" } else {
-    #       paste("Fréquence des valeurs de", r$solde,  sep = " " )
-    #     } 
-    # }) 
     
     
     ## Histogramme de base ----------------------------
@@ -660,14 +641,10 @@ mod_graph_final_server <- function(id,
 
       descript <- descript()
       
-      # paste(c("La moyenne de l'échantillon calculé est de"), round(descript$moy), c("euros."),
-      #       c("La médiane coupe l'échantillon en deux parties contenant le même nombre de valeurs. Elle est de"), round(descript$mediane), c("euros."),
-      #       c("1/4 des valeurs de l'échantillon sont inférieures à"), round(descript$q1), c("euros et 1/4 sont supérieures à"), round(descript$q3), c("euros."),
-      #       sep = " ")
       
-      moy <- paste0(c("Moyenne = " ), round(descript$moy), r$solde)
-      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), r$solde)
-      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), r$solde)
+      moy <- paste0(c("Moyenne du solde (") ,r$select_solde, c(") ="), round(descript$moy), r$unit_e)
+      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), r$unit_e)
+      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), r$unit_e)
       
       HTML(paste(moy, med, q, sep = '<br/>'))
       
@@ -682,7 +659,7 @@ mod_graph_final_server <- function(id,
     nb_result <- nrow(result())
 
     nb_mini <- result() %>%
-      filter(solde  > input$s_mini) %>%
+      filter(solde  < input$s_mini) %>%
       nrow()
 
     pc_mini <- nb_mini*100/nb_result
@@ -712,16 +689,19 @@ mod_graph_final_server <- function(id,
       
 
       
-      output$texte_pourcent <- renderText({
+      output$texte_pourcent <- renderUI({
 
     mini <- pc_mini()
-
     att <- pc_att()
+    moy <- 100 - mini - att
+    
+    p1 <- paste0(mini, c(" % des valeurs en-dessous de "), input$s_mini, (" "), r$unit_e)
+    
+    p2 <-paste0(moy, c(" % des valeurs entre "), input$s_mini, (" et "), input$s_att, (" "), r$unit_e )
+      
+    p3 <-paste0(att, c(" % des valeurs au-dessus de "), input$s_att,(" "), r$unit_e)
 
-    paste( mini, c("% des valeurs sont au-dessus du solde minimum défini et"),
-           att, c("% des valeurs sont au-dessus du solde attendu défini"),
-           sep = " ")
-
+    HTML(paste(p1, p2, p3, sep = '<br/>'))
 
       })
       
@@ -741,7 +721,7 @@ mod_graph_final_server <- function(id,
 
 
 observe({
-  toggle(id = "zone_conf", condition = input$coche_confort)
+  toggle(id = "texte_pourcent", condition = input$coche_confort)
   toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
   toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
   toggle(id= "graphique_rg", condition = input$choix_graph == "rg")
@@ -753,7 +733,10 @@ observe({
 
 })
 
-  
+  observe({
+    req(result())
+    updateBoxSidebar("sidebar")
+  })
       
   ## Gestion du titre--------------------------------------------------
       

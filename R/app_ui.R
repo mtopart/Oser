@@ -179,7 +179,7 @@ app_ui <- function(request) {
          #collapsed = FALSE,
         overlay = FALSE,
         width = 500,
-         mod_gestion_unites_ui("gestion_unites_1")
+        mod_unites_secondaire_ui("gestion_unites_1")
           )
           )
       )

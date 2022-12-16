@@ -39,6 +39,7 @@ mod_onglet_unit_ui <- function(id) {
     column(
     6,
       style = "background: white;",
+      h4("Avant de me lancer..."),
       tags$div(
         id = "inline",
 
@@ -157,10 +158,10 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
   
     unit_solde <- reactive({
       
-    d <-  if(input$val_unit_solde == "autre"){ val_unit_sautre
+    d <-  if(input$val_unit_solde == "autre"){ input$val_unit_sautre
     } else { input$val_unit_solde }
     
-    paste0(d, " en (", input$val_unit_e,")" )
+    paste0(d, " (en ", input$val_unit_e,")" )
       
     })  
     
@@ -172,20 +173,24 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     
     observeEvent( input$button_v_oser, {
       
-      r$check_saisie <- "oui"
-      
        r$button_unit <- input$button_v_oser
 
        r$echelle <- input$val_echelle
        r$unit_prix <- unit_prix()
+       r$unit_prix_p <- input$val_unit_p
        r$unit_prod <- input$val_unit_prod
-       r$unit_ch <-   input$val_unit_e
+       r$unit_e <-   input$val_unit_e
        r$solde <- unit_solde()
+       r$select_solde <- input$val_unit_solde
 
+       session$sendCustomMessage("toggle-tab-item", "oser")
+       
        updateTabItems(session = parent_session,
                       "tabs",
                       selected = "oser")
     })  
+    
+
     
     
     

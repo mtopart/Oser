@@ -79,10 +79,11 @@ mod_box_distrib_ui <- function(id,
       plotOutput(ns("roulette"),
                  click = ns("location"))  %>% 
         add_prompt(
-          message = "Plus il y a de jetons sur une valeur, plus celle-ci sera fréquente.
+          message = "Pour vous aider : un jeton peut représenter une unité de temps. \n\r (année, semaine, mois..). Amusez-vous et testez !!
+          \n Plus il y a de jetons sur une valeur, plus celle-ci sera fréquente.
           \n Vous n'êtes pas à un jeton près !", 
           type = "info",
-          position = "top-left"
+          position = "top"
         ),
       p(id = ns("t_distrib"),
       htmlOutput(ns("mean_distrib"))),
@@ -410,10 +411,10 @@ mod_box_distrib_server <- function(id,
           } 
         
       }     else if(type == "charges"){
-        if(is.null(r$unit_ch)){
+        if(is.null(r$unit_e)){
           "Charges" } else {
             HTML(paste("Charges (",  
-                       em(r$unit_ch), 
+                       em(r$unit_e), 
                        em(" à l'échelle "),  
                        em(r$echelle),
                        em(")"), sep ="" ))

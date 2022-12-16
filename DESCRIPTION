@@ -42,7 +42,8 @@ Imports:
     tidyselect,
     officer,
     scales,
-    ranger
+    ranger,
+    waiter
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 
