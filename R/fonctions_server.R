@@ -289,4 +289,72 @@ mean_distrib <- function(tableau) {
 
 
 
+#' @importFrom dplyr arrange
+
+
+test_tabl <- function(nom_solde,
+                      result,
+                      seuil_mini,
+                      seuil_att,
+                      unite_euros,
+                      unite_prix,
+                      unite_prod
+                      ){
+  
+
+  nb_result <- nrow(result)
+  
+  pc_mini <- ((result %>% 
+                 filter(solde  < seuil_mini ) %>% 
+                 nrow())*100/nb_result) %>% 
+    round(.,digits = 1)
+  
+  
+  pc_att <- ((result %>%
+                filter(solde  > seuil_att) %>%
+                nrow())*100/nb_result)%>% 
+    round(.,digits = 1)
+  
+  
+  tabl <- round(result, digits = 0) %>% 
+    mutate(
+      group_solde = case_when(
+        solde < seuil_mini ~ paste(nom_solde, "< à", seuil_mini, unite_euros, sep = " " ),
+        solde > seuil_att ~ paste(nom_solde, "> à", seuil_att, unite_euros, sep = " "),
+        TRUE  ~ paste(nom_solde, "> à", seuil_mini, "et < à", seuil_att, unite_euros, sep = " ")
+      )) %>% 
+    group_by(group_solde)  %>% 
+    mutate(
+      mini_prod = min(production),
+      maxi_prod = max(production),
+      mini_prix = min(prix),
+      maxi_prix = max(prix),
+      mini_charges = min(charges),
+      maxi_charges = max(charges)
+    )  %>% 
+    select(-c(1:4)) %>% 
+    ungroup()  %>% 
+    unique() %>% 
+    arrange(group_solde) %>% 
+    mutate(
+      pourcent = c(pc_mini, (100 - pc_mini - pc_att), pc_att ),
+      Production = paste("De", mini_prod, "à", maxi_prod, unite_prod, sep = " "),
+      Prix = paste("De", mini_prix, "à", maxi_prix, unite_prix, sep = " "),
+      Charges = paste("De", mini_charges, "à", maxi_charges, unite_euros, sep = " ")
+    ) %>% 
+    select(- starts_with("m")) %>% 
+    t()  
+  
+  tabl <- data.frame(tabl)
+  
+  names(tabl) <- tabl[1,]
+  
+  tabl <- tabl[-c(1),]
+  
+  row.names(tabl) <- c("% des valeurs", "Production", "Prix", "Charges")  
+  
+  return(tabl)
+  
+}
+
 
