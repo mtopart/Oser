@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList downloadHandler downloadButton
-#' @importFrom plotly ggplotly plotlyOutput renderPlotly plot_ly add_segments add_trace layout config style  add_annotations
+#' @importFrom plotly ggplotly plotlyOutput renderPlotly event_data plot_ly add_segments add_trace layout config style  add_annotations
 #' @importFrom tidyr crossing
 #' @importFrom tibble tibble rownames_to_column
 #' @importFrom shinyjs toggle useShinyjs
@@ -17,6 +17,7 @@
 #' @import ggplot2 
 #' @importFrom officer read_docx body_add_gg body_add_par
 #' @importFrom scales percent
+#' @importFrom rlang :=
 #' @importFrom ranger ranger
 #' 
 
@@ -51,8 +52,7 @@ mod_graph_final_ui <- function(id){
         add_prompt(
           position = "right",
           message = "Voir onglet 'Tutoriels' - en construction",
-          type = "info")
-      ,
+          type = "info") ,
       
 
 
@@ -90,6 +90,8 @@ mod_graph_final_ui <- function(id){
                plotlyOutput(ns("graphique_hist")),
                plotlyOutput(ns("graphique_bam"))
                # ,
+               # verbatimTextOutput(ns("se"))
+               # ,
                # plotOutput(ns("graphique_rg"))
       )),
       
@@ -120,12 +122,14 @@ mod_graph_final_ui <- function(id){
       )),
       
       fluidRow(
-       column(6,
+       column(5,
+              br(),
+              br(),
               htmlOutput(ns("texte") 
               )),
-       column(6,
+       column(7,
               br(),
-              htmlOutput(ns("texte_pourcent"))
+              tableOutput(ns("sortie_tabl"))
              )
       ),
       # Gestion de la sidebar------------------------------
@@ -254,19 +258,25 @@ mod_graph_final_server <- function(id,
 
     })
     
-    
-    # calc_rg  <- reactive({
-    #   req(result())
-    #   
-    #   model <- ranger(
-    #     result()[,4] ~ .,
-    #     data = result()[,-4],
-    #     num.trees =  500,
-    #     importance = "impurity"
-    #   )
-    #   
-    # })
-    
+    ##### Ranger------
+#     calc_rg  <- reactive({
+#       req(result())
+# 
+# model <- ranger(
+#         result()[,4] ~ .,
+#         data = result()[,-4],
+#         num.trees =  500,
+#         importance = "impurity"
+#       )
+# as.data.frame(model$variable.importance) %>%
+#       rownames_to_column("nom") %>%
+#       rename("value" = `model$variable.importance`)%>%
+#       mutate(
+#         resultat = value / sum(value) # pourcentage
+#       )
+# 
+#     })
+
     
 # Définition des graphiques -------------------------
     
@@ -382,14 +392,32 @@ mod_graph_final_server <- function(id,
       })
  
     output$graphique_hist <- renderPlotly({
-      ggplotly(graph_hist(),
-               tooltip = "solde") %>%    
+      w <- ggplotly(graph_hist()
+               #      ,
+               # tooltip = c("Solde", "y")
+               ) %>% 
+        layout(dragmode = "select") %>%   
         config(
           modeBarButtonsToRemove = c('lasso2d',
                                      'zoomIn2d',
                                      'zoomOut2d',
                                      'autoScale2d')
         )
+      
+      w$x$data[[1]]$text <- paste(r$solde2, "=", w$x$data[[1]]$x, r$unit_e,
+                                  "<br>",  round(w$x$data[[1]]$y * 100, digits = 2 ) , "% des valeurs" )
+      
+      if(input$coche_confort){
+      w$x$data[[2]]$text <- paste(r$solde2, "=", w$x$data[[2]]$x, r$unit_e,
+                                  "<br>",  round(w$x$data[[2]]$y * 100, digits = 2 ) , "% des valeurs" )
+      
+      w$x$data[[3]]$text <- paste(r$solde2, "=", w$x$data[[3]]$x, r$unit_e,
+                                  "<br>",  round(w$x$data[[3]]$y * 100, digits = 2 ) , "% des valeurs" )
+      }
+      
+      w
+      
+      
     })           
 
    
@@ -434,64 +462,107 @@ mod_graph_final_server <- function(id,
       
     
     ## Matrice--------------------------------------------------------
-  
+    col1_n <- reactive({
+      
+      req(result())
+      nom <- case_when(
+        input$idSelect_mat == 3 ~ "Production",
+        input$idSelect_mat == 2 ~ "Production",
+        input$idSelect_mat == 1 ~ "Prix"
+      )
+      
+      unit <- case_when(
+        input$idSelect_mat == 3 ~ r$unit_prod,
+        input$idSelect_mat == 2 ~ r$unit_prod,
+        input$idSelect_mat == 1 ~ r$unit_prix
+      )
+      
+      paste0(nom, " en (", unit,  ") ")
+    })
+    
+    col2_n <- reactive({
+      req(result())
+      
+      nom <- case_when(
+        input$idSelect_mat == 3 ~ "Prix",
+        input$idSelect_mat == 2 ~ "Charges",
+        input$idSelect_mat == 1 ~ "Charges"
+      )
+      
+      unit <- case_when(
+        input$idSelect_mat == 3 ~ r$unit_prix,
+        input$idSelect_mat == 2 ~ r$unit_e,
+        input$idSelect_mat == 1 ~ r$unit_e
+      )
+      
+      paste0(nom, " en (", unit,  ") ")
+    })
 
+    
+    marge_n <- reactive({
+      req(result())
+      
+      r$solde
+    })
+    
     tbl_matrice <- reactive({
       
       req(result())
       
+      col1 <- col1_n()
+      col2 <- col2_n()
+      marge <- marge_n()
+      
+      
       if(input$idSelect_mat == 3){   # ici charges sont fixes et on fait varier prod et prix
         req(input$charges_mat)
-        
-        expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
+
+        tbl_m <- expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
           mutate(
             marge = col1 * col2 - input$charges_mat
-            # ,
-            # col1 = as.factor(col1),
-            # col2 = as.factor(col2)
           ) %>%
-          group_by(col1, col2) %>%
-          unique()  %>%
-          ungroup()  
-        
+          unique()
+
       } else if(input$idSelect_mat == 2){ # ici prix fixe et on fait varier prod et charges
         req(input$prix_mat)
-        
-        expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_charges) %>%
+
+        tbl_m <- expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_charges) %>%
           mutate(
             marge = col1 * input$prix_mat - col2
-            # ,
-            # col1 = as.factor(col1),
-            # col2 = as.factor(col2)
           ) %>%
-          group_by(col1, col2) %>%
-          unique()  %>%
-          ungroup() 
-        
+          unique()
+
       } else if(input$idSelect_mat == 1){ # ici prod fixe et on fait varier prix et charges
         req(input$prod_mat)
-        
-        expand.grid(col1 = r$dist_pr_graph_prix, col2 = r$dist_pr_graph_charges) %>%
+
+        tbl_m <- expand.grid(col1 = r$dist_pr_graph_prix, col2 = r$dist_pr_graph_charges) %>%
           mutate(
             marge = input$prod_mat * col1 - col2
-            # ,
-            # col1 = as.factor(col1),
-            # col2 = as.factor(col2)
           ) %>%
-          group_by(col1, col2) %>%
-          unique()  %>%
-          ungroup()     
-        
+          unique()
       }
       
+      
+      
+      tbl_m %>% 
+        rename(
+          !!col1 := col1,
+          !!col2 := col2,
+          !!marge := marge
+        )
+
     })
     
  
     
     graph_mat <- reactive({
       
+      col1 <- col1_n()
+      col2 <- col2_n()
+      marge <- marge_n()
+
     g <- ggplot(tbl_matrice())  +
-        geom_tile(aes(x = col1, y = col2, fill = marge))
+        geom_tile(aes(x = .data[[col1]], y = .data[[col2]], fill = .data[[marge]]))
       
       
        g + 
@@ -590,8 +661,12 @@ mod_graph_final_server <- function(id,
       
       
       output$graph_mat <- renderPlotly({  
-        ggplotly(graph_mat,
-                 tooltip = "marge")
+
+        ggplotly(graph_mat)
+        
+        # w$x$data[[1]]$text <- paste(r$solde2, "=", w$x$data[[1]]$x, r$unit_e,
+        #                             "<br>",  round(w$x$data[[1]]$y * 100, digits = 2 ) , "% des valeurs" )
+        
       })
       
     })
@@ -599,17 +674,17 @@ mod_graph_final_server <- function(id,
     
     ##Ranger ------------------------------------------
     # graph_rg <- reactive({
-    #   
+    # 
     #   req(calc_rg())
     # 
     #   model <- calc_rg()
-    #   
-    #   as.data.frame(model$variable.importance) %>% 
-    #     rownames_to_column("nom") %>% 
-    #     rename("value" = `model$variable.importance`)%>% 
+    # 
+    #   as.data.frame(model$variable.importance) %>%
+    #     rownames_to_column("nom") %>%
+    #     rename("value" = `model$variable.importance`)%>%
     #     mutate(
     #       resultat = value / sum(value) # pourcentage
-    #     ) %>% 
+    #     ) %>%
     #     ggplot() +
     #     geom_col( aes(y = "", x = resultat, fill = nom),
     #               position = "fill",
@@ -619,14 +694,14 @@ mod_graph_final_server <- function(id,
     #                  prix = "#00868B",
     #                  production = "#00688B")
     #     ) +
-    #     theme_void()  
-    #   
-    #   
+    #     theme_void()
+    # 
+    # 
     # })
-    
-    
+    # 
+    # 
     # output$graphique_rg <- renderPlot({
-    #   
+    # 
     #   graph_rg()
     # })
     
@@ -654,65 +729,30 @@ mod_graph_final_server <- function(id,
     })
     
     
-  pc_mini <- reactive({
-
-    nb_result <- nrow(result())
-
-    nb_mini <- result() %>%
-      filter(solde  < input$s_mini) %>%
-      nrow()
-
-    pc_mini <- nb_mini*100/nb_result
-    pc_mini <- round(pc_mini,digits = 0)
-
-    pc_mini
-
-
-  })
-
-  pc_att <- reactive({
-
-    nb_result <- nrow(result())
-
-    nb_att <- result() %>%
-      filter(solde  > input$s_att) %>%
-      nrow()
-
-    pc_att <- nb_att*100/nb_result
-    pc_att <- round(pc_att,digits = 0)
-
-    pc_att
-
-
-  })
   
+    output$sortie_tabl <- renderTable (
+      rownames = TRUE,{
+        req(input$coche_confort)
+      test_tabl(nom_solde = r$select_solde ,
+                result = result(),
+                seuil_mini = input$s_mini,
+                seuil_att = input$s_att,
+                unite_euros = r$unit_e,
+                unite_prod = r$unit_prod,
+                unite_prix = r$unit_prix)
       
-
-      
-      output$texte_pourcent <- renderUI({
-
-    mini <- pc_mini()
-    att <- pc_att()
-    moy <- 100 - mini - att
+    })
     
-    p1 <- paste0(mini, c(" % des valeurs en-dessous de "), input$s_mini, (" "), r$unit_e)
+    #### Test-------------------------------------------------
     
-    p2 <-paste0(moy, c(" % des valeurs entre "), input$s_mini, (" et "), input$s_att, (" "), r$unit_e )
-      
-    p3 <-paste0(att, c(" % des valeurs au-dessus de "), input$s_att,(" "), r$unit_e)
-
-    HTML(paste(p1, p2, p3, sep = '<br/>'))
-
-      })
-      
-  
+    # output$se <- renderPrint({
+    #   d <- event_data("plotly_selected")
+    #   d
+    # })
     
-    
-    
-    
-    
-    
-
+    output$se <- renderPrint({
+      calc_rg()
+    })
     
     ### Toggle Gestion graphique ----------------------------------------------
     
@@ -721,7 +761,7 @@ mod_graph_final_server <- function(id,
 
 
 observe({
-  toggle(id = "texte_pourcent", condition = input$coche_confort)
+  toggle(id = "sortie_tabl", condition = input$choix_graph != "mat")
   toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
   toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
   toggle(id= "graphique_rg", condition = input$choix_graph == "rg")
