@@ -165,6 +165,14 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
       
     })  
     
+    unit_solde2 <- reactive({
+      
+      d <-  if(input$val_unit_solde == "autre"){ input$val_unit_sautre
+      } else { input$val_unit_solde }
+      
+     d
+      
+    })  
     
     unit_prix <- reactive({
       paste0(input$val_unit_e, " / ", input$val_unit_p)
@@ -181,6 +189,7 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
        r$unit_prod <- input$val_unit_prod
        r$unit_e <-   input$val_unit_e
        r$solde <- unit_solde()
+       r$solde2 <- unit_solde2()
        r$select_solde <- input$val_unit_solde
 
        session$sendCustomMessage("toggle-tab-item", "oser")

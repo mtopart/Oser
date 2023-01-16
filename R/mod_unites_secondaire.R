@@ -77,10 +77,15 @@ mod_unites_secondaire_server <- function(id, r){
     
     
 observe({
-    updateTextInput(session, "echelle", value = r$echelle)
-    updateTextInput(session, "unit_prod", value = r$unit_prod)
-    updateTextInput(session, "unit_prix", value = r$unit_prix_p)
-    updateTextInput(session, "unit_prix", value = r$unit_prix_p)
+    updateTextInput(session, "echelle", value = r$echelle) })
+  
+observe({
+    updateTextInput(session, "unit_prod", value = r$unit_prod) })
+  
+observe({  
+    updateTextInput(session, "unit_prix", value = r$unit_prix_p) })
+
+observe({
     updateSelectInput(
       session,
       "select_solde",
@@ -90,18 +95,21 @@ observe({
                      "EBE",
                      "Autre" = "autre"),
       selected = r$select_solde
-    )
+    )})
     
-    updateSelectInput(
+observe({
+  updateSelectInput(
       session,
       "unit_e",
       label = "Unité euros",
       choices = c("€",
                   "k€"),
       selected = r$unit_e
-    )
+    ) })
 
+  observe({  
     toggle("val_solde", condition = input$select_solde == "autre") 
+    updateTextInput(session, "val_solde", value = r$echelle)
     
 })
 
@@ -112,20 +120,20 @@ observe({
 # r$unit_e <-   input$val_unit_e
 # r$solde <- unit_solde()
     
-    # 
-    # observeEvent( input$button_unit, {
-    #   r$button_unit <- input$button_unit
-    # 
-    #   r$echelle <- input$echelle
-    #   r$unit_prix <- unit_prix()
-    #   r$unit_prod <- input$unit_prod
-    #   r$unit_e <-   input$unit_e
-    #   r$unit_prix_p <- input$unit_p
-    #   r$solde <- solde_f()
-    # 
-    #   
-    # })
-    # 
+
+    observeEvent( input$button_unit, {
+      r$button_unit <- input$button_unit
+
+      r$echelle <- input$echelle
+      r$unit_prix <- unit_prix()
+      r$unit_prod <- input$unit_prod
+      r$unit_e <-   input$unit_e
+      r$unit_prix_p <- input$unit_p
+      r$solde <- solde_f()
+
+
+    })
+
     
 
     
