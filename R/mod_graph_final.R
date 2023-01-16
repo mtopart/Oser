@@ -52,17 +52,18 @@ mod_graph_final_ui <- function(id){
         add_prompt(
           position = "right",
           message = "Voir onglet 'Tutoriels' - en construction",
-          type = "info") ,
+          type = "info")
+      ,
       
-
-
+      
+      
       br(),
       
       ## Choix graph--------------------------------------------------
       fluidRow(
         column(12,
-        div("Pour positionner les valeurs seuils, cliquez sur", 
-            icon("cogs", style = "color:grey;") )),
+               div("Pour positionner les valeurs seuils, cliquez sur", 
+                   icon("cogs", style = "color:grey;") )),
         
         column(6,
                br(),
@@ -71,14 +72,9 @@ mod_graph_final_ui <- function(id){
                  label = "Choix du graphique",
                  choiceNames = list("Histogramme",
                                     "Boite à moustache",
-                                    "Matrice"
-                                    # ,
-                                    # "TestRanger"
-                                    ),
+                                    "Matrice de gain"),
                  choiceValues = list(
-                   "histo", "bam", "mat"
-                   # , "rg"
-                 ),
+                   "histo", "bam", "mat"),
                  justified = TRUE,
                  checkIcon = list(
                    yes = icon("ok",
@@ -89,127 +85,97 @@ mod_graph_final_ui <- function(id){
         column(12,
                plotlyOutput(ns("graphique_hist")),
                plotlyOutput(ns("graphique_bam"))
-               # ,
-               # verbatimTextOutput(ns("se"))
-               # ,
-               # plotOutput(ns("graphique_rg"))
-      )),
+        )),
       
       fluidRow( id = ns("graphique_mat"),
-      
+                
                 ### Matrice---------------
-      column(8,
-             plotlyOutput(ns("graph_mat"))
-             ),
-      column(4,
-             style = "background: #f2f2f2;",
-       selectInput(inputId = ns("idSelect_mat"), label = "Selectionnez la variable fixe ", selected = 3,
-                         choices = c("Production" = 1, "Prix" = 2, "Charges" = 3)),
-       
-       numericInput(inputId = ns("charges_mat"),
-                    label = paste0("Précisez le niveau de charges souhaité"),
-                    value = uiOutput(ns("charges_moy_UI"))),
-       
-       numericInput(inputId = ns("prod_mat"),
-                    label = paste0("Précisez le niveau de production souhaité"),
-                    value = uiOutput(ns("prod_moy_UI"))),
-       
-       numericInput(inputId = ns("prix_mat"),
-                    label = paste0("Précisez le niveau de prix souhaité"),
-                    value = uiOutput(ns("prix_moy_UI"))),
-       p(style = "font-style: italic","(Par défaut, moyenne)")
-      
-      )),
+                column(8,
+                       plotlyOutput(ns("graph_mat"))
+                ),
+                column(4,
+                       style = "background: #f2f2f2;",
+                       selectInput(inputId = ns("idSelect_mat"), label = "Selectionnez la variable fixe ", selected = 3,
+                                   choices = c("Production" = 1, "Prix" = 2, "Charges" = 3)),
+                       
+                       numericInput(inputId = ns("charges_mat"),
+                                    label = paste0("Précisez le niveau de charges souhaité"),
+                                    value = uiOutput(ns("charges_moy_UI"))),
+                       
+                       numericInput(inputId = ns("prod_mat"),
+                                    label = paste0("Précisez le niveau de production souhaité"),
+                                    value = uiOutput(ns("prod_moy_UI"))),
+                       
+                       numericInput(inputId = ns("prix_mat"),
+                                    label = paste0("Précisez le niveau de prix souhaité"),
+                                    value = uiOutput(ns("prix_moy_UI"))),
+                       p(style = "font-style: italic","(Par défaut, moyenne)")
+                       
+                )),
       
       fluidRow(
-       column(5,
-              br(),
-              br(),
-              htmlOutput(ns("texte") 
-              )),
-       column(7,
-              br(),
-              tableOutput(ns("sortie_tabl"))
-             )
+        column(5,
+               br(),
+               br(),
+               htmlOutput(ns("texte") 
+               )),
+        column(7,
+               br(),
+               tableOutput(ns("sortie_tabl"))
+        )
       ),
+      
       # Gestion de la sidebar------------------------------
       sidebar = boxSidebar(
         id = ns("sidebar"),
         width = 50,
-       background = "#fafafa",
-       style = "color: black",
+        background = "#fafafa",
+        style = "color: black",
         
         
-       prettyCheckbox(
-         inputId = ns("coche_confort"),
-         label = "Afficher la zone de confort",
-         value = FALSE,
-         icon = icon("check"),
-         status = "success"
-       ),
-
-
-
-    wellPanel(id = ns("zone_conf"),
-
-fluidRow(
-
-    column(
-      width = 6,
-
-   numericInput(ns("s_mini"),
-                "Solde minimum",
-                1,
-                width ='100%' )),
-
-   column(
-     width = 6,
-   numericInput(ns("s_att"),
-                "Solde attendu",
-                500,
-                width ='100%' ))
-
-
-
-   )),
-
-hr(),
-
-prettyCheckbox(
-  inputId = ns("coche_quart"),
-  label = " Afficher les quartiles",
-  value = FALSE,
-  icon = icon("check"),
-  status = "success"
-),
-
-
-
-
-br(),
-br(),
-hr(),
-
-
-
-strong(style = "color:red ;font-size: 20px;
-                                 font-style: italic","En construction"),
-
-actionBttn(
-  inputId = ns("select_graph"),
-  label = "Sélectionnez le graphique",
-  style = "bordered",
-  color = "success"
-),
-br(),
-br(),
-downloadButton(ns("dl_graph"), "Télécharger le récapitulatif")
-
+        prettyCheckbox(
+          inputId = ns("coche_confort"),
+          label = "Afficher la zone de confort",
+          value = FALSE,
+          icon = icon("check"),
+          status = "success"
+        ),
+        
+        
+        
+        wellPanel(id = ns("zone_conf"),
+                  
+                  fluidRow(
+                    column(
+                      width = 6,
+                      
+                      numericInput(ns("s_mini"),
+                                   "Solde minimum",
+                                   1,
+                                   width ='100%' )),
+                    
+                    column(
+                      width = 6,
+                      numericInput(ns("s_att"),
+                                   "Solde attendu",
+                                   500,
+                                   width ='100%' ))
+                  )),
+        
+        hr(),
+        
+        prettyCheckbox(
+          inputId = ns("coche_quart"),
+          label = " Afficher les quartiles",
+          value = FALSE,
+          icon = icon("check"),
+          status = "success"
+        )
       )  
     )    
     
   )
-   
+  
 }
 
 #' graph_final Server Functions
@@ -221,19 +187,17 @@ mod_graph_final_server <- function(id,
     ns <- session$ns
     
     observeEvent( input$goButton, {
-      r$button <- input$goButton
+      r$go_button <- input$goButton
     })
     
     
     
     # # # Distribution du solde --------------------------------------------------    
-    
-
 
     result <- reactive({
-
+      
       req(r$dist_pr_graph_production)
-
+      
       crossing(
         production = r$dist_pr_graph_production,
         prix = r$dist_pr_graph_prix,
@@ -241,13 +205,13 @@ mod_graph_final_server <- function(id,
       )  %>%
         mutate(solde = production * prix - charges)
     })
-
+    
     
     descript <- reactive({
-
+      
       result <- result()
-
-     tibble(
+      
+      tibble(
         moy = mean(result$solde),
         mediane = median(result$solde),
         nb_val = length(result$solde),
@@ -255,39 +219,18 @@ mod_graph_final_server <- function(id,
         q3 = quantile(result$solde, 0.75),
         interv = q3 -q1
       )
-
+      
     })
     
-    ##### Ranger------
-#     calc_rg  <- reactive({
-#       req(result())
-# 
-# model <- ranger(
-#         result()[,4] ~ .,
-#         data = result()[,-4],
-#         num.trees =  500,
-#         importance = "impurity"
-#       )
-# as.data.frame(model$variable.importance) %>%
-#       rownames_to_column("nom") %>%
-#       rename("value" = `model$variable.importance`)%>%
-#       mutate(
-#         resultat = value / sum(value) # pourcentage
-#       )
-# 
-#     })
-
+    # Définition des graphiques -------------------------
     
-# Définition des graphiques -------------------------
     
-
-  graph_titre <- reactive({
+    graph_titre <- reactive({
       if(is.null(r$solde) ){
         "Répartition du solde choisi" } else {
           paste("Répartition du solde", r$solde, sep = " " )
         } 
     }) 
-    
     
     graph_axe_titre_x <- reactive({
       if(is.null(r$solde) & is.null(r$unit$solde) ){
@@ -333,24 +276,24 @@ mod_graph_final_server <- function(id,
       ### Ajout annotation------------------------------
       
       hist <- hist(result()$solde, plot = FALSE)
-      xlim = range(hist$breaks)
-      ylim  = c(0, (ceiling(max(hist$density)*100)/10)-0.03)    
-    
+      xlim <- range(hist$breaks)
+      ylim  <- c(0, (ceiling(max(hist$density)*100)/10)-0.03)    
+      
       ### Zone de confort------------------------------
       if(input$coche_confort){
         
-        graph_hist_content <- graph_hist_content +
-          aes(fill = case_when(solde < input$s_mini ~ "A", 
-                               solde > input$s_att ~ "B", 
-                               TRUE ~ "C")) + 
-          scale_fill_manual(
-            values = c("A" = "red", 
-                       "C" = "orange", 
-                       "B" = "green3")
-          )+
-          theme(
-            legend.position = "none")
-        
+          graph_hist_content <- graph_hist_content +
+            aes(fill = case_when(solde < input$s_mini  ~ "A",
+                                 solde > input$s_att ~ "B",
+                                 TRUE ~ "C")) +
+            scale_fill_manual(
+              values = c("A" = "red",
+                         "C" = "orange",
+                         "B" = "green3")
+            )+
+            theme(
+              legend.position = "none")
+          
         
       } else {
         graph_hist_content <- graph_hist_content +
@@ -386,16 +329,17 @@ mod_graph_final_server <- function(id,
                    label = "Q3")
         
       }  
-          
+      
       return(graph_hist_content)
       
-      })
- 
+    })
+    
+    
+    
+
+    
     output$graphique_hist <- renderPlotly({
-      w <- ggplotly(graph_hist()
-               #      ,
-               # tooltip = c("Solde", "y")
-               ) %>% 
+      w <- ggplotly(graph_hist()) %>%    
         layout(dragmode = "select") %>%   
         config(
           modeBarButtonsToRemove = c('lasso2d',
@@ -404,31 +348,26 @@ mod_graph_final_server <- function(id,
                                      'autoScale2d')
         )
       
-      w$x$data[[1]]$text <- paste(r$solde2, "=", w$x$data[[1]]$x, r$unit_e,
-                                  "<br>",  round(w$x$data[[1]]$y * 100, digits = 2 ) , "% des valeurs" )
-      
-      if(input$coche_confort){
-      w$x$data[[2]]$text <- paste(r$solde2, "=", w$x$data[[2]]$x, r$unit_e,
-                                  "<br>",  round(w$x$data[[2]]$y * 100, digits = 2 ) , "% des valeurs" )
-      
-      w$x$data[[3]]$text <- paste(r$solde2, "=", w$x$data[[3]]$x, r$unit_e,
-                                  "<br>",  round(w$x$data[[3]]$y * 100, digits = 2 ) , "% des valeurs" )
+      for(longueurdata in seq(1, length(w$x$data), 1)){
+        w$x$data[[longueurdata]]$text <- paste(r$solde2, "=", w$x$data[[longueurdata]]$x, r$unit_e,
+                                    "<br>",  round(w$x$data[[longueurdata]]$y * 100, digits = 2 ) , "% des valeurs" )
+        
       }
       
-      w
       
+      w    
       
     })           
-
-   
+    
+    
     
     ## Violon / bam de base -----------------------------
     
     graph_bam <- reactive({
       req(result())
-
+      
       result <- result() %>%
-
+        
         plot_ly(
           y = ~solde,
           type = 'violin',
@@ -454,14 +393,16 @@ mod_graph_final_server <- function(id,
       
       
     })
-      
+    
     
     output$graphique_bam <- renderPlotly({
       graph_bam()
     })   
-      
+    
     
     ## Matrice--------------------------------------------------------
+    
+    
     col1_n <- reactive({
       
       req(result())
@@ -497,7 +438,7 @@ mod_graph_final_server <- function(id,
       
       paste0(nom, " en (", unit,  ") ")
     })
-
+    
     
     marge_n <- reactive({
       req(result())
@@ -505,67 +446,72 @@ mod_graph_final_server <- function(id,
       r$solde
     })
     
+    
+    
+    
+    
     tbl_matrice <- reactive({
       
       req(result())
       
-      col1 <- col1_n()
-      col2 <- col2_n()
-      marge <- marge_n()
+      
+      col1_n <- col1_n()
+      col2_n <- col2_n()
+      marge_n <- marge_n()
+      
       
       
       if(input$idSelect_mat == 3){   # ici charges sont fixes et on fait varier prod et prix
         req(input$charges_mat)
-
-        tbl_m <- expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
+        
+        tbl_m <-  expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_prix) %>%
           mutate(
             marge = col1 * col2 - input$charges_mat
           ) %>%
-          unique()
-
+          unique()   
+        
       } else if(input$idSelect_mat == 2){ # ici prix fixe et on fait varier prod et charges
         req(input$prix_mat)
-
+        
         tbl_m <- expand.grid(col1 = r$dist_pr_graph_production, col2 = r$dist_pr_graph_charges) %>%
           mutate(
             marge = col1 * input$prix_mat - col2
           ) %>%
-          unique()
-
+          unique()  
+        
       } else if(input$idSelect_mat == 1){ # ici prod fixe et on fait varier prix et charges
         req(input$prod_mat)
-
+        
         tbl_m <- expand.grid(col1 = r$dist_pr_graph_prix, col2 = r$dist_pr_graph_charges) %>%
           mutate(
             marge = input$prod_mat * col1 - col2
           ) %>%
-          unique()
+          unique()  
       }
-      
       
       
       tbl_m %>% 
         rename(
-          !!col1 := col1,
-          !!col2 := col2,
-          !!marge := marge
+          !!col1_n := col1,
+          !!col2_n := col2,
+          !!marge_n := marge
         )
-
+      
     })
     
- 
+    
     
     graph_mat <- reactive({
       
-      col1 <- col1_n()
-      col2 <- col2_n()
-      marge <- marge_n()
-
-    g <- ggplot(tbl_matrice())  +
-        geom_tile(aes(x = .data[[col1]], y = .data[[col2]], fill = .data[[marge]]))
+      col1_n <- col1_n()
+      col2_n <- col2_n()
+      marge_n <- marge_n()
+      
+      g <- ggplot(tbl_matrice())  +
+        geom_tile(aes(x = .data[[col1_n]], y = .data[[col2_n]], fill = .data[[marge_n]]))
       
       
-       g + 
+      g + 
         labs(
           title = case_when(
             input$idSelect_mat == 3 ~ titre_mat_3(),
@@ -586,7 +532,7 @@ mod_graph_final_server <- function(id,
     })
     
     ####  Moyennes definies --------------------------------------- 
-
+    
     
     charges_moy_UI <- renderUI( round(mean(r$dist_pr_graph_charges))  ) 
     
@@ -599,74 +545,71 @@ mod_graph_final_server <- function(id,
       updateNumericInput(session, "prod_mat", value = round(mean(r$dist_pr_graph_production)))
       updateNumericInput(session, "prix_mat", value = round(mean(r$dist_pr_graph_prix)))
     })
-
+    
     
     ####  zone de confort ---------------------------------------  
     
-     observe({
-       
-        req(tbl_matrice())    
-       
-       graph_mat <- graph_mat()
-       
-       if(input$coche_confort){ 
-         
-          req(input$s_mini)
-          req(input$s_att)
-         
-         seuil_mini <- scales::rescale(input$s_mini, c(0,1), from = range(tbl_matrice()$marge))
-         seuil_att <- scales::rescale(input$s_att, c(0,1), from = range(tbl_matrice()$marge))
-         
-         if( seuil_att >= 1) {
-           
-           if (seuil_mini >= 1){
-             
-             graph_mat <- graph_mat  +
-               scale_fill_gradientn(colours = c("#CD0000", "red"), values = c(0, 1) )
-             
-           } else if (0 < seuil_mini & seuil_mini < 1) {
-             
-             graph_mat <- graph_mat +
-               scale_fill_gradientn(colours = c("red", "orange"), values = c(0, seuil_mini, 1) )
-           } else {
-             graph_mat <- graph_mat +
-               scale_fill_gradientn(colours = c("#FF7F00", "orange"), values = c(0,  1) )  
-     
-           }
-           
-         } else if(seuil_mini < 0 ) {
-           
-           if(seuil_att > 0) {
-             graph_mat <-  graph_mat  +
-               scale_fill_gradientn(colours = c( "orange", "green"), values = c(0,seuil_att,  1) )
-           } else {
-           
-           graph_mat <-  graph_mat  +
-             scale_fill_gradientn(colours = c("chartreuse", "green"), values = c(0,  1) ) 
-           }
-           
-         } else { 
-           
-           graph_mat <- graph_mat +
-             scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil_mini, seuil_att, 1) )
-        }      
-         
-         
-       } else {
-           
-         graph_mat <- graph_mat  +
-           scale_fill_distiller(palette = "RdYlGn",direction = 1) 
-         
-         }
+    observe({
+
+      req(tbl_matrice())
+
+      graph_mat <- graph_mat()
+
+      if(input$coche_confort){
+
+        req(input$s_mini)
+        req(input$s_att)
+        
+        marge_n <- marge_n()
+
+        seuil_mini <- scales::rescale(input$s_mini, c(0,1), from = range(tbl_matrice()[marge_n]))
+        seuil_att <- scales::rescale(input$s_att, c(0,1), from = range(tbl_matrice()[marge_n]))
+
+        if( seuil_att >= 1) {
+
+          if (seuil_mini >= 1){
+
+            graph_mat <- graph_mat  +
+              scale_fill_gradientn(colours = c("#CD0000", "red"), values = c(0, 1) )
+
+          } else if (0 < seuil_mini & seuil_mini < 1) {
+
+            graph_mat <- graph_mat +
+              scale_fill_gradientn(colours = c("red", "orange"), values = c(0, seuil_mini, 1) )
+          } else {
+            graph_mat <- graph_mat +
+              scale_fill_gradientn(colours = c("#FF7F00", "orange"), values = c(0,  1) )
+
+          }
+
+        } else if(seuil_mini < 0 ) {
+
+          if(seuil_att > 0) {
+            graph_mat <-  graph_mat  +
+              scale_fill_gradientn(colours = c( "orange", "green"), values = c(0,seuil_att,  1) )
+          } else {
+
+            graph_mat <-  graph_mat  +
+              scale_fill_gradientn(colours = c("chartreuse", "green"), values = c(0,  1) )
+          }
+
+        } else {
+
+          graph_mat <- graph_mat +
+            scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil_mini, seuil_att, 1) )
+        }
+
+
+      } else {
+
+        graph_mat <- graph_mat  +
+          scale_fill_distiller(palette = "RdYlGn",direction = 1)
+
+      }
       
       
       output$graph_mat <- renderPlotly({  
-
         ggplotly(graph_mat)
-        
-        # w$x$data[[1]]$text <- paste(r$solde2, "=", w$x$data[[1]]$x, r$unit_e,
-        #                             "<br>",  round(w$x$data[[1]]$y * 100, digits = 2 ) , "% des valeurs" )
-        
       })
       
     })
@@ -674,17 +617,17 @@ mod_graph_final_server <- function(id,
     
     ##Ranger ------------------------------------------
     # graph_rg <- reactive({
-    # 
+    #   
     #   req(calc_rg())
     # 
     #   model <- calc_rg()
-    # 
-    #   as.data.frame(model$variable.importance) %>%
-    #     rownames_to_column("nom") %>%
-    #     rename("value" = `model$variable.importance`)%>%
+    #   
+    #   as.data.frame(model$variable.importance) %>% 
+    #     rownames_to_column("nom") %>% 
+    #     rename("value" = `model$variable.importance`)%>% 
     #     mutate(
     #       resultat = value / sum(value) # pourcentage
-    #     ) %>%
+    #     ) %>% 
     #     ggplot() +
     #     geom_col( aes(y = "", x = resultat, fill = nom),
     #               position = "fill",
@@ -694,14 +637,14 @@ mod_graph_final_server <- function(id,
     #                  prix = "#00868B",
     #                  production = "#00688B")
     #     ) +
-    #     theme_void()
-    # 
-    # 
+    #     theme_void()  
+    #   
+    #   
     # })
-    # 
-    # 
+    
+    
     # output$graphique_rg <- renderPlot({
-    # 
+    #   
     #   graph_rg()
     # })
     
@@ -713,7 +656,7 @@ mod_graph_final_server <- function(id,
       
       req(result())
       result <- result()
-
+      
       descript <- descript()
       
       
@@ -722,153 +665,102 @@ mod_graph_final_server <- function(id,
       q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), r$unit_e)
       
       HTML(paste(moy, med, q, sep = '<br/>'))
-      
-    
-      
-      
+
     })
     
     
-  
+
+    
+    
     output$sortie_tabl <- renderTable (
       rownames = TRUE,{
         req(input$coche_confort)
-      test_tabl(nom_solde = r$select_solde ,
-                result = result(),
-                seuil_mini = input$s_mini,
-                seuil_att = input$s_att,
-                unite_euros = r$unit_e,
-                unite_prod = r$unit_prod,
-                unite_prix = r$unit_prix)
-      
-    })
+        test_tabl(nom_solde = r$select_solde ,
+                  result = result(),
+                  seuil_mini = input$s_mini,
+                  seuil_att = input$s_att,
+                  unite_euros = r$unit_e,
+                  unite_prod = r$unit_prod,
+                  unite_prix = r$unit_prix)
     
-    #### Test-------------------------------------------------
+      })
     
-    # output$se <- renderPrint({
-    #   d <- event_data("plotly_selected")
-    #   d
-    # })
     
-    output$se <- renderPrint({
-      calc_rg()
-    })
+    
+    
+    
+    
     
     ### Toggle Gestion graphique ----------------------------------------------
     
-
-
-
-
-observe({
-  toggle(id = "sortie_tabl", condition = input$choix_graph != "mat")
-  toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
-  toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
-  toggle(id= "graphique_rg", condition = input$choix_graph == "rg")
-  toggle(id= "graphique_mat", condition = input$choix_graph == "mat")
-  toggle(id= "charges_mat", condition = input$idSelect_mat == 3 )
-  toggle(id = "prix_mat", condition = input$idSelect_mat == 2 )
-  toggle(id = "prod_mat", condition = input$idSelect_mat == 1 )
-  toggle(id = "texte", condition = input$choix_graph %in% c("histo", "bam"))
-
-})
-
-  observe({
-    req(result())
-    updateBoxSidebar("sidebar")
-  })
+    
+    
+    
+    
+    observe({
+      toggle(id = "texte_pourcent", condition = input$coche_confort)
+      toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
+      toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
+      toggle(id= "graphique_rg", condition = input$choix_graph == "rg")
+      toggle(id= "graphique_mat", condition = input$choix_graph == "mat")
+      toggle(id= "charges_mat", condition = input$idSelect_mat == 3 )
+      toggle(id = "prix_mat", condition = input$idSelect_mat == 2 )
+      toggle(id = "prod_mat", condition = input$idSelect_mat == 1 )
+      toggle(id = "texte", condition = input$choix_graph %in% c("histo", "bam"))
       
-  ## Gestion du titre--------------------------------------------------
+    })
+    
+    observe({
+      req(result())
+      updateBoxSidebar("sidebar")
+    })
+    
+    ## Gestion du titre--------------------------------------------------
+    
+    
+    
+    gest_text <- reactive({
       
+      if(is.null(r$solde)){
+        "Conséquences sur le solde choisi (marge, EBE, revenu...)" } else {
+          paste("Conséquences sur le solde ",  r$solde, sep = "" )
+        } 
       
+    })
+    
+    output$titre <- renderUI( gest_text()   )  
+    
+    
+    
+    ### Matrice
+    
+    titre_mat_3 <- reactive({
+      if(is.null(r$solde)){
+        "Solde en fonction du prix et de la production" } else {
+          paste0(r$solde, " en fonction du prix et de la production") } 
+    })
+    
+    titre_mat_2 <- reactive({
+      if(is.null(r$solde)){
+        "Solde en fonction des charges et de la production" } else {
+          paste0(r$solde, " en fonction des charges et de la production") } 
       
-      gest_text <- reactive({
-        
-          if(is.null(r$solde)){
-            "Conséquences sur le solde choisi (marge, EBE, revenu...)" } else {
-              paste("Conséquences sur le solde ",  r$solde, sep = "" )
-            } 
-        
+    })
+    
+    titre_mat_1 <- reactive({
+      if(is.null(r$solde)){
+        "Solde en fonction du prix et des charges" } else {
+          paste0(r$solde, " en fonction du prix et des charges") } 
+      
+    })
+    
+   # Liens avec les modules --------------------------------
+    
+    observeEvent( r$button_graph , {
+      
+  r$graph_save <- graph_hist()
+      
       })
-      
-      output$titre <- renderUI( gest_text()   )  
-      
-      
-      
-      ### Matrice
-      
-      titre_mat_3 <- reactive({
-        if(is.null(r$solde)){
-          "Solde en fonction du prix et de la production" } else {
-            paste0(r$solde, " en fonction du prix et de la production") } 
-      })
-      
-      titre_mat_2 <- reactive({
-        if(is.null(r$solde)){
-          "Solde en fonction des charges et de la production" } else {
-            paste0(r$solde, " en fonction des charges et de la production") } 
-        
-      })
-      
-      titre_mat_1 <- reactive({
-        if(is.null(r$solde)){
-          "Solde en fonction du prix et des charges" } else {
-            paste0(r$solde, " en fonction du prix et des charges") } 
-        
-      })
-      
-      
-      
-      
-## Téléchargement----------------------------
-      
-      
-  graph_word <- function(gg ){
-
-    if(exists("doc")){
-    } else {
-      doc <- read_docx()
-    }
-
-  doc <- doc %>%
-    body_add_par(value = "Table des graphiques", style = "heading 1") %>%
-    body_add_gg(value = gg,
-                style = "Normal")
-
-  }
-
-
-  observeEvent(input$select_graph,{
-   doc <- reactive({
-     graph_word(graph_hist())
-   })
-
-  })
-      
-  
-  
-  # doc <- reactive({
-  #  read_docx() %>%
-  #     body_add_par(value = "Retranscription des commentaires", style = "heading 1") %>%
-  #     
-  #     body_add_par(value = "Contexte général", style = "heading 2")
-  #   
-  # })
-      
-   
-  # output$dl_graph <- downloadHandler(
-  #   filename = function() {
-  #     paste0("graphiques", Sys.Date(), ".docx")
-  #   },
-  #   content = function(file) {
-  #     print(doc(), target = file)
-  #   }
-  # )  
-  #     
-  # doc() %>%
-  #      print(target = tempfile(fileext = ".docx")) %>%
-  #   browseURL()
-      
     
   })
 }
