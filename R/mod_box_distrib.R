@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom  bs4Dash box boxSidebar
+#' @importFrom  bs4Dash box boxSidebar 
 #' @importFrom dplyr %>% 
 #' @importFrom shinyWidgets materialSwitch actionBttn radioGroupButtons
 #' @importFrom prompter add_prompt use_prompt
@@ -137,9 +137,20 @@ mod_box_distrib_server <- function(id,
       v_mini <- input$v_mini
       v_maxi <- input$v_maxi
       
-      distribution <- repet_unif(mini = v_mini,
-                                 maxi = v_maxi)
+      if (v_mini > v_maxi ){
+      distribution <- 0
+      
       distribution
+
+      } else {
+        # bs4Dash::closeAlert(id = "myalert")
+        
+        distribution <- repet_unif(mini = v_mini,
+                                   maxi = v_maxi)
+        distribution
+        
+      
+      }
     })
     
     
@@ -381,8 +392,28 @@ mod_box_distrib_server <- function(id,
     
     ## Liens avec les modules--------------------- 
     
-    observeEvent( r$button , {
-      r[[paste("dist_pr_graph", type, sep = "_")]] <- distrib_finale()
+    observeEvent( r$go_button , {
+      
+      if(input$v_mini > input$v_maxi ){
+        shinyalert(
+          title = "Mini > Maxi !",
+          text = "Attention, erreur de saisie ",
+          size = "xs", 
+          closeOnEsc = TRUE,
+          closeOnClickOutside = TRUE,
+          html = TRUE,
+          type = "error",
+          showConfirmButton = TRUE,
+          showCancelButton = FALSE,
+          confirmButtonText = "OK",
+          confirmButtonCol = "#AEDEF4",
+          timer = 0,
+          imageUrl = "",
+          animation = TRUE
+        )
+      } else {   
+      
+      r[[paste("dist_pr_graph", type, sep = "_")]] <- distrib_finale() }
     })
     
 
