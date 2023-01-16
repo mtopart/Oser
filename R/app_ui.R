@@ -14,7 +14,7 @@ app_ui <- function(request) {
     
     
     # #browser pour développement
-
+    # 
     # actionButton("browser", "browser"),
     # tags$script("$('#browser');"),
 
@@ -118,6 +118,8 @@ app_ui <- function(request) {
                                        input_maxi = 2000),
                     mod_aide_distrib_ui("aide_distrib_ui_1"),
                     mod_graph_final_ui("graph_final_ui_1")
+                    ,
+                    mod_telechargement_ui("telechargement_1")
                     
                     
                   )                      

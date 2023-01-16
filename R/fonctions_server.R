@@ -320,8 +320,13 @@ test_tabl <- function(nom_solde,
     mutate(
       group_solde = case_when(
         solde < seuil_mini ~ paste(nom_solde, "< à", seuil_mini, unite_euros, sep = " " ),
-        solde > seuil_att ~ paste(nom_solde, "> à", seuil_att, unite_euros, sep = " "),
+        solde > seuil_att ~  paste(nom_solde, "> à", seuil_att, unite_euros, sep = " "),
         TRUE  ~ paste(nom_solde, "> à", seuil_mini, "et < à", seuil_att, unite_euros, sep = " ")
+      ),
+      pourcent = case_when(
+        solde < seuil_mini ~ pc_mini,
+        solde > seuil_att ~ pc_att,  
+        TRUE ~  (100 - pc_mini - pc_att)
       )) %>% 
     group_by(group_solde)  %>% 
     mutate(
@@ -337,7 +342,6 @@ test_tabl <- function(nom_solde,
     unique() %>% 
     arrange(group_solde) %>% 
     mutate(
-      pourcent = c(pc_mini, (100 - pc_mini - pc_att), pc_att ),
       Production = paste("De", mini_prod, "à", maxi_prod, unite_prod, sep = " "),
       Prix = paste("De", mini_prix, "à", maxi_prix, unite_prix, sep = " "),
       Charges = paste("De", mini_charges, "à", maxi_charges, unite_euros, sep = " ")

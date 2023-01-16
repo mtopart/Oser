@@ -11,11 +11,11 @@ app_server <- function( input, output, session ) {
   r <- reactiveValues()
   
 
-  # # List the first level callModules here
-
-  # observeEvent(input$browser,{
-  #   browser()
-  # })
+ # # List the first level callModules here
+ # 
+ #  observeEvent(input$browser,{
+ #    browser()
+ #  })
 
   
   # Mod distrib
@@ -53,5 +53,8 @@ app_server <- function( input, output, session ) {
   observeEvent(input$controlbarToggle, {
     updateControlbar(id = "controlbar")
   })
+  
+  mod_telechargement_server("telechargement_1",
+                            r = r)
 
 }
