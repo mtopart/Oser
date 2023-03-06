@@ -13,9 +13,9 @@ app_server <- function( input, output, session ) {
 
  # # List the first level callModules here
  # 
- #  observeEvent(input$browser,{
- #    browser()
- #  })
+ # observeEvent(input$browser,{
+ #   browser()
+ # })
 
   
   # Mod distrib
@@ -24,37 +24,41 @@ app_server <- function( input, output, session ) {
                          graph_title = "Production",
                          type = "production",
                          r = r)
-  
+
   mod_box_distrib_server("box_distrib_ui_2",
                          graph_title = "Prix",
                          type = "prix",
                          r = r)
-  
+
   mod_box_distrib_server("box_distrib_ui_3",
                          graph_title = "Charges",
                          type = "charges",
                          r = r)
-  
+
   mod_aide_distrib_server("aide_distrib_ui_1")
-  
-  mod_graph_final_server("graph_final_ui_1",
-                         r = r)
- 
+
   mod_tutoriel_server("tutoriel_ui_1")
   mod_apropos_server("apropos_ui_1")
-  
+
   mod_onglet_unit_server("onglet_unit_1",
                          r = r,
                          parent_session = session)
-  
+
   mod_unites_secondaire_server("gestion_unites_1",
                                r = r)
-  
+
   observeEvent(input$controlbarToggle, {
     updateControlbar(id = "controlbar")
   })
-  
+
+
+  mod_zone_graph_server("zone_graph_1",
+                        r = r)
+
+
+
   mod_telechargement_server("telechargement_1",
                             r = r)
+
 
 }

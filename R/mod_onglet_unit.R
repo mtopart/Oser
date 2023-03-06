@@ -62,7 +62,8 @@ mod_onglet_unit_ui <- function(id) {
           ns("val_unit_e"), ## val_unit_e----------
           label = "Et son prix en ",
           choices = c("€",
-                      "k€")
+                      "k€"),
+          selected = 1
         ),
         tooltip(
           textInput(ns("val_unit_p"), "par"), ## val_unit_p----------
@@ -85,7 +86,8 @@ mod_onglet_unit_ui <- function(id) {
             "EBE",
             "Valeur ajoutée",
             "Autre" = "autre"
-          )
+          ),
+          selected = 1
         ),
         textInput(ns("val_unit_sautre"), "Solde choisi"), ## val_unit_sautre----------
         textOutput(ns("text2")) 
@@ -131,7 +133,43 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    
+        observe({
+      updateTextInput(session, "val_echelle", value = r$echelle) })
+
+    observe({
+      updateTextInput(session, "val_unit_prod", value = r$unit_prod) })
+
+    observe({
+      updateTextInput(session, "val_unit_p", value = r$unit_prix_p) })
+
+    observe({
+      updateSelectInput(
+        session,
+        "val_unit_solde",
+        label = "Solde final",
+        choices = list("Marge brute",
+                       "Marge nette",
+                       "EBE",
+                       "Autre" = "autre"),
+        selected = r$select_solde
+      )})
+
+    observe({
+      updateSelectInput(
+        session,
+        "val_unit_e",
+        label = "Unité euros",
+        choices = c("€",
+                    "k€"),
+        selected = r$unit_e
+      ) 
+      })
+
+    observe({
+      updateTextInput(session, "val_unit_sautre", value = r$solde2)
+
+    })
+     
     
   output$text1 <- renderText({
     req(input$val_echelle)

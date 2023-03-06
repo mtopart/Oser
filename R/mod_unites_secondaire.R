@@ -10,8 +10,6 @@
 mod_unites_secondaire_ui <- function(id){
   ns <- NS(id)
   tagList(
-    p("Page en construction - onglet non fonctionnel", style = "color:red ;font-size: 20px;
-                                 font-style: italic"),
     br(),
     h5("Gestion des unités"),
     
@@ -45,7 +43,6 @@ mod_unites_secondaire_ui <- function(id){
     
     
     actionButton(ns("button_unit"), icon("chevron-right"))
-    
 
     
   )
@@ -58,21 +55,29 @@ mod_unites_secondaire_server <- function(id, r){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
-    
-    
-   # observeEvent(input$select_solde == 4, {toggle("solde")})
 
 
     solde_f <- reactive({
 
-      if(input$select_solde == 4){ input$solde
-        } else { input$select_solde }
+      d <-  if(input$select_solde == "autre"){ input$val_solde
+      } else { input$select_solde }
+
+      paste0(d, " (en ", input$unit_e,")" )
+
+    })
+
+    unit_solde2 <- reactive({
+
+      d <-  if(input$select_solde == "autre"){  input$val_solde
+      } else { input$select_solde }
+
+      d
 
     })
     
     
     unit_prix <- reactive({
-      paste0(input$unit_e, " / ", input$unit_p)
+      paste0(input$unit_e, " / ", input$unit_prix)
     })
     
     
@@ -109,17 +114,15 @@ observe({
 
   observe({  
     toggle("val_solde", condition = input$select_solde == "autre") 
-    updateTextInput(session, "val_solde", value = r$echelle)
     
 })
-
-# r$echelle <- input$val_echelle
-# r$unit_prix <- unit_prix()
-# r$unit_prix_p <- input$val_unit_p
-# r$unit_prod <- input$val_unit_prod
-# r$unit_e <-   input$val_unit_e
-# r$solde <- unit_solde()
+  
+  
+  observe({
+    updateTextInput(session, "val_solde", value = r$solde2)
     
+  })
+  
 
     observeEvent( input$button_unit, {
       r$button_unit <- input$button_unit
@@ -128,16 +131,15 @@ observe({
       r$unit_prix <- unit_prix()
       r$unit_prod <- input$unit_prod
       r$unit_e <-   input$unit_e
-      r$unit_prix_p <- input$unit_p
+      r$unit_prix_p <- input$unit_prix
+      r$select_solde <- input$select_solde
       r$solde <- solde_f()
+      r$solde2 <- unit_solde2()
 
 
     })
 
-    
-
-    
-    
+  
  
   })
 }

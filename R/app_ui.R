@@ -13,10 +13,10 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     
     
-    # #browser pour développement
-    # 
-    # actionButton("browser", "browser"),
-    # tags$script("$('#browser');"),
+# #browser pour développement
+# 
+#     actionButton("browser", "browser"),
+#     tags$script("$('#browser');"),
 
     # Define this page as a dashboard page to signal we're using the     dashboard page format
     dashboardPage(
@@ -117,7 +117,7 @@ app_ui <- function(request) {
                                        input_mini = 1000,
                                        input_maxi = 2000),
                     mod_aide_distrib_ui("aide_distrib_ui_1"),
-                    mod_graph_final_ui("graph_final_ui_1")
+                    mod_zone_graph_ui("zone_graph_1")
                     ,
                     mod_telechargement_ui("telechargement_1")
                     
