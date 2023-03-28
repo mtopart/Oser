@@ -241,7 +241,13 @@ mod_hist_repartition_server <- function(id,
         tabl_descript()
       })    
  
+    # Liens avec les modules --------------------------------
     
+    observeEvent( r$button_graph , {
+      
+      r$graph_save <- graph_hist()
+      
+    })    
     
   })
 }

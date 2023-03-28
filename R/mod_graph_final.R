@@ -754,13 +754,13 @@ mod_graph_final_server <- function(id,
       
     })
     
-   # Liens avec les modules --------------------------------
-    
-    observeEvent( r$button_graph , {
-      
-  r$graph_save <- graph_hist()
-      
-      })
+  #  # Liens avec les modules --------------------------------
+  #   
+  #   observeEvent( r$button_graph , {
+  #     
+  # r$graph_save <- graph_hist()
+  #     
+  #     })
     
   })
 }
