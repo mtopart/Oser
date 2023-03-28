@@ -10,7 +10,6 @@
 mod_unites_secondaire_ui <- function(id){
   ns <- NS(id)
   tagList(
-    br(),
     h5("Gestion des unités"),
     
     textInput(ns("echelle"), 
@@ -135,8 +134,6 @@ observe({
       r$select_solde <- input$select_solde
       r$solde <- solde_f()
       r$solde2 <- unit_solde2()
-
-
     })
 
   
