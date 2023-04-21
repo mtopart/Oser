@@ -94,6 +94,8 @@ mod_box_distrib_ui <- function(id,
 
       if(type %in% "charges")  {
        h5("")},
+      
+      #verbatimTextOutput(ns("test")),
 
 
       # Sidebar de la box
@@ -462,6 +464,11 @@ mod_box_distrib_server <- function(id,
     output$titre <- renderUI( gest_text()   )  
     
     
+    output$test <- renderPrint(
+      v_myfit()
+      
+    )
+
   })
 }
 
