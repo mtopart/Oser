@@ -111,8 +111,8 @@ plot_elicit <- function(name,
 tryCatch_mod <- function(vals, probs, lower = -Inf,
                           upper = Inf, weights = 1, tdf = 3,
                           expertnames = NULL){
-  tryCatch(fitdist_mod(vals, probs, lower = -Inf,
-                       upper = Inf, weights = 1, tdf = 3,
+  tryCatch(fitdist_mod(vals, probs, lower, 
+                       upper, weights = 1, tdf = 3,
                        expertnames = NULL),
            error = function(e) {
              if (conditionMessage(e) %in% c("smallest elicited probability must be less than 0.4",
@@ -133,7 +133,7 @@ fitdisti <- function(mini,
                      v,
                      p){
   
-  req(maxi, mini, v, p)
+  # req(maxi, mini, v, p)
   # myfit <- fitdist_mod(vals = v, probs = p, lower = mini,
   #                   upper = maxi )
   
