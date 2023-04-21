@@ -43,7 +43,8 @@ Imports:
     officer,
     scales,
     ranger,
-    waiter
+    waiter,
+    flextable
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 
