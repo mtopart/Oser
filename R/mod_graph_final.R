@@ -15,7 +15,6 @@
 #' @importFrom dplyr select mutate %>% rename case_when filter group_by ungroup
 #' @importFrom prompter add_prompt use_prompt
 #' @import ggplot2 
-#' @importFrom officer read_docx body_add_gg body_add_par
 #' @importFrom scales percent
 #' @importFrom rlang :=
 #' @importFrom ranger ranger

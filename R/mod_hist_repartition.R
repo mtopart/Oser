@@ -7,6 +7,8 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+
+
 mod_hist_repartition_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -232,7 +234,6 @@ mod_hist_repartition_server <- function(id,
                 unite_euros = r$unit_e,
                 unite_prod = r$unit_prod,
                 unite_prix = r$unit_prix)
-      
     })
     
     
@@ -246,6 +247,8 @@ mod_hist_repartition_server <- function(id,
     observeEvent( r$button_graph , {
       
       r$graph_save <- graph_hist()
+      
+      r$tabl_save <-  tabl_descript()
       
     })    
     
