@@ -173,6 +173,11 @@ mod_zone_graph_server <- function(id,
       })
     
     
+      observeEvent(input$choix_graph,{
+        r$choix_graph <- input$choix_graph
+        })
+
+    
     mod_hist_repartition_server("hist_repartition_1",
                                 r = r)
     

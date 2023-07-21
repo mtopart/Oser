@@ -290,6 +290,7 @@ mean_distrib <- function(tableau) {
 
 
 #' @importFrom dplyr arrange
+#' @importFrom flextable as_flextable
 
 
 test_tabl <- function(nom_solde,
@@ -356,6 +357,10 @@ test_tabl <- function(nom_solde,
   tabl <- tabl[-c(1),]
   
   row.names(tabl) <- c("% des valeurs", "Production", "Prix", "Charges")  
+  
+  #essai flextable pour enregistrement
+  
+  as_flextable(tabl)
   
   return(tabl)
   

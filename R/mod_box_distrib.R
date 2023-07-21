@@ -183,14 +183,18 @@ mod_box_distrib_server <- function(id,
                          allBinsPr = NULL,
                          nonempty = NULL )
     
-    
-    output$roulette <- renderPlot({
+    graph_distrib <-  reactive({
       plot_elicit(name =  graph_title,
                   chips = rl$chips,
                   mini = v_mini(),
                   maxi = v_maxi(),
                   left = v_bin.left(),
                   right = v_bin.right())
+    })
+    
+    
+    output$roulette <- renderPlot({
+      graph_distrib() 
     })
     
     observeEvent(input$loi, {toggle("roulette")})
@@ -415,7 +419,21 @@ mod_box_distrib_server <- function(id,
         )
       } else {   
       
-      r[[paste("dist_pr_graph", type, sep = "_")]] <- distrib_finale() }
+      r[[paste("dist_pr_graph", type, sep = "_")]] <- distrib_finale() 
+      
+      r[[paste("saisie_mini", type, sep = "_")]]  <- input$v_mini 
+      r[[paste("saisie_maxi", type, sep = "_")]]  <- input$v_maxi
+      
+
+      if(input$loi){
+        r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution manuelle"
+        r[[paste("saisie_dist_graph", type, sep = "_")]] <- barplot(1:5, col = 2:6)
+        
+      } else {
+        r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution uniforme"
+      }
+      
+      }
     })
     
 

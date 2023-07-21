@@ -59,6 +59,9 @@ mod_graph_final_ui <- function(id){
       br(),
       
       ## Choix graph--------------------------------------------------
+      
+
+      
       fluidRow(
         column(12,
                div("Pour positionner les valeurs seuils, cliquez sur", 
@@ -361,37 +364,34 @@ mod_graph_final_server <- function(id,
     
     
     ## Violon / bam de base -----------------------------
-    
-    graph_bam <- reactive({
-      req(result())
-      
-      result <- result() %>%
-        
-        plot_ly(
-          y = ~solde,
-          type = 'violin',
-          box = list(
-            visible = T
-          ),
-          meanline = list(
-            visible = T
-          ),
-          x0 = 'Solde',
-          hoverinfo = 'y'
-        ) %>% 
-        layout(
-          yaxis = list(
-            title = "",
-            zeroline = F,
-            hoverformat = ".2f"
-          ) 
-        ) 
+    # 
+    # graph_bam <- reactive({
+    #   req(result())
+    #   
+    #   result <- result() %>%
+    #     
+    #     plot_ly(
+    #       y = ~solde,
+    #       type = 'violin',
+    #       box = list(
+    #         visible = T
+    #       ),
+    #       meanline = list(
+    #         visible = T
+    #       ),
+    #       x0 = 'Solde',
+    #       hoverinfo = 'y'
+    #     ) %>% 
+    #     layout(
+    #       yaxis = list(
+    #         title = "",
+    #         zeroline = F,
+    #         hoverformat = ".2f"
+    #       ) 
+    #     ) 
       # %>% 
       #   style(hoverinfo = 'none')
-      
-      
-      
-    })
+    #})
     
     
     output$graphique_bam <- renderPlotly({
@@ -699,14 +699,14 @@ mod_graph_final_server <- function(id,
     observe({
       toggle(id = "texte_pourcent", condition = input$coche_confort)
       toggle(id = "graphique_hist", condition = input$choix_graph == "histo")
-      toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
-      toggle(id= "graphique_rg", condition = input$choix_graph == "rg")
+      #toggle(id = "graphique_bam", condition = input$choix_graph == "bam")
+      #toggle(id= "graphique_rg", condition = input$choix_graph == "rg")
       toggle(id= "graphique_mat", condition = input$choix_graph == "mat")
       toggle(id= "charges_mat", condition = input$idSelect_mat == 3 )
       toggle(id = "prix_mat", condition = input$idSelect_mat == 2 )
       toggle(id = "prod_mat", condition = input$idSelect_mat == 1 )
-      toggle(id = "texte", condition = input$choix_graph %in% c("histo", "bam"))
-      
+      #toggle(id = "texte", condition = input$choix_graph %in% c("histo", "bam"))
+      toggle(id = "texte", condition = input$choix_graph =="histo")
     })
     
     observe({
@@ -760,6 +760,24 @@ mod_graph_final_server <- function(id,
   # r$graph_save <- graph_hist()
   #     
   #     })
+    
+    
+  #   observe({ 
+  #     if(input$choix_graph == "histo"){
+  #     r$choix_graph <- "histogramme"} else {
+  #       r$choix_graph <- "matrice"
+  #     }
+  #     })
+  #   
+  #   
+  # output$test <- renderPrint({
+  #   #r$choix_graph
+  #   
+  #   #input$choix_graph
+  #   "fjfujfjfj"
+  # })  
+    
+    
     
   })
 }

@@ -7,6 +7,8 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @importFrom plotly add_text add_lines add_histogram
+#' @importFrom flextable autofit htmltools_value
 
 
 mod_hist_repartition_ui <- function(id){
@@ -22,7 +24,8 @@ mod_hist_repartition_ui <- function(id){
              )),
       column(7,
              br(),
-             tableOutput(ns("sortie_tabl"))
+             #tableOutput(ns("sortie_tabl"))
+             uiOutput(ns("sortie_tabl"))
       )
     )
   )
@@ -36,7 +39,6 @@ mod_hist_repartition_server <- function(id,
   moduleServer( id, function(input, output, session){
     ns <- session$ns
  
-    
     
     # # # Distribution du solde --------------------------------------------------    
     
@@ -128,7 +130,7 @@ mod_hist_repartition_server <- function(id,
       
       ### Zone de confort------------------------------
       if(r$coche_confort){
-
+        
         graph_hist_content <- graph_hist_content +
           aes(fill = case_when(solde <  r$s_mini  ~ "A",
                                solde >  r$s_att ~ "B",
@@ -140,8 +142,8 @@ mod_hist_repartition_server <- function(id,
           )+
           theme(
             legend.position = "none")
-
-
+        
+        
       } else {
         graph_hist_content <- graph_hist_content +
           aes(fill = "#XXXXX") +
@@ -149,11 +151,11 @@ mod_hist_repartition_server <- function(id,
           theme(
             legend.position = "none")
       }
-
+      
       #### Quartiles -----------------------------------------
-
+      
       if(r$coche_quart){
-
+        
         graph_hist_content <- graph_hist_content +
           geom_vline(xintercept = descript()$q1,
                      color = "orange") +
@@ -174,14 +176,14 @@ mod_hist_repartition_server <- function(id,
                    x = descript()$q3,
                    y =ylim[2]- 0.015,
                    label = "Q3")
-
+        
       }
-
+      
       return(graph_hist_content)
-
+      
     })
     
- 
+    
     
     output$graphique_hist <- renderPlotly({
       w <- ggplotly(graph_hist()) %>%    
@@ -194,16 +196,16 @@ mod_hist_repartition_server <- function(id,
         )
       
       if(!r$coche_quart){
-      for(longueurdata in seq(1, length(w$x$data), 1)){
-        w$x$data[[longueurdata]]$text <- paste(r$solde2, "=", w$x$data[[longueurdata]]$x, r$unit_e,
-                                               "<br>",  round(w$x$data[[longueurdata]]$y * 100, digits = 2 ) , "% des valeurs" )
-
-      }}
+        for(longueurdata in seq(1, length(w$x$data), 1)){
+          w$x$data[[longueurdata]]$text <- paste(r$solde2, "=", w$x$data[[longueurdata]]$x, r$unit_e,
+                                                 "<br>",  round(w$x$data[[longueurdata]]$y * 100, digits = 2 ) , "% des valeurs" )
+          
+        }}
       
       
       w    
       
-    })           
+    })             
     
     
     
@@ -233,22 +235,34 @@ mod_hist_repartition_server <- function(id,
                 seuil_att = r$s_att,
                 unite_euros = r$unit_e,
                 unite_prod = r$unit_prod,
-                unite_prix = r$unit_prix)
+                unite_prix = r$unit_prix) %>% 
+        as_flextable()
     })
     
     
-    output$sortie_tabl <- renderTable(
-      rownames = TRUE, {
-        tabl_descript()
-      })    
+    # output$sortie_tabl <- renderTable(
+    #   rownames = TRUE, {
+    #     tabl_descript()
+    #   })    
+    
+    
+    output$sortie_tabl <- renderUI({
+        tabl_descript() %>% 
+        autofit() %>% 
+        htmltools_value()
+      }) 
+    
+    
  
     # Liens avec les modules --------------------------------
     
     observeEvent( r$button_graph , {
       
+      if(r$choix_graph == "histo"){
+      
       r$graph_save <- graph_hist()
       
-      r$tabl_save <-  tabl_descript()
+      r$tabl_save <-  tabl_descript()  }
       
     })    
     
