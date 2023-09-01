@@ -11,15 +11,17 @@
 #' @importFrom shinyjs show
 mod_onglet_unit_ui <- function(id) {
   ns <- NS(id)
-  tagList(tags$head(
+  tagList(
+    tags$head(
     tags$style(
       type = "text/css",
-      "#inline label{ display: table-cell;
+      "#inline label{ display: table-cell; padding-right: 1em;
                    vertical-align: middle;}
-                 #inline .form-group { display: table-row;}"
+                 #inline .form-group { display: table-row;}
+      "
     ) ),
     
-    #font-family:  Cabin Sketch;
+    
   
   fluidPage(fluidRow(
     # A propos
@@ -39,7 +41,7 @@ mod_onglet_unit_ui <- function(id) {
     column(
     6,
       style = "background: white;",
-      h4("Avant de me lancer..."),
+      h4(class = "titre", "Avant de me lancer..."),
       tags$div(
         id = "inline",
 
@@ -58,6 +60,7 @@ mod_onglet_unit_ui <- function(id) {
         div(
           id = ns("p3"),
           
+    
           selectInput(
           ns("val_unit_e"), ## val_unit_e----------
           label = "Et son prix en ",
@@ -65,6 +68,7 @@ mod_onglet_unit_ui <- function(id) {
                       "k€"),
           selected = 1
         ),
+        
         tooltip(
           textInput(ns("val_unit_p"), "par"), ## val_unit_p----------
           title = "1 000 L, tonne, panier")), 
@@ -91,7 +95,7 @@ mod_onglet_unit_ui <- function(id) {
         ),
         textInput(ns("val_unit_sautre"), "Solde choisi"), ## val_unit_sautre----------
         textOutput(ns("text2")) 
-        # %>% 
+        # %>%
         #   tagAppendAttributes(style ="font-family:  Cabin Sketch;")
       ),
       
@@ -104,14 +108,9 @@ mod_onglet_unit_ui <- function(id) {
         actionButton(ns("button_v_oser"), 
                      icon("play"),
                      status = "primary",
-                     label = "C'est parti !")
-      # infoBox(
-      #   title = "C'est parti !",
-      #   color = "info",
-      #   icon = icon("play"),
-      #   tabName = "oser"
-      # )%>% 
-      #   tagAppendAttributes(style ="font-family:  Cabin Sketch;")
+                     label = "C'est parti !") 
+        # %>% 
+        #  tagAppendAttributes(style ="font-family:  Cabin Sketch;")
       )
 
     )
