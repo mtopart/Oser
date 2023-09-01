@@ -366,4 +366,93 @@ test_tabl <- function(nom_solde,
   
 }
 
+#' @importFrom dplyr n
+#' @importFrom forcats as_factor
+
+gener_graph <- function(nom_solde,
+                        result,
+                        seuil_mini,
+                        seuil_att,
+                        unite_euros,
+                        unite_prix,
+                        unite_prod
+                        # ,
+                        # production,
+                        # prix, 
+                        # charges
+                        ) {
+  
+  result_mod <- result %>% 
+    mutate(
+      group_solde = case_when(
+        solde < seuil_mini ~ "group1",
+        solde < seuil_att & solde  > seuil_mini ~  "group2",
+        TRUE  ~ "group3"
+      ),
+      group_solde = as_factor(group_solde)) 
+  
+  nb_result <- nrow(result) 
+  
+  result2 <- result_mod %>% 
+    select(-solde  ) %>% 
+    pivot_longer(
+      1:3,
+      names_to = "indicateur",
+      values_to = "data"
+    ) 
+  
+  
+  result3 <- result_mod %>% 
+    group_by(group_solde) %>% 
+    summarise(
+      pourcent =  round(n()*100/ nb_result))
+  
+  
+  result2b <- result2 %>% 
+    mutate(
+      group_solde = case_when(
+        group_solde %in% "group1" ~ paste0(nom_solde, " < ", seuil_mini," ", unite_euros, "\n (", result3[1,2], " % des valeurs)", sep = "" ),
+        group_solde %in% "group2" ~ paste0(nom_solde, " > ", seuil_mini, " et < ", seuil_att," ", unite_euros, "\n (", result3[2,2], " % des valeurs)"),
+        TRUE  ~ paste0( nom_solde, " > ", seuil_att," ", unite_euros,"\n (", result3[3,2], " % des valeurs)")
+      )
+    )
+  
+  
+  
+  result2b %>%
+    ggplot( aes(x = group_solde, y=data, fill=group_solde)) +
+    #geom_violin() +
+    geom_boxplot(alpha=0.4) +
+    scale_fill_manual(values=c("red", "orange", "green3")) +
+    facet_wrap(facets = "indicateur", ncol =1, scales = "free_y") +
+    labs(
+      x = "Groupes selon les seuils choisis",
+      y = "Répartition des données",
+      subtitle = "Pour mieux comprendre les résultats",
+      title = "Répartition des différentes variables par groupe",
+      caption = "Vert = zone de confort \n Orange = zone de vigilance \n Rouge = zone critique"
+    ) + 
+    theme_light() +
+    # Customizations
+    theme(
+      legend.position = "none", 
+      strip.background = element_rect(fill = "#2a475e"),
+      
+      # This is the new default font in the plot
+      plot.title = element_text(
+        size = 14,
+        face = "bold",
+        color = "#2a475e"
+      ),# Statistical annotations below the main title
+      plot.subtitle = element_text(
+        size = 13, 
+        face = "bold",
+        color="#1b2838"
+      )
+    ) 
+  
+  
+  
+}
+
 
