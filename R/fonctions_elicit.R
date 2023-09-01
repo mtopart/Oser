@@ -1,5 +1,5 @@
 
-
+#' @importFrom stats pnorm
 normal.error <-
   function(parameters, values, probabilities, weights){
     sum(weights * (pnorm(values, parameters[1], exp(parameters[2])) - probabilities)^2)
@@ -15,21 +15,26 @@ t.error <-
 #   sum(weights * ((qt(probabilities, degreesfreedom) * exp(parameters[2]) +
 # parameters[1]) - values)^2)
 
+#' @importFrom stats pgamma
 gamma.error <-
   function(parameters, values, probabilities, weights){
     sum(weights * (pgamma(values, exp(parameters[1]), exp(parameters[2])) -probabilities)^2)
   }
 
+#' @importFrom stats pt
 logt.error <-
   function(parameters, values, probabilities, weights, degreesfreedom){
     sum(weights * (pt((log(values) - parameters[1]) / exp(parameters[2]), degreesfreedom) - probabilities)^2)
   }
 
+#' @importFrom stats plnorm
 lognormal.error <-
   function(parameters, values, probabilities, weights){
     sum(weights * (plnorm(values, parameters[1], exp(parameters[2])) - probabilities)^2)
   }
 
+
+#' @importFrom stats pbeta
 beta.error <-
   function(parameters, values, probabilities, weights){
     sum(weights * (pbeta(values, exp(parameters[1]), exp(parameters[2])) - probabilities)^2)
@@ -37,7 +42,7 @@ beta.error <-
 
 
 
-
+#' @importFrom stats approx qnorm optim
 fitdist_mod <-
   function(vals, probs, lower = -Inf,
            upper = Inf, weights = 1, tdf = 3,
