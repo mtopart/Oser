@@ -88,6 +88,8 @@ mod_box_distrib_ui <- function(id,
       p(id = ns("t_distrib"),
       htmlOutput(ns("mean_distrib"))),
       
+      #plotOutput(ns("histogram")),  
+      
       
       br(),
       actionButton(ns("button_distrib"), icon("eye")),
@@ -95,7 +97,7 @@ mod_box_distrib_ui <- function(id,
       if(type %in% "charges")  {
        h5("")},
       
-      #verbatimTextOutput(ns("test")),
+     # verbatimTextOutput(ns("test")),
 
 
       # Sidebar de la box
@@ -124,8 +126,8 @@ mod_box_distrib_server <- function(id,
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
-    
-    
+
+ 
     # Sortie des fonctions de distribution    ----------------------------------
     fs <- 12
     nBins <- 10
@@ -394,7 +396,35 @@ mod_box_distrib_server <- function(id,
                          value = rvd$sum_maxi)
     })     
     
+    ##  Envoi du graph pour sortie word -----------
     
+    # observeEvent(r$go_button, {
+    #   essai <- graph_distrib()
+    #   graph_data$plot_prod <- essai
+    # })
+    # 
+    # 
+    # # Affichez le graphique
+    # output$plot_output <- renderPlot({
+    #   # Affichez le graphique stocké dans l'objet reactiveValues
+    #   print(graph_data$plot_prod)
+    # })
+    
+    
+    # output$test <- renderPrint({  input$location })
+    # 
+    # 
+    # saveRoulettePlot <- function() {
+    #   png_file <- tempfile(fileext = ".png")  # Crée un fichier PNG temporaire
+    #   png(png_file, width = 800, height = 600, units = "px", res = 100)
+    #   plotRoulette()
+    #   dev.off()
+    #   graph_png_reactive(png_file)  # Stocke le nom du fichier PNG temporaire dans la variable réactive
+    # }
+    # 
+    # 
+    # r[[paste("graph_png", type, sep = "_")]]
+    # 
     
     ## Liens avec les modules--------------------- 
     
@@ -427,7 +457,6 @@ mod_box_distrib_server <- function(id,
 
       if(input$loi){
         r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution manuelle"
-        r[[paste("saisie_dist_graph", type, sep = "_")]] <- barplot(1:5, col = 2:6)
         
       } else {
         r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution uniforme"
@@ -482,10 +511,10 @@ mod_box_distrib_server <- function(id,
     output$titre <- renderUI( gest_text()   )  
     
     
-    output$test <- renderPrint(
-      v_myfit()
-      
-    )
+    # output$test <- renderPrint(
+    #   v_myfit()
+    #   
+    # )
 
   })
 }
