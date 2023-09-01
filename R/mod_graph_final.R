@@ -18,6 +18,7 @@
 #' @importFrom scales percent
 #' @importFrom rlang :=
 #' @importFrom ranger ranger
+#' @importFrom stats median quantile
 #' 
 
 mod_graph_final_ui <- function(id){
@@ -85,8 +86,9 @@ mod_graph_final_ui <- function(id){
         
         
         column(12,
-               plotlyOutput(ns("graphique_hist")),
-               plotlyOutput(ns("graphique_bam"))
+               plotlyOutput(ns("graphique_hist"))
+               # ,
+               # plotlyOutput(ns("graphique_bam"))
         )),
       
       fluidRow( id = ns("graphique_mat"),
@@ -394,9 +396,9 @@ mod_graph_final_server <- function(id,
     #})
     
     
-    output$graphique_bam <- renderPlotly({
-      graph_bam()
-    })   
+    # output$graphique_bam <- renderPlotly({
+    #   graph_bam()
+    # })   
     
     
     ## Matrice--------------------------------------------------------
