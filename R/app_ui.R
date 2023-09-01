@@ -12,7 +12,17 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     
+    #' tags$head(
+    #'   tags$style(HTML("
+    #'   @import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch&display=swap');
+    #'   
+    #'    h2 {
+    #'    font-family: 'Cabin Sketch', cursive;
+    #'   }
+    #'  "))
+    #' ),
     
+#     
 # #browser pour développement
 # 
 #     actionButton("browser", "browser"),
