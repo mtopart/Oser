@@ -44,7 +44,9 @@ Imports:
     scales,
     ranger,
     waiter,
-    flextable
+    flextable,
+    forcats,
+    stats
 LazyData: true
 RoxygenNote: 7.1.2
 Suggests: 
