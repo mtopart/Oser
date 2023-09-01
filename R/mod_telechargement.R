@@ -9,11 +9,13 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom officer read_docx body_add_gg body_add_par plot_instr body_add_plot fpar body_add_fpar fp_text external_img ftext
 #' @importFrom flextable body_add_flextable 
+#' @importFrom shinyalert shinyalert 
 #' 
 mod_telechargement_ui <- function(id){
   ns <- NS(id)
   tagList(
     useShinyjs(),
+   # useShinyalert(),
     
     box(
       title = "Enregistrement des données",
@@ -64,8 +66,8 @@ mod_telechargement_ui <- function(id){
     br(),
     br(),
     downloadButton(ns("dl_graph"), "Télécharger le compte-rendu")
-    #  ,
-    #  verbatimTextOutput(ns("test"))
+     # ,
+     # verbatimTextOutput(ns("test"))
     # ,
     # plotOutput(ns("test2"))
   ))
@@ -84,44 +86,21 @@ mod_telechargement_server <- function(id,
 
 
 graph_word <- function(gg,
-                       tabl,
+                       gg_tabl,
                        doc_word){
-
-  doc_word <- doc_word %>%
-    body_add_par(value = "", style = "heading 1") %>%
-    body_add_par(value = "Résultats", style = "heading 2") 
   
-  if(r$choix_graph == "histo"){
-    
-  doc_word <- doc_word %>%
-    body_add_gg(value = gg,
-                style = "Normal") %>%
-      body_add_par(value = input$com_hist, style = "Normal") 
   
-  if(r$coche_confort){
-    doc_word <- doc_word %>%
-        body_add_flextable(tabl)  # Besoin ajouter conditionnel pour l'afficher.
-  }
-  }
-  
-  if(r$choix_graph == "mat"){
-    
-    doc_word <- doc_word %>%
-      body_add_gg(value = gg,
-                  style = "Normal") %>%
-      body_add_par(value = input$com_mat, style = "Normal")  
-  }
-    
+  #Définition des paragraphes
   
   ## Paragraphe production
   
   par_prod1 <- fpar(
     ftext("Mini = ", prop = fp_text(bold = TRUE)),
-      paste0(r$saisie_mini_production, " ", r$unit_prod))
-    
+    paste0(r$saisie_mini_production, " ", r$unit_prod))
+  
   par_prod2 <- fpar(
     ftext("Maxi = ", prop = fp_text(bold = TRUE)),  
-      paste0( r$saisie_maxi_production, " ", r$unit_prod))
+    paste0( r$saisie_maxi_production, " ", r$unit_prod))
   
   par_prod3 <- fpar(
     ftext("Choix de distribution = ", fp_text(bold = TRUE)),  
@@ -145,21 +124,6 @@ graph_word <- function(gg,
   
   
   
-  ## Paragraphe production
-  
-  par_prod1 <- fpar(
-    ftext("Mini = ", prop = fp_text(bold = TRUE)),
-    paste0(r$saisie_mini_production, " ", r$unit_prod))
-  
-  par_prod2 <- fpar(
-    ftext("Maxi = ", prop = fp_text(bold = TRUE)),  
-    paste0( r$saisie_maxi_production, " ", r$unit_prod))
-  
-  par_prod3 <- fpar(
-    ftext("Choix de distribution = ", fp_text(bold = TRUE)),  
-    r$saisie_distrib_production)
-  
-  
   ## Paragraphe charges
   
   par_charges1 <- fpar(
@@ -175,6 +139,14 @@ graph_word <- function(gg,
     r$saisie_distrib_charges)
   
   
+
+  
+  # Titre  -------------------------------
+  doc_word <- doc_word %>%
+    body_add_par(value = "", style = "heading 1") 
+  
+  
+  #  Récapitulatif de saisie-------------------------
   
   doc_word <- doc_word %>%
     body_add_par(value = "Récapitulatif des éléments de saisie", style = "heading 2") %>% 
@@ -198,11 +170,39 @@ graph_word <- function(gg,
     body_add_fpar(par_charges2) %>% 
     body_add_fpar(par_charges3) 
   
+  
+  # Résultats -------------------------------
+  
+  doc_word <- doc_word  %>%
+    body_add_par(value = "Résultats", style = "heading 2") 
+  
+  if(r$choix_graph == "histo"){
+    
+  doc_word <- doc_word %>%
+    body_add_gg(value = gg,
+                style = "Normal") %>%
+      body_add_par(value = input$com_hist, style = "Normal") 
+  
+  if(r$coche_confort){
+    doc_word <- doc_word %>%
+      body_add_gg(gg_tabl) 
+  }
+  }
+  
+  if(r$choix_graph == "mat"){
+    
+    doc_word <- doc_word %>%
+      body_add_gg(value = gg,
+                  style = "Normal") %>%
+      body_add_par(value = input$com_mat, style = "Normal")  
+  }
+    
+
+  
 }
 
     doc <- reactive({
      read_docx(path = "inst/app/templates/template.docx") %>%
-        #body_add_par(value = "Sorties Oser - Compte-rendu", style = "centered") %>%
         body_add_fpar(
           fpar(
           ftext(text = "Sorties ",  
@@ -224,7 +224,7 @@ graph_word <- function(gg,
 
       observeEvent(r$button_graph,{
       graph_word(gg =  r$graph_save,
-                 tabl = r$tabl_save,
+                 gg_tabl = r$graph_var_save,
                  doc_word = doc())
     })
 
@@ -234,6 +234,31 @@ graph_word <- function(gg,
     # })
     # 
 
+      
+      observeEvent(input$select_graph, {
+        # Show a simple modal
+        #shinyalert(title = "You did it!", type = "success")
+        
+        shinyalert(
+          title = "Enregistrement effectué",
+          text = "Graphique(s) et données mémorisés",
+          size = "xs", 
+          closeOnEsc = TRUE,
+          closeOnClickOutside = TRUE,
+          html = FALSE,
+          type = "success",
+          showConfirmButton = TRUE,
+          showCancelButton = FALSE,
+          confirmButtonText = "OK",
+          confirmButtonCol = "#AEDEF4",
+          timer = 0,
+          imageUrl = "",
+          animation = FALSE
+        )
+        
+        
+      })
+      
     
     output$dl_graph <- downloadHandler(
       filename = function() {
@@ -250,7 +275,9 @@ graph_word <- function(gg,
       toggle("com_mat", condition = r$choix_graph == "mat") })
     
     # output$test <- renderPrint({
-    #   r$saisie_dist_graph_production })
+    #   #r$saisie_dist_graph_production 
+    #   r$saisie_distrib_charges
+    #   })
     # 
     # output$test2 <- renderPlot({
     #   #r$graph_save
