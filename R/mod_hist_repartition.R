@@ -9,6 +9,7 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom plotly add_text add_lines add_histogram
 #' @importFrom flextable autofit htmltools_value
+#' @importFrom stats median quantile
 
 
 mod_hist_repartition_ui <- function(id){
@@ -16,16 +17,30 @@ mod_hist_repartition_ui <- function(id){
   tagList(
     plotlyOutput(ns("graphique_hist")),
     
-    fluidRow(
-      column(5,
-             br(),
-             br(),
-             htmlOutput(ns("texte") 
-             )),
-      column(7,
-             br(),
-             #tableOutput(ns("sortie_tabl"))
-             uiOutput(ns("sortie_tabl"))
+ 
+    fluidRow(column(
+      12,
+      # p("Blblabl", style = "color:red ;font-size: 20px;
+      #                            font-style: italic"
+      # ),
+      # br(),
+      p(strong("Quelques chiffres")),
+      htmlOutput(
+        ns("texte")),
+        
+      br(),
+      
+        materialSwitch(
+          inputId = ns("detail"),
+          label = strong("Pour plus de détails sur la zone de confort"),
+          value = FALSE,
+          status = "primary"
+        ),
+    
+      
+      plotlyOutput(ns("graphique_variable"),
+                   width = "50%")
+      
       )
     )
   )
@@ -219,25 +234,29 @@ mod_hist_repartition_server <- function(id,
       descript <- descript()
       
       
-      moy <- paste0(c("Moyenne du solde (") ,r$select_solde, c(") ="), round(descript$moy), r$unit_e)
-      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), r$unit_e)
-      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3), r$unit_e)
+      moy <- paste0(c("Moyenne du solde (") ,r$select_solde, c(") ="), round(descript$moy)," ", r$unit_e)
+      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), " ", r$unit_e)
+      q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3)," ", r$unit_e)
       
       HTML(paste(moy, med, q, sep = '<br/>'))
       
     })
     
-    tabl_descript <- reactive({
-      req(r$coche_confort)
-      test_tabl(nom_solde = r$select_solde ,
-                result = result(),
-                seuil_mini = r$s_mini,
-                seuil_att = r$s_att,
-                unite_euros = r$unit_e,
-                unite_prod = r$unit_prod,
-                unite_prix = r$unit_prix) %>% 
-        as_flextable()
-    })
+    
+    
+    # #Définition du graphique -----------
+    
+    # tabl_descript <- reactive({
+    #   req(r$coche_confort)
+    #   test_tabl(nom_solde = r$select_solde ,
+    #             result = result(),
+    #             seuil_mini = r$s_mini,
+    #             seuil_att = r$s_att,
+    #             unite_euros = r$unit_e,
+    #             unite_prod = r$unit_prod,
+    #             unite_prix = r$unit_prix) %>% 
+    #     as_flextable()
+    # })
     
     
     # output$sortie_tabl <- renderTable(
@@ -246,13 +265,45 @@ mod_hist_repartition_server <- function(id,
     #   })    
     
     
-    output$sortie_tabl <- renderUI({
-        tabl_descript() %>% 
-        autofit() %>% 
-        htmltools_value()
-      }) 
+    graph_var <- reactive({
+      
+      req(result())
+      
+      gener_graph(
+        # production,
+        # prix, 
+        # charges,
+      nom_solde = r$select_solde ,
+      result = result(),
+      seuil_mini = r$s_mini,
+      seuil_att = r$s_att,
+      unite_euros = r$unit_e,
+      unite_prod = r$unit_prod,
+      unite_prix = r$unit_prix
+    )
+      })
+    
+    output$graphique_variable <- renderPlotly({
+      graph_var() 
+    })
     
     
+    
+    # output$sortie_tabl <- renderUI({
+    #     tabl_descript() %>% 
+    #     autofit() %>% 
+    #     htmltools_value()
+    #   }) 
+    
+    
+    
+    observe({
+      toggle(id = "detail", condition = r$coche_confort) })
+    
+    
+    observe({
+      toggle(id = "graphique_variable", condition = input$detail &  r$coche_confort)
+    })
  
     # Liens avec les modules --------------------------------
     
@@ -262,7 +313,10 @@ mod_hist_repartition_server <- function(id,
       
       r$graph_save <- graph_hist()
       
-      r$tabl_save <-  tabl_descript()  }
+      # r$tabl_save <-  tabl_descript() 
+      
+      r$graph_var_save <-  graph_var()
+      }
       
     })    
     
