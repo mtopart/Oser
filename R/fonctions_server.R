@@ -375,25 +375,24 @@ gener_graph <- function(nom_solde,
                         seuil_att,
                         unite_euros,
                         unite_prix,
-                        unite_prod
-                        # ,
-                        # production,
-                        # prix, 
-                        # charges
+                        unite_prod,
+                        titre_prod,
+                        titre_prix, 
+                        titre_charges
                         ) {
   
-  result_mod <- result %>% 
+  result_mod <- result %>% # A partir du tableau de resultat on integre les groupes
     mutate(
       group_solde = case_when(
-        solde < seuil_mini ~ "group1",
+        solde <= seuil_mini ~ "group1",
         solde < seuil_att & solde  > seuil_mini ~  "group2",
-        TRUE  ~ "group3"
+        solde >=  seuil_att ~ "group3"
       ),
       group_solde = as_factor(group_solde)) 
   
-  nb_result <- nrow(result) 
+  nb_result <- nrow(result) # calcul du nombre de ligne (normalement 125 000 par def)
   
-  result2 <- result_mod %>% 
+  result2 <- result_mod %>% # Resultat pivote pour mettre toutes les datas sur meme colonne
     select(-solde  ) %>% 
     pivot_longer(
       1:3,
@@ -402,35 +401,66 @@ gener_graph <- function(nom_solde,
     ) 
   
   
-  result3 <- result_mod %>% 
+  result3 <- result_mod %>% # En parrallele calcul du % sur chaque groupe
     group_by(group_solde) %>% 
     summarise(
       pourcent =  round(n()*100/ nb_result))
   
   
-  result2b <- result2 %>% 
+  result2b <- result2 %>% # modification de la colonne des noms avec integration du % valeurs
     mutate(
+      group_fill = group_solde,
       group_solde = case_when(
-        group_solde %in% "group1" ~ paste0(nom_solde, " < ", seuil_mini," ", unite_euros, "\n (", result3[1,2], " % des valeurs)", sep = "" ),
-        group_solde %in% "group2" ~ paste0(nom_solde, " > ", seuil_mini, " et < ", seuil_att," ", unite_euros, "\n (", result3[2,2], " % des valeurs)"),
-        TRUE  ~ paste0( nom_solde, " > ", seuil_att," ", unite_euros,"\n (", result3[3,2], " % des valeurs)")
+        group_solde %in% "group1" ~ paste0(nom_solde, " <= ", seuil_mini," ", unite_euros, "\n (", 
+                                           result3 %>% 
+                                             filter(
+                                               group_solde == "group1"
+                                             ) %>% 
+                                             select(pourcent) %>% 
+                                             pull(),
+                                           " % des valeurs)", sep = "" ),
+        group_solde %in% "group2" ~ paste0(nom_solde, " > ", seuil_mini, " et < ", seuil_att," ", unite_euros, "\n (", 
+                                           result3 %>% 
+                                             filter(
+                                               group_solde == "group2"
+                                             ) %>% 
+                                             select(pourcent) %>% 
+                                             pull(), 
+                                           " % des valeurs)"),
+        group_solde %in% "group3" ~ paste0( nom_solde, " >= ", seuil_att," ", unite_euros,"\n (",
+                                            result3 %>% 
+                                              filter(
+                                                group_solde == "group3"
+                                              ) %>% 
+                                              select(pourcent) %>% 
+                                              pull(),
+                                            " % des valeurs)")
       )
     )
   
   
   
   result2b %>%
-    ggplot( aes(x = group_solde, y=data, fill=group_solde)) +
+    mutate(
+      indicateur = case_when(
+        indicateur %in% "production" ~ titre_prod,
+        indicateur %in% "prix" ~ titre_prix,
+        indicateur %in% "charges" ~ titre_charges
+      )
+    ) %>%
+    ggplot( aes(x = group_solde, y=data, fill=group_fill)) +
     #geom_violin() +
     geom_boxplot(alpha=0.4) +
-    scale_fill_manual(values=c("red", "orange", "green3")) +
+    scale_fill_manual(values=c( "group1" = "red", 
+                                "group2" = "orange",
+                                "group3" = "green3")) +
     facet_wrap(facets = "indicateur", ncol =1, scales = "free_y") +
     labs(
       x = "Groupes selon les seuils choisis",
       y = "Répartition des données",
       subtitle = "Pour mieux comprendre les résultats",
       title = "Répartition des différentes variables par groupe",
-      caption = "Vert = zone de confort \n Orange = zone de vigilance \n Rouge = zone critique"
+      caption = "Vert = zone de confort\nOrange = zone de vigilance\nRouge = zone critique"
     ) + 
     theme_light() +
     # Customizations
