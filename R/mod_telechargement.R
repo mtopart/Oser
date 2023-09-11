@@ -176,20 +176,20 @@ graph_word <- function(gg,
   doc_word <- doc_word  %>%
     body_add_par(value = "Résultats", style = "heading 2") 
   
-  if(r$choix_graph == "histo"){
+  if(r$choix_graph == "histo"){ # Ajout tableau et commentaires pour histogramme
     
   doc_word <- doc_word %>%
     body_add_gg(value = gg,
                 style = "Normal") %>%
       body_add_par(value = input$com_hist, style = "Normal") 
   
-  if(r$coche_confort){
+  if(r$coche_confort){   # Ajout du graphique qui concerne les variables de la zone de confort
     doc_word <- doc_word %>%
-      body_add_gg(gg_tabl) 
+      body_add_gg(gg_tabl)
   }
   }
   
-  if(r$choix_graph == "mat"){
+  if(r$choix_graph == "mat"){    # Ajout tableau et commentaires pour matrice
     
     doc_word <- doc_word %>%
       body_add_gg(value = gg,
