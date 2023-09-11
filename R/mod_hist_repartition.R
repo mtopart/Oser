@@ -15,21 +15,36 @@
 mod_hist_repartition_ui <- function(id){
   ns <- NS(id)
   tagList(
+    tags$head(tags$style(".textcaption{float:right;}")),
+    
     plotlyOutput(ns("graphique_hist")),
     
  
     fluidRow(column(
       12,
+      id = ns("caption_zc"),
       # p("Blblabl", style = "color:red ;font-size: 20px;
       #                            font-style: italic"
       # ),
       # br(),
+       div(
+           htmlOutput(ns("caption")) ,
+              style="text-align:right; color:grey; font-size:13px;",
+      #     # class = "col-sm-12", style = "padding-right:0"),
+         class = 'textcaption')
+      ),
+      
+      column(
+        12,
+      hr(),
       p(strong("Quelques chiffres")),
       htmlOutput(
         ns("texte")),
         
       br(),
-      
+      hr(
+        id = ns("brr")
+      ),
         materialSwitch(
           inputId = ns("detail"),
           label = strong("Pour plus de détails sur la zone de confort"),
@@ -38,8 +53,9 @@ mod_hist_repartition_ui <- function(id){
         ),
     
       
-      plotlyOutput(ns("graphique_variable"),
-                   width = "50%")
+      plotOutput(ns("graphique_variable"),
+                   width = "60%",
+                 height = "600px")
       
       )
     )
@@ -80,7 +96,9 @@ mod_hist_repartition_server <- function(id,
         nb_val = length(result$solde),
         q1 = quantile(result$solde, 0.25),
         q3 = quantile(result$solde, 0.75),
-        interv = q3 -q1
+        interv = q3 -q1 ,
+        qA = quantile(result$solde, 0.20),
+        qB = quantile(result$solde, 0.80)
       )
       
     })    
@@ -109,7 +127,102 @@ mod_hist_repartition_server <- function(id,
     ## Histogramme de base ----------------------------
     
     
-    graph_hist <- reactive({
+    # graph_hist <- reactive({
+    #   req(result())
+    #   result <- result()
+    #   
+    #   
+    #   graph_hist_content <- result %>%
+    #     ggplot(aes(solde)) +
+    #     geom_histogram(aes(y = after_stat(count / sum(count))),
+    #                    binwidth = 200,
+    #                    show.legend = FALSE,
+    #                    alpha = 0.7 ) +
+    #     scale_y_continuous(labels = scales::percent) +
+    #     labs(
+    #       title = graph_titre(),
+    #       #subtitle = "Répartition de la marge ",
+    #       x = graph_axe_titre_x(),
+    #       y = "Fréquence",
+    #       fill = ""
+    #     ) +
+    #     theme_bw() +
+    #     theme(
+    #       plot.title = element_text(size = 13L,
+    #                                 face = "bold"),
+    #       plot.subtitle = element_text(size = 12L,
+    #                                    face = "italic")
+    #     )
+    #   
+    #   
+    #   ### Ajout annotation------------------------------
+    #   
+    #   hist <- hist(result()$solde, plot = FALSE)
+    #   xlim <- range(hist$breaks)
+    #   ylim  <- c(0, (ceiling(max(hist$density)*100)/10)-0.03)    
+    #   
+    #   ### Zone de confort------------------------------
+    #   if(r$coche_confort){
+    #     
+    #     graph_hist_content <- graph_hist_content +
+    #       aes(fill = case_when(solde <  r$s_mini  ~ "A",
+    #                            solde >  r$s_att ~ "B",
+    #                            TRUE ~ "C")) +
+    #       scale_fill_manual(
+    #         values = c("A" = "red",
+    #                    "C" = "orange",
+    #                    "B" = "green3")
+    #       )+
+    #       theme(
+    #         legend.position = "none")+
+    #       labs(
+    #         caption = "Vert = zone de confort\nOrange = zone de vigilance\nRouge = zone critique"
+    #       )
+    #     
+    #     
+    #   } else {
+    #     graph_hist_content <- graph_hist_content +
+    #       aes(fill = "#XXXXX") +
+    #       scale_fill_manual(values = c("#XXXXX" = "#77b5fe"))  +
+    #       theme(
+    #         legend.position = "none")
+    #   }
+    #   
+    #   #### Quartiles -----------------------------------------
+    #   
+    #   if(r$coche_quart){
+    #     
+    #     graph_hist_content <- graph_hist_content +
+    #       geom_vline(xintercept = descript()$q1,
+    #                  color = "orange") +
+    #       geom_vline(xintercept = descript()$q3,
+    #                  color = "green") +
+    #       geom_vline(xintercept = descript()$mediane,
+    #                  color = "blue",
+    #                  linetype =  "dashed")   +
+    #       annotate("text",
+    #                x = descript()$mediane,
+    #                y = ylim[2]- 0.015,
+    #                label = "Médiane") +
+    #       annotate("text",
+    #                x = descript()$q1,
+    #                y =ylim[2]- 0.015,
+    #                label = "Q1") +
+    #       annotate("text",
+    #                x = descript()$q3,
+    #                y =ylim[2]- 0.015,
+    #                label = "Q3")
+    #     
+    #   }
+    #   
+    #   return(graph_hist_content)
+    #   
+    # })
+    
+## Essai graphique -------------------------------------------------------
+    
+    
+    graph_hist_1 <- reactive({
       req(result())
       result <- result()
       
@@ -130,18 +243,14 @@ mod_hist_repartition_server <- function(id,
         ) +
         theme_bw() +
         theme(
-          plot.title = element_text(size = 15L,
+          plot.title = element_text(size = 13L,
                                     face = "bold"),
-          plot.subtitle = element_text(size = 13L,
+          plot.subtitle = element_text(size = 12L,
                                        face = "italic")
         )
       
       
-      ### Ajout annotation------------------------------
-      
-      hist <- hist(result()$solde, plot = FALSE)
-      xlim <- range(hist$breaks)
-      ylim  <- c(0, (ceiling(max(hist$density)*100)/10)-0.03)    
+   
       
       ### Zone de confort------------------------------
       if(r$coche_confort){
@@ -156,7 +265,10 @@ mod_hist_repartition_server <- function(id,
                        "B" = "green3")
           )+
           theme(
-            legend.position = "none")
+            legend.position = "none")+
+          labs(
+            caption = "Vert = zone de confort\nOrange = zone de vigilance\nRouge = zone critique"
+          )
         
         
       } else {
@@ -167,42 +279,108 @@ mod_hist_repartition_server <- function(id,
             legend.position = "none")
       }
       
+      return(graph_hist_content)  # graph_hist_1
+      
+    })   
+      
+      
       #### Quartiles -----------------------------------------
+    graph_hist_2_plotly <- reactive({
+      req(graph_hist_1())
+      graph_hist_content <- graph_hist_1()
+      
+      
+      ### Ajout annotation------------------------------
+      
+      hist <- hist(result()$solde, plot = FALSE)
+      xlim <- range(hist$breaks)
+      ylim  <- c(0, (ceiling(max(hist$density)*100)/10)-0.03)  
+      
+      graph_hist_content <- ggplotly(graph_hist_content)
       
       if(r$coche_quart){
         
-        graph_hist_content <- graph_hist_content +
+        graph_hist_content <- graph_hist_content  %>% 
+          add_lines(x =  descript()$q1, 
+                    y = ylim, inherit = FALSE,
+                    line = list(color = "orange",
+                                dash = 'dot')
+                    ) %>% 
+          add_lines(x =  descript()$mediane, 
+                    line = list(color = "blue",
+                                dash = 'dash'),
+                    y = ylim, inherit = FALSE)%>% 
+          add_lines(x =  descript()$q3, 
+                    line = list(color = "green",
+                                dash = 'dot'),
+                    #color =I("green"),
+                    y = ylim, inherit = FALSE) %>% 
+          add_text( x = descript()$mediane + 100,
+                    y = 0,
+                    text = "Médiane", inherit = FALSE)%>% 
+          add_text( x = descript()$q1,
+                    y =  0,
+                    text = "Q1", inherit = FALSE) %>% 
+          add_text( x = descript()$q3,
+                    y =  0,
+                    text = "Q3", inherit = FALSE)
+        
+      }
+      
+      return(graph_hist_content) # Graphique pour le plotly
+      
+    })   
+    
+    
+    graph_hist_2_imp <- reactive({
+      req(graph_hist_1())
+      graph_hist_content <- graph_hist_1()
+      
+      
+      ### Ajout annotation------------------------------
+      
+      hist <- hist(result()$solde, plot = FALSE)
+      xlim <- range(hist$breaks)
+      ylim  <- c(0, (ceiling(max(hist$density)*100)/10)-0.03)  
+      
+      
+      
+      
+      if(r$coche_quart){
+        
+        graph_hist_content <- graph_hist_content        +
           geom_vline(xintercept = descript()$q1,
                      color = "orange") +
           geom_vline(xintercept = descript()$q3,
                      color = "green") +
           geom_vline(xintercept = descript()$mediane,
                      color = "blue",
-                     linetype =  "dashed")   +
+                     linetype =  "dashed") +
           annotate("text",
                    x = descript()$mediane,
-                   y = ylim[2]- 0.015,
-                   label = "Médiane") +
+                   y = -0.005,
+                   label = "Médiane")  +
           annotate("text",
                    x = descript()$q1,
-                   y =ylim[2]- 0.015,
+                   y = -0.005,
                    label = "Q1") +
           annotate("text",
                    x = descript()$q3,
-                   y =ylim[2]- 0.015,
+                   y = -0.005,
                    label = "Q3")
         
       }
       
-      return(graph_hist_content)
+      return(graph_hist_content)  # Sortie pour l'impression
       
-    })
+    }) 
+    
     
     
     
     output$graphique_hist <- renderPlotly({
-      w <- ggplotly(graph_hist()) %>%    
-        layout(dragmode = "select") %>%   
+      w <- graph_hist_2_plotly() %>%    
+        layout(dragmode = "select" )%>%  
         config(
           modeBarButtonsToRemove = c('lasso2d',
                                      'zoomIn2d',
@@ -210,14 +388,13 @@ mod_hist_repartition_server <- function(id,
                                      'autoScale2d')
         )
       
-      if(!r$coche_quart){
+      
         for(longueurdata in seq(1, length(w$x$data), 1)){
           w$x$data[[longueurdata]]$text <- paste(r$solde2, "=", w$x$data[[longueurdata]]$x, r$unit_e,
                                                  "<br>",  round(w$x$data[[longueurdata]]$y * 100, digits = 2 ) , "% des valeurs" )
-          
-        }}
-      
-      
+
+        }
+    
       w    
       
     })             
@@ -234,47 +411,37 @@ mod_hist_repartition_server <- function(id,
       descript <- descript()
       
       
-      moy <- paste0(c("Moyenne du solde (") ,r$select_solde, c(") ="), round(descript$moy)," ", r$unit_e)
+      moy <- paste0(c("Moyenne du solde (") ,r$select_solde, c(") = "), round(descript$moy)," ", r$unit_e)
       med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), " ", r$unit_e)
       q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3)," ", r$unit_e)
+      q2 <- paste0(c("80 % des valeurs sont comprises entre "), round(descript$qA), c(" et "), round(descript$qB)," ", r$unit_e)
       
-      HTML(paste(moy, med, q, sep = '<br/>'))
+      HTML(paste(moy, med, q, q2, sep = '<br/>'))
       
+    })
+    
+    output$caption <- renderUI({
+      HTML("Vert = zone de confort<br/>Orange = zone de vigilance<br/>Rouge = zone critique")
     })
     
     
     
-    # #Définition du graphique -----------
+    # #Définition du graphique sur les variables -----------
     
-    # tabl_descript <- reactive({
-    #   req(r$coche_confort)
-    #   test_tabl(nom_solde = r$select_solde ,
-    #             result = result(),
-    #             seuil_mini = r$s_mini,
-    #             seuil_att = r$s_att,
-    #             unite_euros = r$unit_e,
-    #             unite_prod = r$unit_prod,
-    #             unite_prix = r$unit_prix) %>% 
-    #     as_flextable()
-    # })
-    
-    
-    # output$sortie_tabl <- renderTable(
-    #   rownames = TRUE, {
-    #     tabl_descript()
-    #   })    
-    
+
     
     graph_var <- reactive({
       
       req(result())
       
+      result <- result()
+      
       gener_graph(
-        # production,
-        # prix, 
-        # charges,
+        titre_prod = r$titre_production,
+        titre_prix = r$titre_prix ,
+        titre_charges = r$titre_charges,
       nom_solde = r$select_solde ,
-      result = result(),
+      result = result,
       seuil_mini = r$s_mini,
       seuil_att = r$s_att,
       unite_euros = r$unit_e,
@@ -283,22 +450,17 @@ mod_hist_repartition_server <- function(id,
     )
       })
     
-    output$graphique_variable <- renderPlotly({
+    output$graphique_variable <- renderPlot({
       graph_var() 
     })
     
     
     
-    # output$sortie_tabl <- renderUI({
-    #     tabl_descript() %>% 
-    #     autofit() %>% 
-    #     htmltools_value()
-    #   }) 
-    
-    
-    
     observe({
-      toggle(id = "detail", condition = r$coche_confort) })
+      toggle(id = "detail", condition = r$coche_confort)
+      toggle(id = "caption_zc", condition = r$coche_confort)
+      toggle(id = "brr", condition = r$coche_confort)
+      })
     
     
     observe({
@@ -311,9 +473,7 @@ mod_hist_repartition_server <- function(id,
       
       if(r$choix_graph == "histo"){
       
-      r$graph_save <- graph_hist()
-      
-      # r$tabl_save <-  tabl_descript() 
+      r$graph_save <- graph_hist_2_imp()
       
       r$graph_var_save <-  graph_var()
       }
