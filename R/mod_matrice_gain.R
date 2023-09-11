@@ -155,7 +155,11 @@ mod_matrice_gain_server <- function(id,
 
       graph_mat_content  <- ggplot(tbl_matrice())  +
         geom_tile(aes(x = .data[[col1_n]], y = .data[[col2_n]], fill = .data[[marge_n]])) +
-        theme_minimal()
+        theme_minimal() +
+        theme(
+          plot.title = element_text(size = 15L,
+                                    face = "bold")
+        )
 
 
       graph_mat_content <-   graph_mat_content  +
@@ -312,7 +316,11 @@ mod_matrice_gain_server <- function(id,
       
       graph_mat_content_word  <- ggplot(tbl_matrice_word())  +
         geom_tile(aes(x = .data[[col1_n]], y = .data[[col2_n]], fill = .data[[marge_n]])) +
-        theme_minimal()
+        theme_minimal() +
+        theme(
+          plot.title = element_text(size = 13L,
+                                    face = "bold")
+        )
       
       
       graph_mat_content_word <-   graph_mat_content_word  +
@@ -422,20 +430,20 @@ mod_matrice_gain_server <- function(id,
     titre_mat_3 <- reactive({
       if(is.null(r$solde)){
         "Solde en fonction du prix et de la production" } else {
-          paste0(r$solde, " en fonction du prix et de la production") } 
+          paste0(r$solde, " en fonction du prix et \n de la production") } 
     })
     
     titre_mat_2 <- reactive({
       if(is.null(r$solde)){
         "Solde en fonction des charges et de la production" } else {
-          paste0(r$solde, " en fonction des charges et de la production") } 
+          paste0(r$solde, " en fonction des charges et \n de la production") } 
       
     })
     
     titre_mat_1 <- reactive({
       if(is.null(r$solde)){
         "Solde en fonction du prix et des charges" } else {
-          paste0(r$solde, " en fonction du prix et des charges") } 
+          paste0(r$solde, " en fonction du prix et \n des charges") } 
       
     })  
     
