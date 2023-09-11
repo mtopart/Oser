@@ -454,7 +454,9 @@ mod_box_distrib_server <- function(id,
       r[[paste("saisie_mini", type, sep = "_")]]  <- input$v_mini 
       r[[paste("saisie_maxi", type, sep = "_")]]  <- input$v_maxi
       
+      r[[paste("titre", type, sep = "_")]]  <- gest_text_2()
 
+      
       if(input$loi){
         r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution manuelle"
         
@@ -466,19 +468,7 @@ mod_box_distrib_server <- function(id,
     })
     
 
-    
-    # observeEvent(r$button_unit,{
-    #   texte <- r$unit_prix
-    #   
-    # })
-    
-    # test_text <- reactive({
-    #   if(is.null(r$unit_prix)){
-    #     box_title } else {
-    #       paste(title,r$unit_prix, sep = ,)
-    #     }
-    # 
-    # })
+  
     
     
  ## Gestion des titres -------------------------------------------------------------------------   
@@ -507,6 +497,34 @@ mod_box_distrib_server <- function(id,
       }
       
     })
+    
+    
+    gest_text_2 <- reactive({  # Pour le tableau des variables en sortie
+      
+      if(type == "prix"){
+        if(is.null(r$unit_prix)){
+          "Prix" } else {
+            paste("Prix (",  r$unit_prix, ")", sep ="" )
+          } 
+        
+      }     else if(type == "charges"){
+        if(is.null(r$unit_e)){
+          "Charges" } else {
+            paste("Charges (",  
+                       r$unit_e, 
+                       " à l'échelle ",  
+                       r$echelle,
+                       ")", sep ="" )
+          } 
+      }      else if(type == "production"){
+        if(is.null(r$unit_prod)){
+          "Production et quantité" } else {
+            paste("Production (",  r$unit_prod, ")", sep ="" )
+          } 
+      }
+      
+    })
+    
     
     output$titre <- renderUI( gest_text()   )  
     
