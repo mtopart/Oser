@@ -15,13 +15,23 @@ mod_aide_distrib_ui <- function(id){
     
     column( 
       12,
-      materialSwitch(
-        inputId = ns("aide"),
-        label = strong("J'ai besoin d'aide pour comprendre comment tracer ma distribution"),
-        value = FALSE,
-        status = "primary",
-        inline = TRUE
+      
+     # strong("J'ai besoin d'aide"),
+      tags$button(
+        id = "web_button",
+        class = "btn action-button",
+        tags$img(src = "www/Image7.png",
+                 height = "100px"),
+        onclick ="window.open('https://view.genial.ly/650b071caad55800184bb5cd', '_blank')"
       ),
+      
+      # materialSwitch(
+      #   inputId = ns("aide"),
+      #   label = strong("J'ai besoin d'aide pour comprendre comment tracer ma distribution"),
+      #   value = FALSE,
+      #   status = "primary",
+      #   inline = TRUE
+      # ),
       
       p(id = ns("h1"), strong("Utilisation :")," Cliquez directement dans le graphique pour allouer un nombre de jetons à chaque intervalle. 
                            Cliquez juste en-dessous de la ligne du 0 de l'axe des y pour effacer une case."),

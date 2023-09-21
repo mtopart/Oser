@@ -31,21 +31,25 @@ mod_zone_graph_ui <- function(id){
     box(
       title = uiOutput(ns("titre")),
       width = 12,
-      icon = 
+      # icon = 
 
-        tags$span(icon("question"))
-      %>%
-        add_prompt(
-          position = "right",
-          message = "Voir onglet 'Tutoriels' - en construction",
-          type = "info"),
-      
+      #   tags$span(icon("question"))
+      # %>%
+      #   add_prompt(
+      #     position = "right",
+      #     message = "Voir onglet 'Tutoriels' - en construction",
+      #     type = "info"),
+        # 
+        # tooltip(
+        #   tags$span(icon("question")),
+        #   title =  "Voir onglet 'Tutoriels' - en construction"),
       
       br(),
       
       ## Choix graph--------------------------------------------------
       fluidRow(
         column(12,
+               
                div("Pour positionner les valeurs seuils, cliquez sur", 
                    icon("cogs", style = "color:grey;") )),
         
@@ -116,7 +120,15 @@ mod_zone_graph_ui <- function(id){
           value = FALSE,
           icon = icon("check"),
           status = "success"
-        )
+        ),
+        
+        tags$button(
+          id = "web_button",
+          class = "btn action-button",
+          tags$img(src = "www/Image7.png",
+                   height = "100px"),
+          onclick ="window.open('https://view.genial.ly/650b073107be920019bea9a5', '_blank')"
+        ),
       )  
       
     )

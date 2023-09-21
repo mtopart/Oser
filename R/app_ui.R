@@ -6,6 +6,7 @@
 #' @import bs4Dash 
 #' @import waiter
 #' @noRd
+#' 
 app_ui <- function(request) {
   
   tagList(
@@ -35,7 +36,8 @@ app_ui <- function(request) {
       
       title = "Oser",
       freshTheme = TRUE,
-      fullscreen = TRUE,
+      #help = TRUE,
+      #fullscreen = TRUE,
       header = dashboardHeader(
         title = bs4DashBrand("Oser",
                              color = NULL , href = NULL, image = NULL, opacity = 0.8),      

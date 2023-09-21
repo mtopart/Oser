@@ -41,10 +41,23 @@ mod_onglet_unit_ui <- function(id) {
     column(
     6,
       style = "background: white;",
+    
       h4(class = "titre", "Avant de me lancer..."),
+    
+  
+    
+    tags$button(
+      id = "web_button",
+      class = "btn action-button",
+      tags$img(src = "www/Image7.png",
+               height = "100px"),
+      onclick ="window.open('https://view.genial.ly/650af2df6c8849001028e14f', '_blank')"
+    ),
+    
+    
       tags$div(
         id = "inline",
-
+  
         tooltip( ##val_echelle-----------------
           textInput(ns("val_echelle"), "Je veux visualiser mes résultats à l'échelle"),
           title = "D'un atelier, d'un groupe de culture, d'une culture, d'un hectare... "
@@ -252,7 +265,7 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
 
 
 
-# Aide CSS
+# Aide CSS------------------------------------
 # library(shiny)
 #
 # ui <- fluidPage(
