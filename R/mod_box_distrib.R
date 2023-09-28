@@ -8,7 +8,8 @@
 #'
 #' @importFrom shiny NS tagList 
 #' @importFrom  bs4Dash box boxSidebar 
-#' @importFrom dplyr %>% 
+#' @importFrom dplyr %>% as_tibble 
+#' @importFrom ggplot2 ggplot geom_histogram
 #' @importFrom shinyWidgets materialSwitch actionBttn radioGroupButtons
 #' @importFrom prompter add_prompt use_prompt
 #' @importFrom shinyalert  shinyalert
@@ -323,7 +324,10 @@ mod_box_distrib_server <- function(id,
         html = TRUE,
         title = "Distribution :",
         text = tagList(
-          verbatimTextOutput(ns("distrib"))
+          verbatimTextOutput(ns("distrib")),
+          plotOutput(ns("graph_dist")),
+          plotOutput(ns("graph_dist2")),
+          verbatimTextOutput(ns("test_distrib"))
         ),
         type = "",
         closeOnClickOutside = TRUE)
@@ -424,7 +428,46 @@ mod_box_distrib_server <- function(id,
     # 
     # 
     # r[[paste("graph_png", type, sep = "_")]]
-    # 
+    
+    
+    
+    ## Graphique distrib -----------------------
+    
+    
+    graph_distibution <- reactive({
+      
+      dist <- distrib_finale() %>% 
+        as_tibble()
+      
+      ggplot(dist) +
+        aes(x = value) +
+        geom_histogram(bins = 30L,  color = "#C2D3E1",fill = "#C2D3E1") +
+        labs(
+          x = "Valeurs de production",
+          y = "Nombre de valeurs",
+          title = "Représentation de l'échantillon",
+          subtitle = "Echantillon défini par Oser à partir de la trace manuelle"
+        ) +
+        theme_light()
+      
+      
+    })
+    
+    
+    output$graph_dist <- renderPlot( graph_distibution() )
+    
+    
+    
+    output$graph_dist2 <- renderPlot( 
+      distrib_finale() %>% 
+        as_tibble() %>% 
+        ggplot() +
+                                        aes(x = value) +
+                                        geom_density(adjust = 1L, fill = "#C2D3E1") +
+                                        theme_minimal()
+    )
+    
+    output$test_distrib<- renderPrint(v_myfit())
     
     ## Liens avec les modules--------------------- 
     
@@ -529,10 +572,7 @@ mod_box_distrib_server <- function(id,
     output$titre <- renderUI( gest_text()   )  
     
     
-    # output$test <- renderPrint(
-    #   v_myfit()
-    #   
-    # )
+ 
 
   })
 }
