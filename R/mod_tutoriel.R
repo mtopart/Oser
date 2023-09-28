@@ -14,8 +14,8 @@ mod_tutoriel_ui <- function(id){
     column(
       width = 12,
       
-        p("Page en construction", style = "color:red ;font-size: 20px;
-                                  font-style: italic"),
+        # p("Page en construction", style = "color:red ;font-size: 20px;
+        #                           font-style: italic"),
     #     br(),
     #   
     # h3("Le choix du solde est laissé au conseiller, en fonction de ses préférences"),
@@ -27,6 +27,14 @@ mod_tutoriel_ui <- function(id){
     
     h1("Tutoriels"),
     br(),
+    p("Oser est un calculateur 'crash-test', qui permet de tester la capacité d'un atelier à encaisser une variation de production, 
+    de prix de vente ou même de charges.
+    Il est à utiliser en complément d'une étude technico-économique classique.", 
+      em("Et si mon prix de vente diminue de tant ? Et s'il y a un aléa climatique qui impacte mon rendement de tant ?")),
+    p("Le choix du solde final est laissé librement à l'utilisateur en fonction de son besoin. 
+    De plus,même si Oser est plus approprié à une utilisation sur une échelle atelier, 
+      il est également possible de l'adapter aux échelles système de culture ou d'élevage ou encore exploitation agricole. "),
+    hr(),
     h2("Utilisation d'Oser"),
     h5(strong("Saisie des unités")),
     htmlOutput(ns("unite")),
@@ -58,7 +66,7 @@ mod_tutoriel_server <- function(id){
     
     output$distribution <- renderUI({
   HTML(
-    '<div style="width: 100%;"><div style="position: relative; padding-bottom: 56.25%;
+    '<div style="width: 80%;"><div style="position: relative; padding-bottom: 56.25%;
       padding-top: 0; height: 0;"><iframe title="Tutoriel choix de la distribution" frameborder="0"
       width="1200" height="675" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
       src="https://view.genial.ly/650b071caad55800184bb5cd" type="text/html" allowscriptaccess="always" 
@@ -68,7 +76,7 @@ mod_tutoriel_server <- function(id){
  
     output$unite<- renderUI({
       HTML(
-        '<div style="width: 100%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0;
+        '<div style="width: 80%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0;
         height: 0;"><iframe title="Tutoriel saisie unités" frameborder="0" width="1200" height="675" 
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
         src="https://view.genial.ly/650af2df6c8849001028e14f" type="text/html" allowscriptaccess="always" 
@@ -77,7 +85,7 @@ mod_tutoriel_server <- function(id){
     
     output$graphiques <- renderUI({
       HTML(
-        '<div style="width: 100%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0;
+        '<div style="width: 80%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0;
         height: 0;"><iframe title="Tutoriel Graphiques" frameborder="0" width="1200" height="675" 
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
         src="https://view.genial.ly/650b073107be920019bea9a5" type="text/html" allowscriptaccess="always" allowfullscreen="true" 
