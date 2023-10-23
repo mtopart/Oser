@@ -30,17 +30,17 @@ mod_matrice_gain_ui <- function(id){
                                  choices = c("Production" = 1, "Prix" = 2, "Charges" = 3)),
                      
                      numericInput(inputId = ns("charges_mat"),
-                                  label = paste0("Pr\\u00e9cisez le niveau de charges souhait\\u00e9"),
+                                  label = paste0("Pr\u00e9cisez le niveau de charges souhait\u00e9"),
                                   value = uiOutput(ns("charges_moy_UI"))),
                      
                      numericInput(inputId = ns("prod_mat"),
-                                  label = paste0("Pr\\u00e9cisez le niveau de production souhait\\u00e9"),
+                                  label = paste0("Pr\u00e9cisez le niveau de production souhait\u00e9"),
                                   value = uiOutput(ns("prod_moy_UI"))),
                      
                      numericInput(inputId = ns("prix_mat"),
-                                  label = paste0("Pr\\u00e9cisez le niveau de prix souhait\\u00e9"),
+                                  label = paste0("Pr\u00e9cisez le niveau de prix souhait\u00e9"),
                                   value = uiOutput(ns("prix_moy_UI"))),
-                     p(style = "font-style: italic","(Par d\\u00e9faut, moyenne)")
+                     div(style = "font-style: italic","(Par d\u00e9faut, moyenne)")
                      
               ))
   )

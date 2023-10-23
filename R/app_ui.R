@@ -17,7 +17,7 @@ app_ui <- function(request) {
     use_font(
       id = "cabin-sketch",
         css_path = "inst/app/www/css/cabin-sketch.css",
-      selector = c("h1", "h3", "h4", "h5", "span", "p", "button", "h2"
+      selector = c("h1", "h3", "h4", "h5", "h6", "span", "p", "button", "h2"
                    )
     ), 
     
@@ -40,7 +40,7 @@ app_ui <- function(request) {
       header = dashboardHeader(
         title = bs4DashBrand("Oser",
                              color = NULL , href = NULL, image = NULL, opacity = 0.8),      
-        actionButton(inputId = "controlbarToggle", label = "Gestion des unit\\u00e9s", class = "mx-2")
+        actionButton(inputId = "controlbarToggle", label = "Gestion des unit\u00e9s", class = "mx-2")
       ),
       
       # Create our navigation menu that links to each of the tabs we defined
@@ -55,7 +55,7 @@ app_ui <- function(request) {
           name = span("Welcome Onboard!")
         ),
         
-        # D\\u00e9finition des menus de la barre de gauche      
+        # Définition des menus de la barre de gauche      
         sidebarMenu(
           id = "tabs",
           
@@ -83,9 +83,9 @@ app_ui <- function(request) {
           
         )),
       
-      # D\\u00e9finition des menus de la barre de gauche       
+      # D\u00e9finition des menus de la barre de gauche       
       footer = dashboardFooter(
-        left = "Prototype - application en d\\u00e9veloppement",
+        left = "Prototype - application en d\u00e9veloppement",
         right = "2022 - Strat&co"
       ),
       
@@ -136,7 +136,7 @@ app_ui <- function(request) {
                   )                      
           ),
           
-          # # Mode avanc\\u00e9 
+          # # Mode avancé
           # conditionalPanel(
           #   'input.select == 2',
           #   box(
@@ -152,7 +152,7 @@ app_ui <- function(request) {
         ),
       #,
       
-      # # Cr\\u00e9ation de la controlbar -----------------------------
+      # # Création de la controlbar -----------------------------
       
       # controlbar = dashboardControlbar(
       #   skin = "light",
@@ -166,7 +166,7 @@ app_ui <- function(request) {
       #       selectInput("select", 
       #                   label = "Select box", 
       #                   choices = list("Simple" = 1, 
-      #                                  "Avanc\\u00e9" = 2), 
+      #                                  "Avanc\u00e9" = 2), 
       #                   selected = 1),
       #       conditionalPanel(
       #         'input.select == 2',

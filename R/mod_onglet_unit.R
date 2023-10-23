@@ -58,11 +58,11 @@ mod_onglet_unit_ui <- function(id) {
       tags$div(
         id = "inline",
         
-      h5("Choix des unit\\u00e9s et des param\\u00e8tres :",
+      h6("Choix des unit\u00e9s et des param\u00e8tres :",
          style ="text-decoration: underline;" ),
       
         tooltip( ##val_echelle-----------------
-          textInput(ns("val_echelle"), "Je veux visualiser mes r\\u00e9sultats \\u00e0 l'\\u00e9chelle"),
+          textInput(ns("val_echelle"), "Je veux visualiser mes r\u00e9sultats \u00e0 l'\u00e9chelle"),
           title = "D'un atelier, d'un groupe de culture, d'une culture, d'un hectare... "
         ),
 
@@ -82,8 +82,8 @@ mod_onglet_unit_ui <- function(id) {
           selectInput(
           ns("val_unit_e"), ## val_unit_e----------
           label = "Et son prix en ",
-          choices = c("\\u20ac",
-                      "k\\u20ac"),
+          choices = c("\u20ac",
+                      "k\u20ac"),
           selected = 1
         )),
     
@@ -110,7 +110,7 @@ mod_onglet_unit_ui <- function(id) {
           choices = c(
             "Marge brute",
             "EBE",
-            "Valeur ajout\\u00e9e",
+            "Valeur ajout\u00e9e",
             "Autre" = "autre"
           ),
           selected = 1
@@ -178,8 +178,8 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
       updateSelectInput(
         session,
         "val_unit_e",
-        choices = c("\\u20ac",
-                    "k\\u20ac"),
+        choices = c("\u20ac",
+                    "k\u20ac"),
         selected = r$unit_e
       ) 
       })
@@ -196,8 +196,8 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     
     paste( "<span style='text-decoration: underline;'>Attention !</span>",
            "Lors de la saisie des charges :",
-           "- garder une coh\\u00e9rence entre le type de charges saisies et le solde choisi",
-    paste0("- les renseigner \\u00e0 l'\\u00e9chelle ", input$val_echelle, 
+           "- garder une coh\u00e9rence entre le type de charges saisies et le solde choisi",
+    paste0("- les renseigner \u00e0 l'\u00e9chelle ", input$val_echelle, 
            " et en ", input$val_unit_e,"." ) 
     , sep ="<br/>" ) %>% 
       HTML()
@@ -250,9 +250,9 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
        r$unit_prix_p <- input$val_unit_p  # €
        r$unit_prod <- input$val_unit_prod
        r$unit_e <-   input$val_unit_e
-       r$solde <- unit_solde()  # Unit\\u00e9 finale ( en €)
+       r$solde <- unit_solde()  # Unit\u00e9 finale ( en €)
        r$solde2 <- unit_solde2()
-       r$select_solde <- input$val_unit_solde  # unit\\u00e9 rentr\\u00e9e
+       r$select_solde <- input$val_unit_solde  # unit\u00e9 rentr\u00e9e
 
        session$sendCustomMessage("toggle-tab-item", "oser")
        

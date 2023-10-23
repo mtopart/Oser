@@ -75,7 +75,7 @@ plot_elicit <- function(name,
        type="l",
        ylab="",
        xaxp=c(mini[1], maxi, nBins), 
-       main = paste0("R\\u00e9partissez vos jetons (", sum(chips), ")"),
+       main = paste0("R\u00e9partissez vos jetons (", sum(chips), ")"),
        xlab =  name)
   for(i in 1:nBins){
     lines(c(left[i],left[i]),
@@ -362,9 +362,9 @@ test_tabl <- function(nom_solde,
   tabl <- round(result, digits = 0) %>% 
     mutate(
       group_solde = case_when(
-        solde < seuil_mini ~ paste(nom_solde, "< \\u00e0", seuil_mini, unite_euros, sep = " " ),
-        solde > seuil_att ~  paste(nom_solde, "> \\u00e0", seuil_att, unite_euros, sep = " "),
-        TRUE  ~ paste(nom_solde, "> \\u00e0", seuil_mini, "et < \\u00e0", seuil_att, unite_euros, sep = " ")
+        solde < seuil_mini ~ paste(nom_solde, "< \u00e0", seuil_mini, unite_euros, sep = " " ),
+        solde > seuil_att ~  paste(nom_solde, "> \u00e0", seuil_att, unite_euros, sep = " "),
+        TRUE  ~ paste(nom_solde, "> \u00e0", seuil_mini, "et < \u00e0", seuil_att, unite_euros, sep = " ")
       ),
       pourcent = case_when(
         solde < seuil_mini ~ pc_mini,
@@ -385,9 +385,9 @@ test_tabl <- function(nom_solde,
     unique() %>% 
     arrange(group_solde) %>% 
     mutate(
-      Production = paste("De", mini_prod, "\\u00e0", maxi_prod, unite_prod, sep = " "),
-      Prix = paste("De", mini_prix, "\\u00e0", maxi_prix, unite_prix, sep = " "),
-      Charges = paste("De", mini_charges, "\\u00e0", maxi_charges, unite_euros, sep = " ")
+      Production = paste("De", mini_prod, "\u00e0", maxi_prod, unite_prod, sep = " "),
+      Prix = paste("De", mini_prix, "\u00e0", maxi_prix, unite_prix, sep = " "),
+      Charges = paste("De", mini_charges, "\u00e0", maxi_charges, unite_euros, sep = " ")
     ) %>% 
     select(- starts_with("m")) %>% 
     t()  
@@ -503,9 +503,9 @@ gener_graph <- function(nom_solde,
     facet_wrap(facets = "indicateur", ncol =1, scales = "free_y") +
     labs(
       x = "Groupes selon les seuils choisis",
-      y = "R\\u00e9partition des donn\\u00e9es",
-      subtitle = "Pour mieux comprendre les r\\u00e9sultats",
-      title = "R\\u00e9partition des diff\\u00e9rentes variables par groupe",
+      y = "R\u00e9partition des donn\u00e9es",
+      subtitle = "Pour mieux comprendre les r\u00e9sultats",
+      title = "R\u00e9partition des diff\u00e9rentes variables par groupe",
       caption = "Vert = zone de confort\nOrange = zone de vigilance\nRouge = zone critique"
     ) + 
     theme_light() +
