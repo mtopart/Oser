@@ -69,10 +69,10 @@ mod_box_distrib_ui <- function(id,
         )
       ),
       
-      
+      div("Par défaut, l'échantillon choisi suit une distribution uniforme."),
       materialSwitch(
         inputId = ns("loi"),
-        label = "Je souhaite tracer une distribution (par défaut, la distribution sera uniforme)",
+        label = "Tracer une distribution",
         value = FALSE,
         status = "primary"
       ),
@@ -305,29 +305,81 @@ mod_box_distrib_server <- function(id,
      
       })
        
+   output$text <- renderText( "Les valeurs :")
 
-
-
+    # output$distrib<- renderPrint(matrix(unlist(distrib_finale()),
+    #                                            ncol = 5) %>% 
+    #                                as_tibble(.name_repair = "minimal"))
+    
+   ## Toutput tableau distrib-------------------
+   
+   tabl_distrib_af <- reactive({
+     req(is.numeric(distrib_finale()[1]))
+     
+     matrix(unlist(distrib_finale()),
+            ncol = 5) %>% 
+     #  as_tibble(.name_repair = "minimal")
+     as.data.frame()
+     
+   })
+   
+   
+    output$distrib<- renderTable(
+      tabl_distrib_af(),
+      
+                                 colnames = FALSE,
+                                 spacing = "s")
+                                        
     
     # Aperçu de la distribution Shinyalert quand clique sur le bouton--------------
     
     observeEvent(input$button_distrib, {
       #   # Show a modal when the button is pressed
       
-     req(distrib_finale())
+      req(distrib_finale())
       
-       distrib <- distrib_finale()
-      
-      output$distrib<- renderPrint(distrib)
-      
+     #  
+     #   distrib <- distrib_finale()
+     #  
+     #  output$distrib<- renderPrint(distrib)
+      ##shinyalert-------------------------------
       shinyalert(
         html = TRUE,
-        title = "Distribution :",
+        title = "Plus de détails sur l'échantillon :",
+        size = "m",
         text = tagList(
-          verbatimTextOutput(ns("distrib")),
-          plotOutput(ns("graph_dist")),
-          plotOutput(ns("graph_dist2")),
-          verbatimTextOutput(ns("test_distrib"))
+          # if(input$loi){
+          # plotOutput(ns("graph_dist")
+          #             ,
+          #            width = "350px",
+          #            height = "350px"
+          #            )},
+          # if(input$loi){
+          #   br()},
+          # textOutput(ns("text")),
+          # verbatimTextOutput(ns("distrib"))
+          
+          
+          fluidRow( 
+            column(6,
+                   textOutput(ns("text")),
+                   #verbatimTextOutput(ns("distrib")),
+                   br(),
+                   tableOutput(ns("distrib"))
+                   
+                   # materialSwitch(
+                   #   inputId = ns("modif_choix"),
+                   #   label = "Modifier les valeurs",
+                   #   value = FALSE,
+                   #   status = "primary"
+                   # )
+
+                   ),
+            column(6,
+                   if(input$loi){
+                     plotOutput(ns("graph_dist")) } ))
+
+          
         ),
         type = "",
         closeOnClickOutside = TRUE)
@@ -336,6 +388,8 @@ mod_box_distrib_server <- function(id,
     
     
     
+    output$donnees_modif <- renderPrint({ input$modif_choix })
+     
     
     
     #   Gestion du rhandsontable pour intégrer plus de praticité pour l'utilisateur  ---------------------
@@ -435,20 +489,30 @@ mod_box_distrib_server <- function(id,
     
     
     graph_distibution <- reactive({
+      req(is.numeric(distrib_finale()[1]))
+      req(input$loi == TRUE)
       
       dist <- distrib_finale() %>% 
         as_tibble()
       
       ggplot(dist) +
         aes(x = value) +
-        geom_histogram(bins = 30L,  color = "#C2D3E1",fill = "#C2D3E1") +
+        geom_histogram(bins = 10,  color = "#C2D3E1",fill = "#C2D3E1") +
         labs(
-          x = "Valeurs de production",
+          x = paste0("Valeurs de ", type ),
           y = "Nombre de valeurs",
           title = "Représentation de l'échantillon",
           subtitle = "Echantillon défini par Oser à partir de la trace manuelle"
         ) +
-        theme_light()
+        theme_light()  +
+        theme(
+          panel.grid = element_line(linetype = 2, color = "grey70"),
+          plot.title = element_text(size = 11,hjust = 0.5),
+          plot.subtitle = element_text(size = 10,hjust = 0.5)
+        ) +
+        coord_cartesian(xlim =c(v_mini(), v_maxi())) +
+        scale_x_continuous(breaks = seq(v_mini(),v_maxi(),
+                                        length.out = 11/2))
       
       
     })
@@ -458,16 +522,16 @@ mod_box_distrib_server <- function(id,
     
     
     
-    output$graph_dist2 <- renderPlot( 
-      distrib_finale() %>% 
-        as_tibble() %>% 
-        ggplot() +
-                                        aes(x = value) +
-                                        geom_density(adjust = 1L, fill = "#C2D3E1") +
-                                        theme_minimal()
-    )
-    
-    output$test_distrib<- renderPrint(v_myfit())
+    # output$graph_dist2 <- renderPlot( 
+    #   distrib_finale() %>% 
+    #     as_tibble() %>% 
+    #     ggplot() +
+    #                                     aes(x = value) +
+    #                                     geom_density(adjust = 1L, fill = "#C2D3E1") +
+    #                                     theme_minimal()
+    # )
+    # 
+    # output$test_distrib<- renderPrint(v_myfit())
     
     ## Liens avec les modules--------------------- 
     
@@ -502,6 +566,7 @@ mod_box_distrib_server <- function(id,
       
       if(input$loi){
         r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution manuelle"
+        r[[paste("graph_distrib", type, sep = "_")]] <- graph_distibution()
         
       } else {
         r[[paste("saisie_distrib", type, sep = "_")]] <- "Distribution uniforme"
