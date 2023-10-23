@@ -57,7 +57,10 @@ mod_onglet_unit_ui <- function(id) {
     
       tags$div(
         id = "inline",
-  
+        
+      h5("Choix des unités et des paramètres :",
+         style ="text-decoration: underline;" ),
+      
         tooltip( ##val_echelle-----------------
           textInput(ns("val_echelle"), "Je veux visualiser mes résultats à l'échelle"),
           title = "D'un atelier, d'un groupe de culture, d'une culture, d'un hectare... "
@@ -67,32 +70,38 @@ mod_onglet_unit_ui <- function(id) {
           id = ns("p2"),
           tooltip(
           textInput( ##val_unit_prod-------------
-            ns("val_unit_prod"), "Sur cette échelle de travail, ma production s'exprime en "),
+            ns("val_unit_prod"), "La production s'exprime en "),
           title = "1 000 L, tonnes, nombre de paniers" )),
 
         div(
           id = ns("p3"),
-          
-    
+   
+          fluidRow(   
+            br(),
+    column(6,
           selectInput(
           ns("val_unit_e"), ## val_unit_e----------
           label = "Et son prix en ",
           choices = c("€",
                       "k€"),
           selected = 1
-        ),
-        
+        )),
+    
+    
+    column(6,    
         tooltip(
           textInput(ns("val_unit_p"), "par"), ## val_unit_p----------
-          title = "1 000 L, tonne, panier")), 
+          title = "1 000 L, tonne, panier")
+    ))
+    
+    ), 
         
         div(
           id = ns("p4"),
           br(),
-        textOutput(ns("text1")) %>% 
+
+          htmlOutput(ns("text1")) %>% 
           tagAppendAttributes(style ="color:blue;"),
-        p(style =" color:blue;",
-          "Le solde obtenu sera différent en fonction du type de charges rentrées dans le calculateur."),
         br(),
         
         selectInput(
@@ -106,8 +115,8 @@ mod_onglet_unit_ui <- function(id) {
           ),
           selected = 1
         ),
-        textInput(ns("val_unit_sautre"), "Solde choisi"), ## val_unit_sautre----------
-        textOutput(ns("text2")) 
+        textInput(ns("val_unit_sautre"), "Solde choisi") ## val_unit_sautre----------
+        #textOutput(ns("text2")) 
         # %>%
         #   tagAppendAttributes(style ="font-family:  Cabin Sketch;")
       ),
@@ -158,7 +167,6 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
       updateSelectInput(
         session,
         "val_unit_solde",
-        label = "Solde final",
         choices = list("Marge brute",
                        "Marge nette",
                        "EBE",
@@ -170,7 +178,6 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
       updateSelectInput(
         session,
         "val_unit_e",
-        label = "Unité euros",
         choices = c("€",
                     "k€"),
         selected = r$unit_e
@@ -183,20 +190,25 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     })
      
     
-  output$text1 <- renderText({
+  output$text1 <- renderUI({
     req(input$val_echelle)
     req(input$val_unit_e)
     
-    paste0("Les charges seront à renseigner à l'échelle ", input$val_echelle, 
-           " en ", input$val_unit_e,"." )
+    paste( "<span style='text-decoration: underline;'>Attention !</span>",
+           "Lors de la saisie des charges :",
+           "- garder une cohérence entre le type de charges saisies et le solde choisi",
+    paste0("- les renseigner à l'échelle ", input$val_echelle, 
+           " et en ", input$val_unit_e,"." ) 
+    , sep ="<br/>" ) %>% 
+      HTML()
     
   })  
     
-  output$text2 <- renderText({
-  
-    paste0("en  ",  input$val_unit_e,"." )
-    
-  })  
+  # output$text2 <- renderText({
+  # 
+  #   paste0("en  ",  input$val_unit_e,"." )
+  #   
+  # })  
     observe({
       toggle("p2", condition = input$val_echelle)
       toggle("p3", condition = input$val_unit_prod)
@@ -234,13 +246,13 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
        r$button_unit <- input$button_v_oser
 
        r$echelle <- input$val_echelle
-       r$unit_prix <- unit_prix()
-       r$unit_prix_p <- input$val_unit_p
+       r$unit_prix <- unit_prix()     # Ex : €/t
+       r$unit_prix_p <- input$val_unit_p  # €
        r$unit_prod <- input$val_unit_prod
        r$unit_e <-   input$val_unit_e
-       r$solde <- unit_solde()
+       r$solde <- unit_solde()  # Unité finale ( en €)
        r$solde2 <- unit_solde2()
-       r$select_solde <- input$val_unit_solde
+       r$select_solde <- input$val_unit_solde  # unité rentrée
 
        session$sendCustomMessage("toggle-tab-item", "oser")
        

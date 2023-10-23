@@ -23,14 +23,11 @@ mod_hist_repartition_ui <- function(id){
     fluidRow(column(
       12,
       id = ns("caption_zc"),
-      # p("Blblabl", style = "color:red ;font-size: 20px;
-      #                            font-style: italic"
-      # ),
-      # br(),
+
        div(
            htmlOutput(ns("caption")) ,
               style="text-align:right; color:grey; font-size:13px;",
-      #     # class = "col-sm-12", style = "padding-right:0"),
+
          class = 'textcaption')
       ),
       

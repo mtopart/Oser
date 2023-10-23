@@ -28,15 +28,19 @@ mod_telechargement_ui <- function(id){
     fluidRow(
       
       column(
-      6,
+      4,
     textInput(ns("nom_prenom"), 
               "Nom - Prénom / Désignation")),
     
     column(
-      6,
+      4,
     textInput(ns("titre_analyse"), 
               "Contexte d'analyse")),
     
+    column(
+      4,
+      textInput(ns("titre_scenar"), 
+                "Titre du scénario")),
     
     textAreaInput(
       inputId = ns("com_hist"),
@@ -65,7 +69,7 @@ mod_telechargement_ui <- function(id){
     
     br(),
     br(),
-    downloadButton(ns("dl_graph"), "Télécharger le compte-rendu")
+    downloadButton(ns("dl_graph"), span("Télécharger le compte-rendu"))
      # ,
      # verbatimTextOutput(ns("test"))
     # ,
@@ -84,6 +88,11 @@ mod_telechargement_server <- function(id,
     ns <- session$ns
     
 
+    
+    
+    # titre_sce <- reactive(
+    #   if
+    # )
 
 graph_word <- function(gg,
                        gg_tabl,
@@ -105,7 +114,6 @@ graph_word <- function(gg,
   par_prod3 <- fpar(
     ftext("Choix de distribution = ", fp_text(bold = TRUE)),  
     r$saisie_distrib_production)
-  
   
   
   ## Paragraphe prix
@@ -143,7 +151,7 @@ graph_word <- function(gg,
   
   # Titre  -------------------------------
   doc_word <- doc_word %>%
-    body_add_par(value = "", style = "heading 1") 
+    body_add_par(value = input$titre_scenar, style = "heading 1") 
   
   
   #  Récapitulatif de saisie-------------------------
@@ -153,22 +161,42 @@ graph_word <- function(gg,
     body_add_par(value = "Production", style = "heading 3") %>% 
     body_add_fpar(par_prod1) %>% 
     body_add_fpar(par_prod2) %>% 
-    body_add_fpar(par_prod3) %>% 
-    # body_add_plot(value = plot_instr(
-    #   code = {
-    #     r$saisie_dist_graph_production
-    #   }),
-    #   style = "Normal"
-    #                 ) %>% 
+    body_add_fpar(par_prod3) 
+  
+  if( r$saisie_distrib_production == "Distribution manuelle"){
+    doc_word <- doc_word %>%
+      body_add_gg( r$graph_distrib_production,
+                   width = 4,
+                   height = 3)
+  }
+
+    doc_word <- doc_word %>%
     body_add_par(value = "Prix", style = "heading 3") %>% 
     body_add_fpar(par_prix1) %>% 
     body_add_fpar(par_prix2) %>% 
-    body_add_fpar(par_prix3) %>% 
+    body_add_fpar(par_prix3) 
     
+    
+    if( r$saisie_distrib_prix == "Distribution manuelle"){
+      doc_word <- doc_word %>%
+        body_add_gg( r$graph_distrib_prix,
+                     width = 4,
+                     height = 3)
+    }
+    
+    doc_word <- doc_word %>%
     body_add_par(value = "Charges", style = "heading 3")   %>% 
     body_add_fpar(par_charges1) %>% 
     body_add_fpar(par_charges2) %>% 
     body_add_fpar(par_charges3) 
+    
+    
+    if( r$saisie_distrib_charges == "Distribution manuelle"){
+      doc_word <- doc_word %>%
+        body_add_gg( r$graph_distrib_charges,
+                     width = 4,
+                     height = 3)
+    }
   
   
   # Résultats -------------------------------
@@ -219,6 +247,7 @@ graph_word <- function(gg,
 
 
     observeEvent(input$select_graph,{
+      req(r$dist_pr_graph_production)
       r$button_graph <- input$select_graph
     })
 
@@ -238,6 +267,7 @@ graph_word <- function(gg,
       observeEvent(input$select_graph, {
         # Show a simple modal
         #shinyalert(title = "You did it!", type = "success")
+        req(r$dist_pr_graph_production)
         
         shinyalert(
           title = "Enregistrement effectué",

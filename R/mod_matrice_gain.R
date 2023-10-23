@@ -200,15 +200,16 @@ mod_matrice_gain_server <- function(id,
           if (seuil_mini >= 1){
             
             graph_mat_content  <- graph_mat_content   +
-              scale_fill_gradientn(colours = c("#CD0000", "red"), values = c(0, 1) )
+              scale_fill_gradientn(colours = c("#CD0000", "red"), values = c(0, 1) ) 
             
           } else if (0 < seuil_mini & seuil_mini < 1) {
             
             graph_mat_content  <- graph_mat_content +
-              scale_fill_gradientn(colours = c("red", "orange"), values = c(0, seuil_mini, 1) )
+              scale_fill_gradientn(colours = c("red", "orange"), values = c(0, seuil_mini, 1) ) 
+            
           } else {
             graph_mat_content  <- graph_mat_content  +
-              scale_fill_gradientn(colours = c("#FF7F00", "orange"), values = c(0,  1) )
+              scale_fill_gradientn(colours = c("#FF7F00", "orange"), values = c(0,  1) ) 
             
           }
           
@@ -216,24 +217,24 @@ mod_matrice_gain_server <- function(id,
           
           if(seuil_att > 0) {
             graph_mat_content  <-  graph_mat_content   +
-              scale_fill_gradientn(colours = c( "orange", "green"), values = c(0,seuil_att,  1) )
+              scale_fill_gradientn(colours = c( "orange", "green"), values = c(0,seuil_att,  1) ) 
           } else {
             
             graph_mat_content  <-  graph_mat_content   +
-              scale_fill_gradientn(colours = c("chartreuse", "green"), values = c(0,  1) )
+              scale_fill_gradientn(colours = c("chartreuse", "green"), values = c(0,  1) ) 
           }
           
         } else {
           
           graph_mat_content  <- graph_mat_content  +
-            scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil_mini, seuil_att, 1) )
+            scale_fill_gradientn(colours = c("red", "orange", "green"), values = c(0, seuil_mini, seuil_att, 1) ) 
         }
         
         
       } else {
         
         graph_mat_content  <- graph_mat_content   +
-          scale_fill_distiller(palette = "RdYlGn",direction = 1)
+          scale_fill_distiller(palette = "RdYlGn",direction = 1) 
         
       }
 

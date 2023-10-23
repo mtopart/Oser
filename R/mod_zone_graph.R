@@ -31,18 +31,6 @@ mod_zone_graph_ui <- function(id){
     box(
       title = uiOutput(ns("titre")),
       width = 12,
-      # icon = 
-
-      #   tags$span(icon("question"))
-      # %>%
-      #   add_prompt(
-      #     position = "right",
-      #     message = "Voir onglet 'Tutoriels' - en construction",
-      #     type = "info"),
-        # 
-        # tooltip(
-        #   tags$span(icon("question")),
-        #   title =  "Voir onglet 'Tutoriels' - en construction"),
       
       br(),
       
