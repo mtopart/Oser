@@ -208,21 +208,43 @@ calc_distrib <- function (myfit,
     
   } else if (myfit$best.fitting[1] == "lognormal") {
     
+    # distribution <- map_dfc(
+    #   1:50, ~{ EnvStats::rlnormTrunc(50, min = mini, max = maxi,
+    #                                  meanlog = myfit$Log.normal$mean.log.X,
+    #                                  sdlog = myfit$Log.normal$sd.log.X) %>% 
+    #       sort()}) %>% 
+    #   mean_distrib()
+    
+    
+    
     distribution <- map_dfc(
-      1:50, ~{ EnvStats::rlnormTrunc(50, min = mini, max = maxi,
-                                     meanlog = myfit$Log.normal$mean.log.X,
-                                     sdlog = myfit$Log.normal$sd.log.X) %>% 
-          sort()}) %>% 
+      1:50, ~{ 
+        ( mini + EnvStats::rlnormTrunc(50, min = mini - mini, max = maxi - mini,
+                                       meanlog = myfit$Log.normal$mean.log.X,
+                                       sdlog = myfit$Log.normal$sd.log.X) )%>%
+          sort()}) %>%
       mean_distrib()
+    
+    
     
   } else if (myfit$best.fitting[1] == "beta") {
     
     
+    # distribution <- map_dfc(
+    #   1:50, ~{ (mini + (maxi - mini)  *
+    #       stats::qbeta((1:50/51), myfit$Beta$shape1, myfit$Beta$shape2)) %>% 
+    #       sort()}) %>% 
+    #   mean_distrib()
+    
+    
     distribution <- map_dfc(
-      1:50, ~{ (mini + (maxi - mini)  *
-          stats::qbeta((1:50/51), myfit$Beta$shape1, myfit$Beta$shape2)) %>% 
-          sort()}) %>% 
+      1:50, ~{
+        (mini + (maxi - mini) * rbeta(n = 50, shape1 = myfit$Beta$shape1, shape2 = myfit$Beta$shape2)) %>% 
+          sort()}
+    ) %>% 
       mean_distrib()
+    
+    
   } else if (myfit$best.fitting[1] == "mirrorgamma") {
     
     
@@ -235,10 +257,19 @@ calc_distrib <- function (myfit,
     
   } else if (myfit$best.fitting[1] == "mirrorlognormal") {
     
+    # distribution <- map_dfc(
+    #   1:50, ~{ 100 - EnvStats::rlnormTrunc(50, min = mini, max = maxi,
+    #                                  meanlog = myfit$mirrorlognormal$mean.log.X,
+    #                                  sdlog = myfit$mirrorlognormal$sd.log.X) %>% 
+    #       sort()}) %>% 
+    #   mean_distrib()
+    
     distribution <- map_dfc(
-      1:50, ~{ 100 - EnvStats::rlnormTrunc(50, min = mini, max = maxi,
-                                     meanlog = myfit$mirrorlognormal$mean.log.X,
-                                     sdlog = myfit$mirrorlognormal$sd.log.X) %>% 
+      1:50, ~{ 
+        ( maxi - 
+            EnvStats::rlnormTrunc(50, min = mini-mini, max = maxi-mini,
+                                  meanlog = myfit$mirrorlognormal$mean.log.X,
+                                  sdlog = myfit$mirrorlognormal$sd.log.X)) %>%
           sort()}) %>% 
       mean_distrib()
     
@@ -467,6 +498,7 @@ gener_graph <- function(nom_solde,
     theme(
       legend.position = "none", 
       strip.background = element_rect(fill = "#2a475e"),
+      strip.text =  element_text(size = 12),
       
       # This is the new default font in the plot
       plot.title = element_text(
