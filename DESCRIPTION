@@ -46,7 +46,8 @@ Imports:
     waiter,
     flextable,
     forcats,
-    stats
+    stats,
+    gfonts
 LazyData: true
 RoxygenNote: 7.2.3
 Suggests: 

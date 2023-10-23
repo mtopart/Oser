@@ -5,6 +5,7 @@
 #' @rawNamespace import(shiny, except = c(insertTab, actionButton, tabsetPanel, column))
 #' @import bs4Dash 
 #' @import waiter
+#' @importFrom gfonts use_font
 #' @noRd
 #' 
 app_ui <- function(request) {
@@ -13,15 +14,12 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     
-    #' tags$head(
-    #'   tags$style(HTML("
-    #'   @import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch&display=swap');
-    #'   
-    #'    h2 {
-    #'    font-family: 'Cabin Sketch', cursive;
-    #'   }
-    #'  "))
-    #' ),
+    use_font(
+      id = "cabin-sketch",
+        css_path = "inst/app/www/css/cabin-sketch.css",
+      selector = c("h1", "h3", "h4", "h5", "span", "p", "button", "h2"
+                   )
+    ), 
     
 #     
 # #browser pour développement
@@ -33,6 +31,7 @@ app_ui <- function(request) {
     dashboardPage(
       
       preloader = list(html = tagList(spin_1(), "Chargement en cours ..."), color = "#3c8dbc"),
+      
       
       title = "Oser",
       freshTheme = TRUE,
@@ -53,7 +52,7 @@ app_ui <- function(request) {
         elevation = 3,
         sidebarUserPanel(
           image = "https://cdn-icons-png.flaticon.com/512/1055/1055683.png",
-          name = "Welcome Onboard!"
+          name = span("Welcome Onboard!")
         ),
         
         # Définition des menus de la barre de gauche      
