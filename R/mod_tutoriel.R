@@ -18,8 +18,8 @@ mod_tutoriel_ui <- function(id){
         #                           font-style: italic"),
     #     br(),
     #   
-    # h3("Le choix du solde est laissé au conseiller, en fonction de ses préférences"),
-    # p("La signification des résultats est différente en fonction des charges rentrées dans le calculateur."),
+    # h3("Le choix du solde est laiss\\u00e9 au conseiller, en fonction de ses pr\\u00e9f\\u00e9rences"),
+    # p("La signification des r\\u00e9sultats est diff\\u00e9rente en fonction des charges rentr\\u00e9es dans le calculateur."),
     # p(em("Pour mieux comprendre :")),
     # img(src = "www/soldes.jpg", width = "95%")
     
@@ -27,16 +27,16 @@ mod_tutoriel_ui <- function(id){
     
     h1("Tutoriels"),
     br(),
-    p("Oser est un calculateur 'crash-test', qui permet de tester la capacité d'un atelier à encaisser une variation de production, 
-    de prix de vente ou même de charges.
-    Il est à utiliser en complément d'une étude technico-économique classique.", 
-      em("Et si mon prix de vente diminue de tant ? Et s'il y a un aléa climatique qui impacte mon rendement de tant ?")),
-    p("Le choix du solde final est laissé librement à l'utilisateur en fonction de son besoin. 
-    De plus,même si Oser est plus approprié à une utilisation sur une échelle atelier, 
-      il est également possible de l'adapter aux échelles système de culture ou d'élevage ou encore exploitation agricole. "),
+    p("Oser est un calculateur 'crash-test', qui permet de tester la capacit\\u00e9 d'un atelier \\u00e0 encaisser une variation de production, 
+    de prix de vente ou m\\u00eame de charges.
+    Il est \\u00e0 utiliser en compl\\u00e9ment d'une \\u00e9tude technico-\\u00e9conomique classique.", 
+      em("Et si mon prix de vente diminue de tant ? Et s'il y a un al\\u00e9a climatique qui impacte mon rendement de tant ?")),
+    p("Le choix du solde final est laiss\\u00e9 librement \\u00e0 l'utilisateur en fonction de son besoin. 
+    De plus,m\\u00eame si Oser est plus appropri\\u00e9 \\u00e0 une utilisation sur une \\u00e9chelle atelier, 
+      il est \\u00e9galement possible de l'adapter aux \\u00e9chelles syst\\u00e8me de culture ou d'\\u00e9levage ou encore exploitation agricole. "),
     hr(),
     h2("Utilisation d'Oser"),
-    h5(strong("Saisie des unités")),
+    h5(strong("Saisie des unit\\u00e9s")),
     htmlOutput(ns("unite")),
     br(),
     h5(strong("Variables et distribution")),
@@ -47,7 +47,7 @@ mod_tutoriel_ui <- function(id){
     br(),
     h5(strong("Enregistrement des sorties")),
     hr(),
-    h2("Mieux comprendre les indicateurs économiques"),
+    h2("Mieux comprendre les indicateurs \\u00e9conomiques"),
     p("A venir"),
     hr(),
     h2("Comment fonctionne Oser ?"),
@@ -77,7 +77,7 @@ mod_tutoriel_server <- function(id){
     output$unite<- renderUI({
       HTML(
         '<div style="width: 80%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0;
-        height: 0;"><iframe title="Tutoriel saisie unités" frameborder="0" width="1200" height="675" 
+        height: 0;"><iframe title="Tutoriel saisie unit\\u00e9s" frameborder="0" width="1200" height="675" 
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
         src="https://view.genial.ly/650af2df6c8849001028e14f" type="text/html" allowscriptaccess="always" 
         allowfullscreen="true" scrolling="yes" allownetworking="all"></iframe> </div> </div>')

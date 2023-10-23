@@ -1,6 +1,6 @@
 #' apropos UI Function
 #'
-#' @description A shiny Module.
+#' @description A propos d Oser
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'

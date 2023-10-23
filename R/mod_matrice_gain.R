@@ -1,12 +1,18 @@
 #' matrice_gain UI Function
 #'
-#' @description A shiny Module.
+#' @description Gère tout ce qui est en lien avec la matrice de gain
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
+#' @importFrom dplyr case_when rename
+#' @importFrom rlang :=
+#' @importFrom ggplot2 geom_tile aes theme_minimal scale_fill_gradientn scale_fill_distiller
+#' @importFrom shinyWidgets prettyCheckbox
+#' 
+
 mod_matrice_gain_ui <- function(id){
   ns <- NS(id)
   tagList(
@@ -24,17 +30,17 @@ mod_matrice_gain_ui <- function(id){
                                  choices = c("Production" = 1, "Prix" = 2, "Charges" = 3)),
                      
                      numericInput(inputId = ns("charges_mat"),
-                                  label = paste0("Précisez le niveau de charges souhaité"),
+                                  label = paste0("Pr\\u00e9cisez le niveau de charges souhait\\u00e9"),
                                   value = uiOutput(ns("charges_moy_UI"))),
                      
                      numericInput(inputId = ns("prod_mat"),
-                                  label = paste0("Précisez le niveau de production souhaité"),
+                                  label = paste0("Pr\\u00e9cisez le niveau de production souhait\\u00e9"),
                                   value = uiOutput(ns("prod_moy_UI"))),
                      
                      numericInput(inputId = ns("prix_mat"),
-                                  label = paste0("Précisez le niveau de prix souhaité"),
+                                  label = paste0("Pr\\u00e9cisez le niveau de prix souhait\\u00e9"),
                                   value = uiOutput(ns("prix_moy_UI"))),
-                     p(style = "font-style: italic","(Par défaut, moyenne)")
+                     p(style = "font-style: italic","(Par d\\u00e9faut, moyenne)")
                      
               ))
   )

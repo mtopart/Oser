@@ -46,7 +46,7 @@ mod_zone_graph_ui <- function(id){
                radioGroupButtons(
                  inputId = ns("choix_graph"),
                  label = "Choix du graphique",
-                 choiceNames = list(paste("Répartition"),
+                 choiceNames = list(paste("R\\u00e9partition"),
                                     "Matrice de gain"),
                  choiceValues = list(
                    "histo",  "mat"),
@@ -147,8 +147,8 @@ mod_zone_graph_server <- function(id,
     gest_text <- reactive({
       
       if(is.null(r$solde)){
-        "Conséquences sur le solde choisi (marge, EBE, revenu...)" } else {
-          paste("Conséquences sur le solde ",  r$solde, sep = "" )
+        "Cons\\u00e9quences sur le solde choisi (marge, EBE, revenu...)" } else {
+          paste("Cons\\u00e9quences sur le solde ",  r$solde, sep = "" )
         } 
       
     })

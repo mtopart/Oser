@@ -18,7 +18,7 @@ mod_telechargement_ui <- function(id){
    # useShinyalert(),
     
     box(
-      title = "Enregistrement des données",
+      title = "Enregistrement des donn\\u00e9es",
       width = 12,
       
       
@@ -30,7 +30,7 @@ mod_telechargement_ui <- function(id){
       column(
       4,
     textInput(ns("nom_prenom"), 
-              "Nom - Prénom / Désignation")),
+              "Nom - Pr\\u00e9nom / D\\u00e9signation")),
     
     column(
       4,
@@ -40,7 +40,7 @@ mod_telechargement_ui <- function(id){
     column(
       4,
       textInput(ns("titre_scenar"), 
-                "Titre du scénario")),
+                "Titre du sc\\u00e9nario")),
     
     textAreaInput(
       inputId = ns("com_hist"),
@@ -69,7 +69,7 @@ mod_telechargement_ui <- function(id){
     
     br(),
     br(),
-    downloadButton(ns("dl_graph"), span("Télécharger le compte-rendu"))
+    downloadButton(ns("dl_graph"), span("T\\u00e9l\\u00e9charger le compte-rendu"))
      # ,
      # verbatimTextOutput(ns("test"))
     # ,
@@ -99,7 +99,7 @@ graph_word <- function(gg,
                        doc_word){
   
   
-  #Définition des paragraphes
+  #D\\u00e9finition des paragraphes
   
   ## Paragraphe production
   
@@ -154,10 +154,10 @@ graph_word <- function(gg,
     body_add_par(value = input$titre_scenar, style = "heading 1") 
   
   
-  #  Récapitulatif de saisie-------------------------
+  #  R\\u00e9capitulatif de saisie-------------------------
   
   doc_word <- doc_word %>%
-    body_add_par(value = "Récapitulatif des éléments de saisie", style = "heading 2") %>% 
+    body_add_par(value = "R\\u00e9capitulatif des \\u00e9l\\u00e9ments de saisie", style = "heading 2") %>% 
     body_add_par(value = "Production", style = "heading 3") %>% 
     body_add_fpar(par_prod1) %>% 
     body_add_fpar(par_prod2) %>% 
@@ -199,10 +199,10 @@ graph_word <- function(gg,
     }
   
   
-  # Résultats -------------------------------
+  # R\\u00e9sultats -------------------------------
   
   doc_word <- doc_word  %>%
-    body_add_par(value = "Résultats", style = "heading 2") 
+    body_add_par(value = "R\\u00e9sultats", style = "heading 2") 
   
   if(r$choix_graph == "histo"){ # Ajout tableau et commentaires pour histogramme
     
@@ -270,8 +270,8 @@ graph_word <- function(gg,
         req(r$dist_pr_graph_production)
         
         shinyalert(
-          title = "Enregistrement effectué",
-          text = "Graphique(s) et données mémorisés",
+          title = "Enregistrement effectu\\u00e9",
+          text = "Graphique(s) et donn\\u00e9es m\\u00e9moris\\u00e9s",
           size = "xs", 
           closeOnEsc = TRUE,
           closeOnClickOutside = TRUE,

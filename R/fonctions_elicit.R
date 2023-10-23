@@ -1,4 +1,5 @@
-
+#' Fonctions nécessaires pour elicit de SHELF => fonctions non perso
+#' 
 #' @importFrom stats pnorm
 normal.error <-
   function(parameters, values, probabilities, weights){

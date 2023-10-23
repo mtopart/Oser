@@ -1,15 +1,19 @@
 #' hist_repartition UI Function
 #'
-#' @description A shiny Module.
+#' @description Module qui gere l'histogramme 
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom plotly add_text add_lines add_histogram
+#' @importFrom plotly add_text add_lines add_histogram ggplotly renderPlotly layout config plotlyOutput
 #' @importFrom flextable autofit htmltools_value
 #' @importFrom stats median quantile
+#' @importFrom tidyr crossing
+#' @importFrom tibble tibble
+#' @importFrom dplyr case_when
+#' @importFrom ggplot2 aes after_stat annotate geom_vline scale_fill_manual scale_y_continuous labs theme_bw theme element_text
 
 
 mod_hist_repartition_ui <- function(id){
@@ -44,7 +48,7 @@ mod_hist_repartition_ui <- function(id){
       ),
         materialSwitch(
           inputId = ns("detail"),
-          label = strong("Pour plus de détails sur la zone de confort"),
+          label = strong("Pour plus de d\\u00e9tails sur la zone de confort"),
           value = FALSE,
           status = "primary"
         ),
@@ -106,14 +110,14 @@ mod_hist_repartition_server <- function(id,
     
     graph_titre <- reactive({
       if(is.null(r$solde) ){
-        "Répartition du solde choisi" } else {
-          paste("Répartition du solde", r$solde, sep = " " )
+        "R\\u00e9partition du solde choisi" } else {
+          paste("R\\u00e9partition du solde", r$solde, sep = " " )
         } 
     }) 
     
     graph_axe_titre_x <- reactive({
       if(is.null(r$solde) & is.null(r$unit$solde) ){
-        "Solde (en € ou k€)" } else {
+        "Solde (en \\u20ac ou k\\u20ac)" } else {
           paste( r$solde,  sep = " " )
         } 
     })   
@@ -138,9 +142,9 @@ mod_hist_repartition_server <- function(id,
     #     scale_y_continuous(labels = scales::percent) +
     #     labs(
     #       title = graph_titre(),
-    #       #subtitle = "Répartition de la marge ",
+    #       #subtitle = "R\\u00e9partition de la marge ",
     #       x = graph_axe_titre_x(),
-    #       y = "Fréquence",
+    #       y = "Fr\\u00e9quence",
     #       fill = ""
     #     ) +
     #     theme_bw() +
@@ -200,7 +204,7 @@ mod_hist_repartition_server <- function(id,
     #       annotate("text",
     #                x = descript()$mediane,
     #                y = ylim[2]- 0.015,
-    #                label = "Médiane") +
+    #                label = "M\\u00e9diane") +
     #       annotate("text",
     #                x = descript()$q1,
     #                y =ylim[2]- 0.015,
@@ -233,9 +237,9 @@ mod_hist_repartition_server <- function(id,
         scale_y_continuous(labels = scales::percent) +
         labs(
           title = graph_titre(),
-          #subtitle = "Répartition de la marge ",
+          #subtitle = "R\\u00e9partition de la marge ",
           x = graph_axe_titre_x(),
-          y = "Fréquence",
+          y = "Fr\\u00e9quence",
           fill = ""
         ) +
         theme_bw() +
@@ -314,7 +318,7 @@ mod_hist_repartition_server <- function(id,
                     y = ylim, inherit = FALSE) %>% 
           add_text( x = descript()$mediane + 100,
                     y = 0,
-                    text = "Médiane", inherit = FALSE)%>% 
+                    text = "M\\u00e9diane", inherit = FALSE)%>% 
           add_text( x = descript()$q1,
                     y =  0,
                     text = "Q1", inherit = FALSE) %>% 
@@ -356,7 +360,7 @@ mod_hist_repartition_server <- function(id,
           annotate("text",
                    x = descript()$mediane,
                    y = -0.005,
-                   label = "Médiane")  +
+                   label = "M\\u00e9diane")  +
           annotate("text",
                    x = descript()$q1,
                    y = -0.005,
@@ -409,7 +413,7 @@ mod_hist_repartition_server <- function(id,
       
       
       moy <- paste0(c("Moyenne du solde (") ,r$select_solde, c(") = "), round(descript$moy)," ", r$unit_e)
-      med <- paste0(c("Médiane (coupe l'échantillon en deux parties contenant le même nombre de valeurs) = " ), round(descript$mediane), " ", r$unit_e)
+      med <- paste0(c("M\\u00e9diane (coupe l'\\u00e9chantillon en deux parties contenant le m\\u00eame nombre de valeurs) = " ), round(descript$mediane), " ", r$unit_e)
       q <- paste0(c("50 % des valeurs sont comprises entre "), round(descript$q1), c(" et "), round(descript$q3)," ", r$unit_e)
       q2 <- paste0(c("80 % des valeurs sont comprises entre "), round(descript$qA), c(" et "), round(descript$qB)," ", r$unit_e)
       

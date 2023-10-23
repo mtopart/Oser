@@ -1,6 +1,6 @@
 #' box_distrib UI Function
 #'
-#' @description A shiny Module.
+#' @description Module selection et definition de la distribution
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
@@ -9,7 +9,7 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom  bs4Dash box boxSidebar 
 #' @importFrom dplyr %>% as_tibble 
-#' @importFrom ggplot2 ggplot geom_histogram
+#' @importFrom ggplot2 ggplot geom_histogram aes labs theme_light theme element_line element_text coord_cartesian scale_x_continuous
 #' @importFrom shinyWidgets materialSwitch actionBttn radioGroupButtons
 #' @importFrom prompter add_prompt use_prompt
 #' @importFrom shinyalert  shinyalert
@@ -69,7 +69,7 @@ mod_box_distrib_ui <- function(id,
         )
       ),
       
-      div("Par défaut, l'échantillon choisi suit une distribution uniforme."),
+      div("Par d\\u00e9faut, l'\\u00e9chantillon choisi suit une distribution uniforme."),
       materialSwitch(
         inputId = ns("loi"),
         label = "Tracer une distribution",
@@ -80,9 +80,9 @@ mod_box_distrib_ui <- function(id,
       plotOutput(ns("roulette"),
                  click = ns("location"))  %>% 
         add_prompt(
-          message = "Pour vous aider : un jeton peut représenter une unité de temps. \n\r (année, semaine, mois..). Amusez-vous et testez !!
-          \n Plus il y a de jetons sur une valeur, plus celle-ci sera fréquente.
-          \n Vous n'êtes pas à un jeton près !", 
+          message = "Pour vous aider : un jeton peut repr\\u00e9senter une unit\\u00e9 de temps. \n\r (ann\\u00e9e, semaine, mois..). Amusez-vous et testez !!
+          \n Plus il y a de jetons sur une valeur, plus celle-ci sera fr\\u00e9quente.
+          \n Vous n'\\u00eates pas \\u00e0 un jeton pr\\u00e8s !", 
           type = "info",
           position = "top"
         ),
@@ -277,7 +277,7 @@ mod_box_distrib_server <- function(id,
           round(., digits = 1) %>%
           sort()
       } else   if (input$loi == TRUE && is.null(distrib_man())) {
-        distrib <- "Oser a besoin de jetons supplémentaires pour déterminer une distribution"
+        distrib <- "Oser a besoin de jetons suppl\\u00e9mentaires pour d\\u00e9terminer une distribution"
       } else{
         distrib <- distrib_unif()%>%
           round(., digits = 1) %>%
@@ -345,7 +345,7 @@ mod_box_distrib_server <- function(id,
       ##shinyalert-------------------------------
       shinyalert(
         html = TRUE,
-        title = "Plus de détails sur l'échantillon :",
+        title = "Plus de d\\u00e9tails sur l'\\u00e9chantillon :",
         size = "m",
         text = tagList(
           # if(input$loi){
@@ -392,9 +392,9 @@ mod_box_distrib_server <- function(id,
      
     
     
-    #   Gestion du rhandsontable pour intégrer plus de praticité pour l'utilisateur  ---------------------
+    #   Gestion du rhandsontable pour int\\u00e9grer plus de praticit\\u00e9 pour l'utilisateur  ---------------------
     
-    ## Définition du tableau
+    ## D\\u00e9finition du tableau
     Nom <- c("", "","","","", "", "", "", "", "")
     Mini <- c("", "","","","", "", "", "", "", "") %>%
       as.numeric()
@@ -436,7 +436,7 @@ mod_box_distrib_server <- function(id,
     
     
     
-    # Mise à jour des inputs avec les données du tableau (uniquement si rempli)  
+    # Mise \\u00e0 jour des inputs avec les donn\\u00e9es du tableau (uniquement si rempli)  
     observe({
       req(rvd$sum_mini!=0)
       
@@ -464,7 +464,7 @@ mod_box_distrib_server <- function(id,
     # 
     # # Affichez le graphique
     # output$plot_output <- renderPlot({
-    #   # Affichez le graphique stocké dans l'objet reactiveValues
+    #   # Affichez le graphique stock\\u00e9 dans l'objet reactiveValues
     #   print(graph_data$plot_prod)
     # })
     
@@ -473,11 +473,11 @@ mod_box_distrib_server <- function(id,
     # 
     # 
     # saveRoulettePlot <- function() {
-    #   png_file <- tempfile(fileext = ".png")  # Crée un fichier PNG temporaire
+    #   png_file <- tempfile(fileext = ".png")  # Cr\\u00e9e un fichier PNG temporaire
     #   png(png_file, width = 800, height = 600, units = "px", res = 100)
     #   plotRoulette()
     #   dev.off()
-    #   graph_png_reactive(png_file)  # Stocke le nom du fichier PNG temporaire dans la variable réactive
+    #   graph_png_reactive(png_file)  # Stocke le nom du fichier PNG temporaire dans la variable r\\u00e9active
     # }
     # 
     # 
@@ -501,8 +501,8 @@ mod_box_distrib_server <- function(id,
         labs(
           x = paste0("Valeurs de ", type ),
           y = "Nombre de valeurs",
-          title = "Représentation de l'échantillon",
-          subtitle = "Echantillon défini par Oser à partir de la trace manuelle"
+          title = "Repr\\u00e9sentation de l'\\u00e9chantillon",
+          subtitle = "Echantillon d\\u00e9fini par Oser \\u00e0 partir de la trace manuelle"
         ) +
         theme_light()  +
         theme(
@@ -593,13 +593,13 @@ mod_box_distrib_server <- function(id,
           "Charges" } else {
             HTML(paste("Charges (",  
                        em(r$unit_e), 
-                       em(" à l'échelle "),  
+                       em(" \\u00e0 l'\\u00e9chelle "),  
                        em(r$echelle),
                        em(")"), sep ="" ))
           } 
       }      else if(type == "production"){
         if(is.null(r$unit_prod)){
-          "Production et quantité" } else {
+          "Production et quantit\\u00e9" } else {
             HTML(paste("Production (",  em(r$unit_prod), ")", sep ="" ))
           } 
       }
@@ -620,13 +620,13 @@ mod_box_distrib_server <- function(id,
           "Charges" } else {
             paste("Charges (",  
                        r$unit_e, 
-                       " à l'échelle ",  
+                       " \\u00e0 l'\\u00e9chelle ",  
                        r$echelle,
                        ")", sep ="" )
           } 
       }      else if(type == "production"){
         if(is.null(r$unit_prod)){
-          "Production et quantité" } else {
+          "Production et quantit\\u00e9" } else {
             paste("Production (",  r$unit_prod, ")", sep ="" )
           } 
       }

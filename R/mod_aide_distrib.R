@@ -1,6 +1,6 @@
 #' aide_distrib UI Function
 #'
-#' @description A shiny Module.
+#' @description Module d aide a la distribution - renvoi vers lien Genially
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
@@ -23,7 +23,8 @@ mod_aide_distrib_ui <- function(id){
         tags$img(src = "www/Image7.png",
                  height = "100px"),
         onclick ="window.open('https://view.genial.ly/650b071caad55800184bb5cd', '_blank')"
-      ),
+      )
+     #,
       
       # materialSwitch(
       #   inputId = ns("aide"),
@@ -32,16 +33,17 @@ mod_aide_distrib_ui <- function(id){
       #   status = "primary",
       #   inline = TRUE
       # ),
-      
-      p(id = ns("h1"), strong("Utilisation :")," Cliquez directement dans le graphique pour allouer un nombre de jetons à chaque intervalle. 
-                           Cliquez juste en-dessous de la ligne du 0 de l'axe des y pour effacer une case."),
-      br(id = ns("h3")),
-      p(id = ns("h4"), strong("Pour mieux comprendre :"), "Plus la barre est haute, plus la probabilité que la valeur de l'intervalle soit atteinte dans la distribution est élevée.
-                           Inversement, s'il n'y a pas de jeton dans une barre verticale, la probabilité qu'il y ait une valeur dans l'intervalle est", strong(" faible, mais possible.") 
-      ),
-      
-      br())
- 
+      # 
+      # p(id = ns("h1"), strong("Utilisation :")," Cliquez directement dans le graphique pour allouer un nombre de jetons à chaque intervalle. 
+      #                      Cliquez juste en-dessous de la ligne du 0 de l'axe des y pour effacer une case."),
+      # br(id = ns("h3")),
+      # p(id = ns("h4"), strong("Pour mieux comprendre :"), "Plus la barre est haute, plus la probabilité que la valeur de l'intervalle soit atteinte dans la distribution est élevée.
+      #                      Inversement, s'il n'y a pas de jeton dans une barre verticale, la probabilité qu'il y ait une valeur dans l'intervalle est", strong(" faible, mais possible.") 
+      # ),
+      # 
+      # br()
+     )
+      # 
   )
 }
     

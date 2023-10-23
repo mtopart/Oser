@@ -10,23 +10,23 @@
 mod_unites_secondaire_ui <- function(id){
   ns <- NS(id)
   tagList(
-    h5("Gestion des unités"),
+    h5("Gestion des unit\\u00e9s"),
     
     textInput(ns("echelle"), 
               label = "Echelle de travail"),
  
     
     textInput(ns("unit_prod"), 
-              label = "Production exprimée en"),
+              label = "Production exprim\\u00e9e en"),
     
     selectInput(
       ns("unit_e"), ## val_unit_e----------
-      label = "Unité euros",
-      choices = c("€",
-                  "k€")),
+      label = "Unit\\u00e9 euros",
+      choices = c("\\u20ac",
+                  "k\\u20ac")),
     
      textInput(ns("unit_prix"), 
-              label = "Unité du prix : € ou k€ par"),
+              label = "Unit\\u00e9 du prix : \\u20ac ou k\\u20ac par"),
     
     
 
@@ -105,9 +105,9 @@ observe({
   updateSelectInput(
       session,
       "unit_e",
-      label = "Unité euros",
-      choices = c("€",
-                  "k€"),
+      label = "Unit\\u00e9 euros",
+      choices = c("\\u20ac",
+                  "k\\u20ac"),
       selected = r$unit_e
     ) })
 
