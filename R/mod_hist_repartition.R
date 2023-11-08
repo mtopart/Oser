@@ -37,6 +37,13 @@ mod_hist_repartition_ui <- function(id){
       
       column(
         12,
+        tags$button(
+          id = "web_button",
+          class = "btn action-button",
+          tags$img(src = "www/Image7.png",
+                   height = "100px"),
+          onclick ="window.open('https://view.genial.ly/650b073107be920019bea9a5', '_blank')"
+        ),
       hr(),
       p(strong("Quelques chiffres")),
       htmlOutput(
@@ -52,8 +59,8 @@ mod_hist_repartition_ui <- function(id){
           value = FALSE,
           status = "primary"
         ),
-    
-      
+      htmlOutput(ns("text_var")),
+      br(),
       plotOutput(ns("graphique_variable"),
                    width = "60%",
                  height = "600px")
@@ -455,6 +462,12 @@ mod_hist_repartition_server <- function(id,
       graph_var() 
     })
     
+    text_v <- reactive({"Le graphique suivant permet d'observer comment les variables (production, prix et charges) se comportent au sein de chaque zone."})
+    
+    
+    output$text_var <- renderText({
+      text_v()
+    }) # Text graph variable-----------
     
     
     observe({
@@ -464,8 +477,9 @@ mod_hist_repartition_server <- function(id,
       })
     
     
-    observe({
+    observe({ 
       toggle(id = "graphique_variable", condition = input$detail &  r$coche_confort)
+      toggle(id = "text_var", condition = input$detail &  r$coche_confort)
     })
  
     # Liens avec les modules --------------------------------
@@ -477,6 +491,9 @@ mod_hist_repartition_server <- function(id,
       r$graph_save <- graph_hist_2_imp()
       
       r$graph_var_save <-  graph_var()
+      
+      r$text_var <- text_v()
+      
       }
       
     })    
