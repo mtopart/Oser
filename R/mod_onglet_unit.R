@@ -9,13 +9,14 @@
 #' @importFrom shiny NS tagList
 #' @importFrom bs4Dash tooltip actionButton
 #' @importFrom shinyjs show
+#' @importFrom shinyWidgets pickerInput
 mod_onglet_unit_ui <- function(id) {
   ns <- NS(id)
   tagList(
     tags$head(
     tags$style(
       type = "text/css",
-      ".inline label{ display: table-cell; vertical-align: middle; } 
+      ".inline label{ display: table-cell; padding-right: 1em; vertical-align: middle; } 
                  .inline .form-group{display: table-row;}
       "
     ) ),
@@ -83,29 +84,51 @@ mod_onglet_unit_ui <- function(id) {
           fluidRow(   
             br(),
     column(6,
+          #  pickerInput(
+          # ns("val_unit_e"), ## val_unit_e----------
+          # label = "Et son prix en ",
+          # choices = c("\u20ac",
+          #             "k\u20ac"),
+          # selected = 1,
+          # width = "fit",
+          # inline = TRUE,
+          # options = list(
+          #   class="selectize-control shiny-input-select shinyjs-resettable shiny-bound-input single plugin-selectize-plugin-a11y",
+          #                style = "background-color: white;"
+          #   ),
+          # choicesOpt = list(
+          #     style = rep_len("font-size: 150%; line-height: 1.6;", 2)
+          #   )
+          # )
+          
+          
           selectInput(
-          ns("val_unit_e"), ## val_unit_e----------
-          label = "Et son prix en ",
-          choices = c("\u20ac",
-                      "k\u20ac"),
-          selected = 1
-        )),
+            ns("val_unit_e"), ## val_unit_e----------
+            label = "Et son prix en ",
+            choices = c("\u20ac",
+                        "k\u20ac"),
+            selected = 1,
+            
+          )
+          
+        ),
     
     
-    column(6,    
+    column(6,
+         #  class = "inline",
         tooltip(
           textInput(ns("val_unit_p"), "par"), ## val_unit_p----------
           title = "1 000 L, tonne, panier")
     ))
-    
-    ), 
+        ), 
         
         div(
           id = ns("p4"),
           br(),
 
           htmlOutput(ns("text1")) %>% 
-          tagAppendAttributes(style ="color:#FF0000;"),
+         # tagAppendAttributes(style ="color:#FF0000;"),
+           tagAppendAttributes(style ="color:blue;"),
         br(),
         
         selectInput(
@@ -239,7 +262,7 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
       paste0(input$val_unit_e, " / ", input$val_unit_p)
     })
     
-    
+    # Sortie des modules----------------------------------
     observeEvent( input$button_v_oser, {
       
        r$button_unit <- input$button_v_oser
