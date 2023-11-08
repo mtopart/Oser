@@ -46,6 +46,7 @@ mod_tutoriel_ui <- function(id){
     htmlOutput(ns("graphiques")),
     br(),
     h5(strong("Enregistrement des sorties")),
+    htmlOutput(ns("enregistrement")),
     hr(),
     h2("Mieux comprendre les indicateurs \u00e9conomiques"),
     p("A venir"),
@@ -89,6 +90,15 @@ mod_tutoriel_server <- function(id){
         height: 0;"><iframe title="Tutoriel Graphiques" frameborder="0" width="1200" height="675" 
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
         src="https://view.genial.ly/650b073107be920019bea9a5" type="text/html" allowscriptaccess="always" allowfullscreen="true" 
+        scrolling="yes" allownetworking="all"></iframe> </div> </div>')
+    })
+    
+    
+    output$enregistrement <- renderUI({
+      HTML(
+        '<div style="width: 80%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0; height: 0;"><iframe title="Tutoriel Enregistrement"
+        frameborder="0" width="1200" height="675" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+        src="https://view.genial.ly/650c8cc6504ecb00114f906a" type="text/html" allowscriptaccess="always" allowfullscreen="true" 
         scrolling="yes" allownetworking="all"></iframe> </div> </div>')
     })
     
