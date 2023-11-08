@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-#' @importFrom officer read_docx body_add_gg body_add_par plot_instr body_add_plot fpar body_add_fpar fp_text external_img ftext
+#' @importFrom officer read_docx body_add_gg body_add_par body_add_break plot_instr body_add_plot fpar body_add_fpar fp_text external_img ftext
 #' @importFrom flextable body_add_flextable 
 #' @importFrom shinyalert shinyalert 
 #' 
@@ -26,6 +26,7 @@ mod_telechargement_ui <- function(id){
     # strong(style = "color:red ;font-size: 20px;
     #                              font-style: italic","En construction"),
     fluidRow(
+      
       
       column(
       4,
@@ -69,7 +70,15 @@ mod_telechargement_ui <- function(id){
     
     br(),
     br(),
-    downloadButton(ns("dl_graph"), span("T\u00e9l\u00e9charger le compte-rendu"))
+    downloadButton(ns("dl_graph"), span("T\u00e9l\u00e9charger le compte-rendu")),
+    br(),
+    tags$button(
+      id = "web_button",
+      class = "btn action-button",
+      tags$img(src = "www/Image7.png",
+               height = "100px"),
+      onclick ="window.open('https://view.genial.ly/650c8cc6504ecb00114f906a', '_blank')"
+    )
      # ,
      # verbatimTextOutput(ns("test"))
     # ,
@@ -99,7 +108,10 @@ graph_word <- function(gg,
                        doc_word){
   
   
-  #D\u00e9finition des paragraphes
+  #Definition des paragraphes------------
+  par_unit <- fpar(
+    ftext("Echelle d'analyse = ", fp_text(bold = TRUE)),  
+    r$echelle)
   
   ## Paragraphe production
   
@@ -154,10 +166,11 @@ graph_word <- function(gg,
     body_add_par(value = input$titre_scenar, style = "heading 1") 
   
   
-  #  R\u00e9capitulatif de saisie-------------------------
+  #  Recapitulatif de saisie-------------------------
   
   doc_word <- doc_word %>%
     body_add_par(value = "R\u00e9capitulatif des \u00e9l\u00e9ments de saisie", style = "heading 2") %>% 
+    body_add_fpar(value = par_unit, style = "Normal") %>% 
     body_add_par(value = "Production", style = "heading 3") %>% 
     body_add_fpar(par_prod1) %>% 
     body_add_fpar(par_prod2) %>% 
@@ -199,7 +212,7 @@ graph_word <- function(gg,
     }
   
   
-  # R\u00e9sultats -------------------------------
+  # Ree9sultats -------------------------------
   
   doc_word <- doc_word  %>%
     body_add_par(value = "R\u00e9sultats", style = "heading 2") 
@@ -213,6 +226,8 @@ graph_word <- function(gg,
   
   if(r$coche_confort){   # Ajout du graphique qui concerne les variables de la zone de confort
     doc_word <- doc_word %>%
+      body_add_break() %>% 
+      body_add_par(value = r$text_var, style = "Normal") %>% 
       body_add_gg(gg_tabl)
   }
   }
