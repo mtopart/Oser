@@ -62,6 +62,7 @@ mod_zone_graph_ui <- function(id){
                    ),
                div(id = ns("g2"),
                    mod_matrice_gain_ui(ns("matrice_gain_1")))
+ 
         )),
       
       sidebar = boxSidebar(
