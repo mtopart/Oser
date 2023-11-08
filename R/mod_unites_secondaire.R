@@ -41,7 +41,7 @@ mod_unites_secondaire_ui <- function(id){
               label = "Solde"),
     
     
-    actionButton(ns("button_unit"), icon("chevron-right"))
+    actionButton(ns("button_unit"), icon("chevron-right"),  label = "Valider")
 
     
   )
