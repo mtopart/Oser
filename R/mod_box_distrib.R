@@ -508,7 +508,7 @@ mod_box_distrib_server <- function(id,
         theme(
           panel.grid = element_line(linetype = 2, color = "grey70"),
           plot.title = element_text(size = 11,hjust = 0.5),
-          plot.subtitle = element_text(size = 10,hjust = 0.5)
+          plot.subtitle = element_text(size = 9,hjust = 0.5)
         ) +
         coord_cartesian(xlim =c(v_mini(), v_maxi())) +
         scale_x_continuous(breaks = seq(v_mini(),v_maxi(),
