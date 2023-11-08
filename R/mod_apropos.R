@@ -14,10 +14,14 @@ mod_apropos_ui <- function(id){
       title = "A propos",
       width = 12,
       
+      div(style="text-align: center;",
       tags$img(src = "www/002.jpg", width = "85%" ),
+      hr(),
       tags$img(src = "www/003.jpg", width = "85%" ),
-      br(),
-      tags$img(src = "www/004.jpg", width = "85%" )
+      hr(),
+      tags$img(src = "www/004.jpg", width = "85%" ),
+      hr(),
+      tags$img(src = "www/005.jpg", width = "85%" ))
       
   ))
 }
