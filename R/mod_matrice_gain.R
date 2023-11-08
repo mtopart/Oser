@@ -20,7 +20,14 @@ mod_matrice_gain_ui <- function(id){
               
               ### Matrice---------------
               column(8,
-                     plotlyOutput(ns("graph_mat"))
+                     plotlyOutput(ns("graph_mat")),
+                     tags$button(
+                       id = "web_button",
+                       class = "btn action-button",
+                       tags$img(src = "www/Image7.png",
+                                height = "100px"),
+                       onclick ="window.open('https://view.genial.ly/650b073107be920019bea9a5', '_blank')"
+                     )
                      # ,
                      # verbatimTextOutput(ns("test"))
               ),
@@ -101,7 +108,7 @@ mod_matrice_gain_server <- function(id,
 
 
 
-######## Pour l'appli en ligne
+######## Pour l'appli en ligne----------------------------------------
 
     tbl_matrice <- reactive({
 
@@ -152,7 +159,7 @@ mod_matrice_gain_server <- function(id,
     })
 
 
-
+## Def de la matrice ggplot-------------
     graph_mat <- reactive({
 
       col1_n <- col1_n()
@@ -164,7 +171,8 @@ mod_matrice_gain_server <- function(id,
         theme_minimal() +
         theme(
           plot.title = element_text(size = 15L,
-                                    face = "bold")
+                                    face = "bold",
+                                    hjust = 0.5)
         )
 
 
@@ -254,7 +262,8 @@ mod_matrice_gain_server <- function(id,
       ggplotly(graph_mat() )
     })
     
-    ############################# Pour le word----------------------------------------------------
+    # Pour le word----------------------------------------------------
+    # Ici pour le fonctionnement besoin de mettre une colonne en facteur, par rapport a l'appli en ligne
     
     
     
@@ -314,7 +323,7 @@ mod_matrice_gain_server <- function(id,
     })
     
     
-    
+    #### Définition de la matrice du rapport---------------------------------------------
     graph_mat_word <- reactive({
       
       col1_n <- col1_n()
@@ -326,7 +335,8 @@ mod_matrice_gain_server <- function(id,
         theme_minimal() +
         theme(
           plot.title = element_text(size = 13L,
-                                    face = "bold")
+                                    face = "bold",
+                                    hjust = 0.5)
         )
       
       
@@ -432,25 +442,25 @@ mod_matrice_gain_server <- function(id,
 
 
     
-    ### Matrice
+    ### Titre des matrices----------------------------
     
     titre_mat_3 <- reactive({
       if(is.null(r$solde)){
         "Solde en fonction du prix et de la production" } else {
-          paste0(r$solde, " en fonction du prix et \n de la production") } 
+          paste0(r$solde, " en fonction \n du prix et de la production") } 
     })
     
     titre_mat_2 <- reactive({
       if(is.null(r$solde)){
         "Solde en fonction des charges et de la production" } else {
-          paste0(r$solde, " en fonction des charges et \n de la production") } 
+          paste0(r$solde, " en fonction \n des charges et de la production") } 
       
     })
     
     titre_mat_1 <- reactive({
       if(is.null(r$solde)){
         "Solde en fonction du prix et des charges" } else {
-          paste0(r$solde, " en fonction du prix et \n des charges") } 
+          paste0(r$solde, " en fonction \n du prix et des charges") } 
       
     })  
     
