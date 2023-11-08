@@ -15,9 +15,8 @@ mod_onglet_unit_ui <- function(id) {
     tags$head(
     tags$style(
       type = "text/css",
-      "#inline label{ display: table-cell; padding-right: 1em;
-                   vertical-align: middle;}
-                 #inline .form-group { display: table-row;}
+      ".inline label{ display: table-cell; vertical-align: middle; } 
+                 .inline .form-group{display: table-row;}
       "
     ) ),
     
@@ -36,6 +35,8 @@ mod_onglet_unit_ui <- function(id) {
         
 
       )
+      #,
+      #htmlOutput(ns("presentation"))
     ),
 
     column(
@@ -56,7 +57,7 @@ mod_onglet_unit_ui <- function(id) {
     
     
       tags$div(
-        id = "inline",
+        class = "inline",
         
       h6("Choix des unit\u00e9s et des param\u00e8tres :",
          style ="text-decoration: underline;" ),
@@ -71,7 +72,10 @@ mod_onglet_unit_ui <- function(id) {
           tooltip(
           textInput( ##val_unit_prod-------------
             ns("val_unit_prod"), "La production s'exprime en "),
-          title = "1 000 L, tonnes, nombre de paniers" )),
+          title = "1 000 L, tonnes, nombre de paniers" ))
+      #,
+      
+      ), # div inline
 
         div(
           id = ns("p3"),
@@ -101,7 +105,7 @@ mod_onglet_unit_ui <- function(id) {
           br(),
 
           htmlOutput(ns("text1")) %>% 
-          tagAppendAttributes(style ="color:blue;"),
+          tagAppendAttributes(style ="color:#FF0000;"),
         br(),
         
         selectInput(
@@ -116,9 +120,6 @@ mod_onglet_unit_ui <- function(id) {
           selected = 1
         ),
         textInput(ns("val_unit_sautre"), "Solde choisi") ## val_unit_sautre----------
-        #textOutput(ns("text2")) 
-        # %>%
-        #   tagAppendAttributes(style ="font-family:  Cabin Sketch;")
       ),
       
       # column(
@@ -131,13 +132,11 @@ mod_onglet_unit_ui <- function(id) {
                      icon("play"),
                      status = "primary",
                      label = "C'est parti !") 
-        # %>% 
-        #  tagAppendAttributes(style ="font-family:  Cabin Sketch;")
       )
 
     )
    ))
-  ))
+  )
   
   
 }
@@ -174,15 +173,15 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
         selected = r$select_solde
       )})
 
-    observe({
-      updateSelectInput(
-        session,
-        "val_unit_e",
-        choices = c("\u20ac",
-                    "k\u20ac"),
-        selected = r$unit_e
-      ) 
-      })
+    # observe({
+    #   updateSelectInput(
+    #     session,
+    #     "val_unit_e",
+    #     choices = c("\u20ac",
+    #                 "k\u20ac"),
+    #     selected = r$unit_e
+    #   ) 
+    #   })
 
     observe({
       updateTextInput(session, "val_unit_sautre", value = r$solde2)
@@ -262,7 +261,13 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     })  
     
 
-    
+    output$presentation <- renderUI({
+      HTML(
+        '<div style="width: 80%;"><div style="position: relative; padding-bottom: 56.25%; padding-top: 0; height: 0;"><iframe title="Tutoriel Enregistrement"
+        frameborder="0" width="1200" height="675" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+        src="https://view.genial.ly/650c8cc6504ecb00114f906a" type="text/html" allowscriptaccess="always" allowfullscreen="true" 
+        scrolling="yes" allownetworking="all"></iframe> </div> </div>')
+    }) 
     
     
   })
