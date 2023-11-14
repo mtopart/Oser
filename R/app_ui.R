@@ -85,8 +85,8 @@ app_ui <- function(request) {
       
       # D\u00e9finition des menus de la barre de gauche       
       footer = dashboardFooter(
-        left = "Prototype - application en d\u00e9veloppement",
-        right = "2022 - Strat&co"
+        left = "Oser - Outil de Simulation du risque Economique et des Revenus - V1.0",
+        right = "2023 - Projet Strat&co"
       ),
       
       

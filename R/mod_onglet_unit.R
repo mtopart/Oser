@@ -32,7 +32,7 @@ mod_onglet_unit_ui <- function(id) {
                 border-left: 6px solid #2196F3!important;
                 background: white;",
 
-        img(src = "www/apropos.jpg", width = "95%"),
+        htmlOutput(ns("video"))
         
 
       )
@@ -260,6 +260,16 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     
     unit_prix <- reactive({
       paste0(input$val_unit_e, " / ", input$val_unit_p)
+    })
+    
+    # Video--------------------------
+    output$video <- renderUI({
+      HTML(
+        '<div style="width: 100%;"><div style="position: relative; padding-bottom: 100%; 
+        padding-top: 0; height: 0;"><iframe title="video_oser" frameborder="0" width="800"
+        height="800" style="position: absolute; top: 0; left: 0; width: 100%; height: 
+        100%;" src="https://view.genial.ly/65537515a275b1001160fe01" type="text/html" 
+        allowscriptaccess="always" allowfullscreen="true" scrolling="yes" allownetworking="all"></iframe> </div> </div>')
     })
     
     # Sortie des modules----------------------------------
