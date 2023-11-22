@@ -265,11 +265,13 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
     # Video--------------------------
     output$video <- renderUI({
       HTML(
-        '<div style="width: 100%;"><div style="position: relative; padding-bottom: 100%; 
-        padding-top: 0; height: 0;"><iframe title="video_oser" frameborder="0" width="800"
-        height="800" style="position: absolute; top: 0; left: 0; width: 100%; height: 
-        100%;" src="https://view.genial.ly/65537515a275b1001160fe01" type="text/html" 
-        allowscriptaccess="always" allowfullscreen="true" scrolling="yes" allownetworking="all"></iframe> </div> </div>')
+        '<div style="width: 100%;"><div style="position: relative;
+        padding-bottom: 100%; padding-top: 0; height: 0;"><iframe 
+        title="video_oser_sson" frameborder="0" width="800" height="800" 
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+        src="https://view.genial.ly/6553cab9eb1630001165ae6c" type="text/html"
+        allowscriptaccess="always" allowfullscreen="true" scrolling="yes"
+        allownetworking="all"></iframe> </div> </div>')
     })
     
     # Sortie des modules----------------------------------
@@ -279,9 +281,9 @@ mod_onglet_unit_server <- function(id, r, parent_session) {
 
        r$echelle <- input$val_echelle
        r$unit_prix <- unit_prix()     # Ex : €/t
-       r$unit_prix_p <- input$val_unit_p  # €
-       r$unit_prod <- input$val_unit_prod
-       r$unit_e <-   input$val_unit_e
+       r$unit_prix_p <- input$val_unit_p  # Ex : t
+       r$unit_prod <- input$val_unit_prod # Ex : tonnes
+       r$unit_e <-   input$val_unit_e # Ex : €
        r$solde <- unit_solde()  # Unit\u00e9 finale ( en €)
        r$solde2 <- unit_solde2()
        r$select_solde <- input$val_unit_solde  # unit\u00e9 rentr\u00e9e
