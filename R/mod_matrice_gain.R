@@ -473,16 +473,35 @@ mod_matrice_gain_server <- function(id,
 
     })
 
+# Liens modules --------------------------
+    valeur_var <- reactive({
+      case_when(
+        input$idSelect_mat == 3 ~ paste0(input$charges_mat, " ", r$unit_e),     # charges
+        input$idSelect_mat == 2 ~ paste0(input$prix_mat, " ", r$unit_prix),   # prix
+        input$idSelect_mat == 1 ~ paste0(input$prod_mat, " ", r$unit_prod)    # prod       
+      )
+    })
+    
+    variable_fixe <- reactive({
+      case_when(
+        input$idSelect_mat == 3 ~ "charges",     # charges
+        input$idSelect_mat == 2 ~ "prix",   # prix
+        input$idSelect_mat == 1 ~ "production"    # prod       
+      )
+    })
     
     observeEvent( r$button_graph , {
       
       if(r$choix_graph == "mat"){
       
-      r$graph_save <- graph_mat_word() }
+      r$graph_save <- graph_mat_word() 
+      r$var_fixe <- variable_fixe()
+      r$val_var_fixe <- valeur_var()  
+      }
       
     }) 
     
-    
+ 
     
     # output$test <- renderPrint({
     #   tbl_matrice()

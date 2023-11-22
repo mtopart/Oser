@@ -5,5 +5,5 @@ account: mtopart
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5417428
-bundleId: 7925886
+bundleId: 7957274
 url: https://mtopart.shinyapps.io/oser/

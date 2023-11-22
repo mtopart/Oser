@@ -288,7 +288,20 @@ mod_box_distrib_server <- function(id,
     )
    
 
-
+  moyenne <- reactive({
+    mean(distrib_finale())  %>%
+      round(., digits = 1)})
+  
+  moyenne_unit <- reactive({
+    paste( moyenne(),
+      case_when(
+        type == "production" ~ r$unit_prod  ,
+        type == "prix" ~ r$unit_prix  ,
+        type == "charges" ~ r$unit_e 
+      ),
+      sep = " "
+  )
+  })
 
 
     output$mean_distrib <- renderUI({
@@ -296,8 +309,7 @@ mod_box_distrib_server <- function(id,
         myfit <- v_myfit()
         text <- paste0(em("Oups ! J'ai encore besoin de jetons !"))
         if (is.list(myfit)){
-          my_mean <- mean(distrib_finale())  %>%
-            round(., digits = 1)
+          my_mean <- moyenne()
           text <- paste0(em("Moyenne de la distribution :"), br(), my_mean)
         }
         HTML(text)
@@ -557,6 +569,7 @@ mod_box_distrib_server <- function(id,
       } else {   
       
       r[[paste("dist_pr_graph", type, sep = "_")]] <- distrib_finale() 
+      r[[paste("moy_distrib", type, sep = "_")]] <- moyenne_unit() 
       
       r[[paste("saisie_mini", type, sep = "_")]]  <- input$v_mini 
       r[[paste("saisie_maxi", type, sep = "_")]]  <- input$v_maxi
